@@ -3,7 +3,7 @@
 **AirDraw** is a browser-based, camera-powered creative workspace for drawing in 2D and 3D, then arranging and manipulating 3D objects with hand gestures.
 
 **AirDraw** 是一款基于浏览器摄像头的创作工作区：通过手势进行二维、三维绘画，并导入和操控 3D 模型。
-
+https://airdraw-c1m.pages.dev/
 > Current scope / 当前功能：Spatial Draw, Canvas Draw and Model Control. PlayLab toys were removed from the current product. / 三维绘画、平面绘画与模型操控。互动玩具已从当前产品移除。
 
 | Hello / 粒子开场 | Creation hub / 创作大厅 |
