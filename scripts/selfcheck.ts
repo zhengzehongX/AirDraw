@@ -10,6 +10,7 @@ import { createCoverMapper, clampToViewport, toPlane } from '../src/utils/coordi
 import { PinchDetector } from '../src/utils/gesture/pinch.ts';
 import { OneEuroFilter } from '../src/utils/smoothing/oneEuro.ts';
 import { StrokeStore } from '../src/engine/StrokeStore.ts';
+import { Canvas2DStrokeRenderer } from '../src/rendering/canvas2d/Canvas2DStrokeRenderer.ts';
 import { palmLength, pinchRatio, toPixelPoints, worldPalmLength, indexDepthFeedback } from '../src/utils/gesture/landmarks.ts';
 import { computeCurls, curlOf, FingerCurl, gesturePoints } from '../src/utils/gesture/curl.ts';
 import { GestureEngine } from '../src/utils/gesture/GestureEngine.ts';
@@ -299,6 +300,36 @@ const P = (x: number, y: number, z = 0) => ({ x, y, z });
   check('committed point count drives the budget', filled.committedPointCount >= INK_BUDGET_POINTS, `${filled.committedPointCount} pts`);
   store.clear();
   check('clear empties history', store.strokeCount === 0 && store.canUndo === false);
+
+  const eraseStore = new StrokeStore();
+  eraseStore.begin('#fff', 4, 'plastic', P(0.1, 0.5));
+  eraseStore.append(P(0.5, 0.5)); eraseStore.append(P(0.9, 0.5)); eraseStore.commit();
+  eraseStore.beginEraseSession();
+  const clipped = eraseStore.eraseAlong({ path: [P(0.5, 0.42), P(0.5, 0.58)], radius: 0.04 });
+  eraseStore.finishEraseSession();
+  check('local eraser splits only the touched part of a stroke', clipped && eraseStore.committed.length === 1 && eraseStore.committed[0].segments.length === 2);
+  check('one continuous local erase is one undo step', eraseStore.undo() && eraseStore.committed[0].segments[0].length === 3);
+  check('local erase redo restores the clipped fragments', eraseStore.redo() && eraseStore.committed[0].segments.length === 2);
+
+  // Keep the committed buffer independent from StrokeStore's mutable history array.
+  let historyFills = 0;
+  const makeContext = (onFill: () => void = () => {}) => ({
+    lineCap: 'butt', lineJoin: 'miter', globalAlpha: 1, fillStyle: '', strokeStyle: '', lineWidth: 1,
+    save() {}, restore() {}, clearRect() {}, setTransform() {}, beginPath() {}, arc() {},
+    fill() { onFill(); }, stroke() {}, moveTo() {}, lineTo() {}, quadraticCurveTo() {},
+  } as unknown as CanvasRenderingContext2D);
+  const historyContext = makeContext(() => { historyFills += 1; }), liveContext = makeContext();
+  const canvas = (ctx: CanvasRenderingContext2D) => ({ width: 100, height: 100, style: {}, getContext: () => ctx } as unknown as HTMLCanvasElement);
+  const rendererStore = new StrokeStore();
+  const renderer = new Canvas2DStrokeRenderer(canvas(historyContext), canvas(liveContext));
+  renderer.rebuild(rendererStore.committed);
+  const dot = rendererStore.begin('#fff', 6, 'plastic', P(0.4, 0.4));
+  renderer.beginStroke(dot, P(0.4, 0.4));
+  rendererStore.commit();
+  renderer.commitStroke(dot);
+  check('new committed 2D ink is painted immediately without viewport movement', historyFills > 0);
+  renderer.dispose();
+
 }
 
 // -------------------------------------------------------------- landmarks

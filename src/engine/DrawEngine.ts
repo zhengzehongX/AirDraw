@@ -40,6 +40,7 @@ import type { ContactProfile } from '../utils/gesture/PinchContactDetector';
 import { HandMotion, opennessOf, palmCentreOf, palmOrientation, wristRollOf, type HandFrame, type TwoHandFrame } from '../hands/handFrame';
 import { inputRouter } from '../interaction/InputRouter';
 import { CanvasNavigation, CANVAS_NAV, type Vec2 } from '../interaction/canvasNavigation';
+import { PAPER_HEIGHT, PAPER_WIDTH } from '../rendering/canvas2d/freehand';
 
 /** What the engine tells the scene about a palm navigation session on the 3D ink. */
 export type SpatialNavIntent =
@@ -162,6 +163,9 @@ export class DrawEngine {
   private hasSeenHand = false;
   private lostSince: number | null = null;
   private penDown = false;
+  private eraserStore: StrokeStore | null = null;
+  private eraserLastPoint: Point | null = null;
+  private eraserCaptureWasPaused = false;
   private suspended = false;
   private forceFilterReset = true;
   private screenStabilizer = new ScreenStabilizer();
@@ -238,6 +242,7 @@ export class DrawEngine {
 
   dispose(): void {
     this.stop();
+    this.finishEraseGesture();
     if (this.penDown) this.finishStroke();
     this.cursorListeners.clear();
     this.metricsListeners.clear();
@@ -379,7 +384,7 @@ export class DrawEngine {
     this.store=mode==='CANVAS_DRAW'?this.canvasStore:this.spatialStore;
     this.historyListeners.forEach(cb=>cb());
   }
-  cancelInput(): void { if(this.penDown)this.finishStroke();this.pinchDetector.reset();this.secondaryDetector.reset();inputRouter.suspend();this.tracking.epoch++;this.cursor.pinched=false; }
+  cancelInput(): void { this.finishEraseGesture();if(this.penDown)this.finishStroke();this.pinchDetector.reset();this.secondaryDetector.reset();inputRouter.suspend();this.tracking.epoch++;this.cursor.pinched=false; }
   get contact() { return this.pinchDetector.metrics; }
   setContactProfile(profile:ContactProfile) {this.cancelInput();this.pinchDetector.profile=profile;this.secondaryDetector.profile=profile;}
   rawStrokesFor(mode:WorkspaceMode) {return mode==='CANVAS_DRAW'?this.canvasStore.committed:this.spatialStore.committed;}
@@ -390,13 +395,13 @@ export class DrawEngine {
   setInspectMode(on: boolean): void {
     if (this.inspectMode === on) return;
     this.inspectMode = on;
-    if (on && this.penDown) this.finishStroke();
+    if (on) { this.finishEraseGesture(); if (this.penDown) this.finishStroke(); }
   }
 
   /** FIST pause: freeze pen + UI interaction semantics (cursor keeps moving). */
   setInputLocked(locked: boolean): void {
     this.inputLocked = locked;
-    if (locked && this.penDown) this.finishStroke();
+    if (locked) { this.finishEraseGesture(); if (this.penDown) this.finishStroke(); }
   }
 
   /**
@@ -416,6 +421,7 @@ export class DrawEngine {
   }
 
   setEraseMode(on: boolean): void {
+    if (this.eraseMode !== on) this.finishEraseGesture();
     this.eraseMode = on;
   }
 
@@ -433,7 +439,7 @@ export class DrawEngine {
    *  over UI is a click, never a stroke (disambiguation rule of the system). */
   setUiHovered(hovered: boolean): void {
     this.uiHovered = hovered;
-    if (hovered && this.penDown) this.finishStroke();
+    if (hovered) { this.finishEraseGesture(); if (this.penDown) this.finishStroke(); }
   }
 
   /**
@@ -454,7 +460,7 @@ export class DrawEngine {
   setDrawingAllowed(allowed: boolean): void {
     if (this.drawingAllowed === allowed) return;
     this.drawingAllowed = allowed;
-    if (!allowed && this.penDown) this.finishStroke();
+    if (!allowed) { this.finishEraseGesture(); if (this.penDown) this.finishStroke(); }
   }
 
   /** Pointer Sensitivity setting: 1 is the tuned default. */
@@ -855,6 +861,7 @@ export class DrawEngine {
   }
 
   undo(): boolean {
+    this.finishEraseGesture();
     if (this.penDown) this.finishStroke();
     if(this.projectHistory)return this.projectHistory.undo();
     if (!this.store.undo()) return false;
@@ -863,6 +870,7 @@ export class DrawEngine {
   }
 
   redo(): boolean {
+    this.finishEraseGesture();
     if (this.penDown) this.finishStroke();
     if(this.projectHistory)return this.projectHistory.redo();
     if (!this.store.redo()) return false;
@@ -876,12 +884,14 @@ export class DrawEngine {
    * launch, so a fresh session always starts with a clean sheet.
    */
   loadArtwork(strokes: readonly Stroke[]): void {
+    this.finishEraseGesture();
     if (this.penDown) this.finishStroke();
     this.store.replaceAll(strokes.map((stroke) => ({ ...stroke })));
     this.renderer?.rebuild(this.store.committed);
   }
 
   clear(): boolean {
+    this.finishEraseGesture();
     this.penDown = false;
     this.suspended = false;
     this.store.abort();
@@ -1016,6 +1026,19 @@ export class DrawEngine {
 
   private handleLost(now: number): void {
     this.lostSince ??= now;
+    if (this.eraserStore) {
+      // Keep the same eraser transaction through a brief detector dropout, but
+      // discard its spatial bridge so reacquisition can never erase across a jump.
+      this.eraserLastPoint = null;
+      if (now - this.lostSince < TRACKING_LOST_GRACE_MS) {
+        this.pinchDetector.update(null, now);
+        this.frame.primary = null; this.frame.secondary = null; this.frame.two = null; this.frame.at = now;
+        this.cursor.pinched = false;
+        this.publishCursor();
+        return;
+      }
+      this.finishEraseGesture();
+    }
     // Keep an ink session across a short dropout; models lose their grab frame immediately.
     if (this.penDown && now - this.lostSince < TRACKING_LOST_GRACE_MS) {
       this.frame.primary=null;this.frame.secondary=null;this.frame.two=null;
@@ -1234,12 +1257,43 @@ export class DrawEngine {
     // otherwise a pinch that activates a dock button also deletes ink.
     const penPinched =
       pinchedRaw && this.drawingAllowed && !this.inputLocked && !this.inspectMode && !this.uiHovered && inputRouter.mayDraw;
-    if ((this.eraseMode || this.workspaceMode==='CANVAS_DRAW' && this.canvasTool==='eraser') && penPinched) {
-      // The eraser is a cursor-sized tool: its reach is constant on screen, so in
-      // document units it shrinks as the sheet is magnified.
-      const eraseRadius = onCanvas ? ERASE_RADIUS_PLANE / this.canvasNav.state().zoom : ERASE_RADIUS_PLANE;
-      if (this.store.removeNear(aim, eraseRadius,this.projectEditable??undefined,s=>this.projectRender?.([s])[0]??s)) this.renderer?.rebuild(this.store.committed);
+    const erasing = (this.eraseMode || this.workspaceMode==='CANVAS_DRAW' && this.canvasTool==='eraser') && penPinched;
+    if (erasing) {
+      const spacePoint: Point = onCanvas ? { x: screen.x, y: screen.y, z: 0 } : { x: aim.x, y: aim.y, z: aim.z * 0.35 };
+      if (!this.eraserStore) this.beginEraseGesture(spacePoint);
+      const projectPoint = onCanvas
+        ? (p: Point): Point => ({ ...this.canvasNav.docToScreen(p), z: 0 })
+        : (p: Point): Point => ({ x: p.x, y: p.y, z: p.z * 0.35 });
+      let radius: number;
+      let strokeRadius: (stroke: Stroke, projected: Stroke) => number;
+      if (onCanvas) {
+        const zoom = this.canvasNav.state().zoom;
+        const centre = this.canvasNav.docToScreen({ x: 0.5, y: 0.5 });
+        const edgeX = this.canvasNav.docToScreen({ x: 0.5 + ERASE_RADIUS_PLANE / zoom, y: 0.5 });
+        const edgeY = this.canvasNav.docToScreen({ x: 0.5, y: 0.5 + ERASE_RADIUS_PLANE / zoom });
+        radius = Math.max(8, (Math.hypot(edgeX.x - centre.x, edgeX.y - centre.y) + Math.hypot(edgeY.x - centre.x, edgeY.y - centre.y)) / 2);
+        const origin = this.canvasNav.docToScreen({ x: 0, y: 0 });
+        const unitX = this.canvasNav.docToScreen({ x: 1 / PAPER_WIDTH, y: 0 });
+        const unitY = this.canvasNav.docToScreen({ x: 0, y: 1 / PAPER_HEIGHT });
+        const pixelPerPaperUnit = Math.max(Math.hypot(unitX.x - origin.x, unitX.y - origin.y), Math.hypot(unitY.x - origin.x, unitY.y - origin.y));
+        strokeRadius = (stroke, rendered) => rendered.width * (stroke.tool === 'marker' ? 2 : stroke.tool === 'highlighter' ? 3 : 1) * pixelPerPaperUnit / 2;
+      } else {
+        radius = ERASE_RADIUS_PLANE;
+        strokeRadius = (_stroke, rendered) => 0.05 + Math.min(1, Math.max(0, (rendered.width - 2) / 22)) * 0.26;
+      }
+      const path = this.eraserLastPoint ? [this.eraserLastPoint, spacePoint] : [spacePoint];
+      const changed = this.store.eraseAlong({
+        path,
+        radius,
+        editable: this.projectEditable ?? undefined,
+        project: stroke => this.projectRender?.([stroke])[0] ?? stroke,
+        projectPoint,
+        strokeRadius,
+      });
+      this.eraserLastPoint = spacePoint;
+      if (changed && onCanvas) this.renderer?.rebuild(this.strokesFor('CANVAS_DRAW'));
     } else {
+      this.finishEraseGesture();
       this.updateStroke(penPinched && this.recapture === null, aim, screen);
     }
 
@@ -1324,6 +1378,29 @@ export class DrawEngine {
     const stroke = this.store.commit();
     if (stroke) this.renderer?.commitStroke(stroke);
     else this.renderer?.discardStroke();
+  }
+
+  private beginEraseGesture(point: Point): void {
+    if (this.penDown) this.finishStroke();
+    this.eraserStore = this.store;
+    this.eraserStore.beginEraseSession();
+    this.eraserLastPoint = point;
+    this.eraserCaptureWasPaused = this.projectCapturePaused;
+    this.projectCapturePaused = true;
+  }
+
+  private finishEraseGesture(): void {
+    const store = this.eraserStore;
+    if (!store) return;
+    this.eraserStore = null;
+    this.eraserLastPoint = null;
+    const changed = store.finishEraseSession();
+    const wasPaused = this.eraserCaptureWasPaused;
+    this.projectCapturePaused = wasPaused;
+    if (store === this.canvasStore) this.renderer?.rebuild(this.strokesFor('CANVAS_DRAW'));
+    // During the gesture the project bridge is paused; publish once so one long
+    // erase becomes one project history command rather than a command per frame.
+    if (changed && !wasPaused) this.historyListeners.forEach(listener => listener());
   }
 
   // --------------------------------------------------------------------- loop

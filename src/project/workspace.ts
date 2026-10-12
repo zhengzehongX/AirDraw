@@ -56,8 +56,11 @@ class Workspace {
     // A locked original is the source a solid was made from; emptying the ink
     // must not take it along, or undoing "Make 3D" would have nothing to unlock.
     const locked=old.filter(o=>o.locked),lockedStrokes=new Set(locked.map(o=>o.stroke));
-    const existing=new Map(old.filter(o=>!o.locked).map(o=>[o.stroke,o]));
-    const next=strokes.filter(s=>!lockedStrokes.has(s)).map(s=>existing.get(s)??({id:createId(),type,name:`${type==='stroke2d'?'2D':'3D'} stroke ${s.id}`,visible:true,locked:false,transform:identityTransform(),material:{preset:s.material,color:s.color},createdAt:Date.now(),updatedAt:Date.now(),modeSource:mode,stroke:s} satisfies SceneObject));
+    // A partial erase replaces the immutable Stroke value but not the artwork
+    // object. Match by its stable per-mode stroke id so its transform, layer state,
+    // parent group and material survive clipping and undo/redo.
+    const existing=new Map(old.filter(o=>!o.locked&&o.stroke).map(o=>[o.stroke!.id,o]));
+    const next=strokes.filter(s=>!lockedStrokes.has(s)).map(s=>{const previous=existing.get(s.id);return previous?(previous.stroke===s?previous:{...previous,stroke:s,updatedAt:Date.now()}):({id:createId(),type,name:`${type==='stroke2d'?'2D':'3D'} stroke ${s.id}`,visible:true,locked:false,transform:identityTransform(),material:{preset:s.material,color:s.color},createdAt:Date.now(),updatedAt:Date.now(),modeSource:mode,stroke:s} satisfies SceneObject);});
     const merged=[...next,...locked];
     if(old.length===merged.length&&old.every((o,i)=>o===merged[i]))return;
     this.change('绘画',[...this.project.objects.filter(o=>o.type!==type),...merged]);

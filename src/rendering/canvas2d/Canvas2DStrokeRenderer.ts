@@ -71,7 +71,10 @@ export class Canvas2DStrokeRenderer implements StrokeRenderer {
   }
 
   rebuild(strokes: readonly Stroke[]): void {
-    this.history = strokes;
+    // StrokeStore exposes its live mutable array for fast scene reads. Keep a
+    // renderer-owned snapshot: commitStroke must not see the just-committed id in
+    // an aliased array and conclude that the live ink was already painted.
+    this.history = [...strokes];
     this.repaintHistory();
   }
 
