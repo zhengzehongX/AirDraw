@@ -1,0 +1,351 @@
+.anchor {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 45;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: opacity var(--ad-motion-med) var(--ad-ease);
+}
+
+.anchor[data-focus='true'] {
+  opacity: 0.16;
+}
+
+.anchor[data-focus='true']:hover {
+  opacity: 1;
+}
+
+.dock {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: var(--ad-radius-xl);
+}
+
+.item {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  width: 52px;
+  padding: 9px 4px 7px;
+  border-radius: var(--ad-radius-md);
+  color: var(--ad-text-dim);
+  /* Hover lift, press give-way and the colour timing all come from `ad-press`; a
+     second transition here would replace that list rather than add to it. */
+  will-change: transform;
+}
+
+.item:hover {
+  color: var(--ad-text);
+}
+
+.item[data-active='true'] {
+  color: var(--ad-accent);
+  background: color-mix(in srgb, var(--ad-accent) 12%, transparent);
+}
+
+.item[data-disabled='true'] {
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.itemIcon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--ad-text) 7%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ad-text) 9%, transparent);
+}
+
+.item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ad-radius-md);
+  background: radial-gradient(circle at 50% 30%, rgba(var(--ad-glow-a), 0.22), transparent 70%);
+  opacity: var(--glow, 0);
+  pointer-events: none;
+}
+
+.itemLabel {
+  font-size: 9px;
+  font-weight: var(--ad-weight-medium);
+  letter-spacing: 0.04em;
+  color: var(--ad-text-faint);
+}
+
+.holdRing {
+  position: absolute;
+  inset: 2px;
+  border-radius: var(--ad-radius-md);
+  border: 1.5px solid transparent;
+  border-top-color: var(--ad-accent);
+  opacity: var(--hold, 0);
+  transform: rotate(calc(var(--hold, 0) * 360deg));
+  pointer-events: none;
+}
+
+.sep {
+  width: 1px;
+  height: 26px;
+  margin: 0 4px;
+  background: var(--ad-glass-border);
+}
+
+.handle {
+  width: 44px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--ad-text-faint);
+  pointer-events: none;
+}
+
+.handle span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.popover {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 16px;
+  border-radius: var(--ad-radius-lg);
+  min-width: 220px;
+}
+
+.sphereRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 320px;
+}
+
+.sphere {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.28),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.22);
+  transition: box-shadow var(--ad-motion-fast) var(--ad-ease);
+  will-change: transform;
+}
+
+.sphere[data-active='true'],
+.sphereLarge[data-active='true'] {
+  box-shadow:
+    0 0 0 2px var(--ad-glass-bg),
+    0 0 0 3.5px var(--ad-accent),
+    0 0 16px color-mix(in srgb, var(--ad-accent) 55%, transparent);
+}
+
+.sphereLarge {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.3),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.25);
+  will-change: transform;
+}
+
+.slider {
+  position: relative;
+  width: 240px;
+  height: 34px;
+}
+
+.sliderTrack {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ad-text) 12%, transparent);
+}
+
+.sliderFill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--ad-accent) 55%, transparent), var(--ad-accent));
+}
+
+.sliderKnob {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: var(--ad-text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.sliderMarks {
+  position: absolute;
+  inset: 0;
+}
+
+.sliderMark {
+  position: absolute;
+  top: 50%;
+  width: 2px;
+  height: 2px;
+  margin: -1px 0 0 -1px;
+  border-radius: 50%;
+  background: var(--ad-text-faint);
+}
+
+.sizePreview {
+  position: fixed;
+  left: 50%;
+  top: 42%;
+  z-index: 46;
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.sizePreviewDot {
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ad-accent) 80%, #fff);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--ad-accent) 45%, transparent);
+}
+
+.sizePreviewLabel {
+  font-size: 11px;
+  color: var(--ad-text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.settings {
+  display: grid;
+  gap: 8px;
+  min-width: 210px;
+}
+
+.settingsLabel {
+  font-size: var(--ad-text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ad-text-faint);
+}
+
+.segmented {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: var(--ad-radius-md);
+  background: color-mix(in srgb, var(--ad-text) 6%, transparent);
+}
+
+.chip {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: var(--ad-radius-sm);
+  font-size: var(--ad-text-sm);
+  font-weight: var(--ad-weight-medium);
+  color: var(--ad-text-dim);
+  will-change: transform;
+}
+
+.chip[data-active='true'] {
+  background: color-mix(in srgb, var(--ad-accent) 16%, transparent);
+  color: var(--ad-accent);
+}
+
+.confirm {
+  position: fixed;
+  z-index: 70;
+  padding: 14px 16px;
+  border-radius: var(--ad-radius-lg);
+}
+
+.confirmBody {
+  display: grid;
+  gap: 10px;
+}
+
+.confirmTitle {
+  font-size: var(--ad-text-md);
+  font-weight: var(--ad-weight-semi);
+}
+
+.confirmActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.confirmCancel {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: var(--ad-text-sm);
+  color: var(--ad-text-dim);
+  background: color-mix(in srgb, var(--ad-text) 8%, transparent);
+  will-change: transform;
+}
+
+.confirmHold {
+  position: relative;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: var(--ad-text-sm);
+  font-weight: var(--ad-weight-semi);
+  color: rgb(var(--ad-danger-ink));
+  background: rgb(var(--ad-danger));
+  overflow: hidden;
+}
+
+.confirmRing {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: rgba(var(--ad-danger-ink), 0.35);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* W1: the current mode's tools own the bottom row, one row deep, seven at most.
+   Everything else — view, centre, save, clear — is behind the explicit 更多 panel,
+   and that panel opens above the row it belongs to rather than as a second rail. */
+.anchor {left:50%;right:auto;top:auto;bottom:24px;transform:translateX(-50%);flex-direction:column;align-items:center;gap:12px;max-height:none;}
+.dock {display:flex;flex-direction:row;gap:4px;padding:8px 10px;max-height:none;overflow:visible;border-radius:var(--ad-radius-xl);}
+.item {width:64px;min-height:56px;padding:8px 4px;border-radius:var(--ad-radius-md);gap:6px;}
+.itemLabel {font-size:var(--ad-text-eyebrow);letter-spacing:0;}
+.sep {display:block;width:1px;height:32px;margin:0 4px;}
+.handle {display:none;}
+.anchor[data-focus='true'] {opacity:0;pointer-events:none;}
+@media (max-width:800px) {.anchor {bottom:12px;}.dock {gap:2px;padding:6px;}.item {width:56px;}}
+
+/* Motion drives `transform` on this element, so the centring offset has to come from
+   the motion style too — a CSS translate here is overwritten mid-animation. */
+.popover {position:absolute;left:50%;right:auto;top:auto;bottom:calc(100% + 12px);transform:none;width:min(320px,calc(100vw - 48px));padding:16px;border-radius:var(--ad-radius-lg);}
+.sphereRow {gap:16px;max-width:288px;}
+.sphere, .sphereLarge {width:52px;height:52px;}
+.slider {width:288px;height:64px;}
+.moreGrid {display:grid;grid-template-columns:repeat(2,1fr);gap:10px;justify-items:center;}
+

@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-11T09:03:24.108Z",
+  "results": [
+    {
+      "name": "CPU worker initializes",
+      "pass": true
+    },
+    {
+      "name": "GPU configuration uses same worker",
+      "pass": true
+    },
+    {
+      "name": "20 live-camera mode switches keep stream, worker and Canvas",
+      "pass": true,
+      "detail": {
+        "cameraRequests": 1,
+        "workers": 1,
+        "tracks": [
+          "live"
+        ],
+        "delegate": "GPU"
+      }
+    },
+    {
+      "name": "Worker returns inference results",
+      "pass": true
+    },
+    {
+      "name": "no runtime exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

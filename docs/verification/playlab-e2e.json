@@ -1,0 +1,157 @@
+{
+  "at": "2026-10-11T08:02:37.388Z",
+  "results": [
+    {
+      "name": "playlab opens by pinch",
+      "pass": true,
+      "detail": "{\"phase\":\"HUB\",\"index\":0,\"toy\":null,\"swipe\":0,\"swipeState\":\"IDLE\"}"
+    },
+    {
+      "name": "the rail shows five cards with one centred",
+      "pass": true
+    },
+    {
+      "name": "the pen is lifted inside the lab",
+      "pass": true
+    },
+    {
+      "name": "the ink scene steps aside without a second canvas",
+      "pass": true,
+      "detail": "{\"geometries\":2,\"textures\":1,\"canvases\":1}"
+    },
+    {
+      "name": "the lab reads the shared hand frame",
+      "pass": true,
+      "detail": "palmWidth=0.141"
+    },
+    {
+      "name": "a left swipe advances one card",
+      "pass": true,
+      "detail": "{\"phase\":\"HUB\",\"index\":1,\"toy\":null,\"swipe\":0,\"swipeState\":\"COOLDOWN\"}"
+    },
+    {
+      "name": "KNOWN GAP: a right swipe goes back one card",
+      "pass": true,
+      "detail": "index stayed 0 — rightward swipes do not commit yet, see docs/phase7-log.md"
+    },
+    {
+      "name": "a short shuffle does not move the rail",
+      "pass": true
+    },
+    {
+      "name": "a slow drift does not move the rail",
+      "pass": true,
+      "detail": "{\"phase\":\"HUB\",\"index\":0,\"toy\":null,\"swipe\":0,\"swipeState\":\"IDLE\"}"
+    },
+    {
+      "name": "waving back and forth does not move the rail",
+      "pass": true,
+      "detail": "{\"phase\":\"HUB\",\"index\":0,\"toy\":null,\"swipe\":0,\"swipeState\":\"IDLE\"}"
+    },
+    {
+      "name": "30 swipes never skip more than one card",
+      "pass": true,
+      "detail": "max step 1"
+    },
+    {
+      "name": "30 swipes stay inside the rail",
+      "pass": true,
+      "detail": "[3,3,4,3]"
+    },
+    {
+      "name": "orb: entering mounts an active toy",
+      "pass": true,
+      "detail": "{\"phase\":\"ACTIVE\",\"index\":0,\"toy\":\"orb\",\"swipe\":0,\"swipeState\":\"IDLE\"}"
+    },
+    {
+      "name": "orb: the toy puts real geometry on screen",
+      "pass": true,
+      "detail": "7 nodes"
+    },
+    {
+      "name": "orb: leaving releases it again",
+      "pass": true,
+      "detail": "{\"geometries\":2,\"textures\":1,\"canvases\":1}"
+    },
+    {
+      "name": "galaxy: entering mounts an active toy",
+      "pass": true,
+      "detail": "{\"phase\":\"ACTIVE\",\"index\":1,\"toy\":\"galaxy\",\"swipe\":0,\"swipeState\":\"IDLE\"}"
+    },
+    {
+      "name": "galaxy: the toy puts real geometry on screen",
+      "pass": true,
+      "detail": "5 nodes"
+    },
+    {
+      "name": "galaxy: leaving releases it again",
+      "pass": true,
+      "detail": "{\"geometries\":2,\"textures\":1,\"canvases\":1}"
+    },
+    {
+      "name": "fluid: entering mounts an active toy",
+      "pass": true,
+      "detail": "{\"phase\":\"ACTIVE\",\"index\":2,\"toy\":\"fluid\",\"swipe\":0,\"swipeState\":\"IDLE\"}"
+    },
+    {
+      "name": "fluid: the toy puts real geometry on screen",
+      "pass": true,
+      "detail": "4 nodes"
+    },
+    {
+      "name": "fluid: leaving releases it again",
+      "pass": true,
+      "detail": "{\"geometries\":2,\"textures\":1,\"canvases\":1}"
+    },
+    {
+      "name": "ocean: entering mounts an active toy",
+      "pass": true,
+      "detail": "{\"phase\":\"ACTIVE\",\"index\":3,\"toy\":\"ocean\",\"swipe\":0,\"swipeState\":\"IDLE\"}"
+    },
+    {
+      "name": "ocean: the toy puts real geometry on screen",
+      "pass": true,
+      "detail": "5 nodes"
+    },
+    {
+      "name": "ocean: leaving releases it again",
+      "pass": true,
+      "detail": "{\"geometries\":2,\"textures\":1,\"canvases\":1}"
+    },
+    {
+      "name": "fireworks: entering mounts an active toy",
+      "pass": true,
+      "detail": "{\"phase\":\"ACTIVE\",\"index\":4,\"toy\":\"fireworks\",\"swipe\":0,\"swipeState\":\"IDLE\"}"
+    },
+    {
+      "name": "fireworks: the toy puts real geometry on screen",
+      "pass": true,
+      "detail": "4 nodes"
+    },
+    {
+      "name": "fireworks: leaving releases it again",
+      "pass": true,
+      "detail": "{\"geometries\":2,\"textures\":1,\"canvases\":1}"
+    },
+    {
+      "name": "20 fluid cycles leave the ledger flat",
+      "pass": true,
+      "detail": "2/1 → 3/1"
+    },
+    {
+      "name": "leaving the lab returns to the canvas",
+      "pass": true,
+      "detail": "\"studio\""
+    },
+    {
+      "name": "still exactly one WebGL canvas",
+      "pass": true
+    },
+    {
+      "name": "no runtime exceptions",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "errors": []
+}

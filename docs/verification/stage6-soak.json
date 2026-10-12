@@ -1,0 +1,2516 @@
+{
+  "started": "2026-10-05T11:29:10.572Z",
+  "elapsedMs": 1800011,
+  "switches": 179,
+  "scope": "100 stroke fixtures derived from contact-generated ink, synthetic gesture input, SwiftShader; real camera/inference and human contact accuracy require separate checks",
+  "samples": [
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 95645471,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 21,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1110
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 91337660,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 11162
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 90826221,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 21209
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 82038519,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 31300
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 107406645,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 41392
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92524729,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 51439
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 105560003,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 61504
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92637113,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 71553
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 86354725,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 81586
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85033311,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 91678
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 83479157,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 101720
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 91167081,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 111769
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92941423,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 121819
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84572449,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 131858
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 82754073,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 141912
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 87188067,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 151978
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92212725,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 162042
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 97984529,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 172079
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 97639155,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 182124
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85143385,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 192162
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 97079835,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 202221
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 93901073,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 212305
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 108098787,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 222349
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84936839,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 232403
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 87056635,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 242510
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84244415,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 252563
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84984415,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 262628
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 83172885,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 272697
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 94178971,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 282763
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 82454959,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 292835
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 103263448,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 302914
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 80227678,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 312964
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 91965131,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 323065
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 99279571,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 333117
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 86056530,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 343160
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 88810004,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 353200
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92245748,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 363257
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 87674385,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 373293
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106386922,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 383335
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 87206371,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 393397
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 102915074,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 403462
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 93823636,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 413569
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 103080400,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 423624
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 81581498,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 433669
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 90001927,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 443736
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106562624,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 453789
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 88399378,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 463855
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 109906618,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 473953
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106278164,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 484006
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92534906,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 494040
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 107939490,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 504102
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 98610892,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 514155
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84669202,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 524217
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 102462494,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 534259
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 100062252,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 544299
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 90731766,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 554399
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 99980358,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 564488
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 91655476,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 574542
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 87608109,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 584592
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 99291538,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 594649
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 89092032,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 604700
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 100808738,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 614748
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 86976222,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 624802
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 89396950,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 634844
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 91886410,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 644878
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 102635702,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 654918
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 99425992,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 664970
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 96719662,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 675017
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 105849400,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 685059
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 86907680,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 695097
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 82707662,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 705138
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 101822574,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 715242
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 98706180,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 725274
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106819062,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 735325
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 101953966,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 745373
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 104783416,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 755425
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106446250,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 765484
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92137734,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 775554
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 98726572,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 785599
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85743734,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 795651
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 99919098,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 805769
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 95629004,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 815816
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 96219274,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 825911
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 111914242,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 835959
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106100031,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 846007
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 98947250,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 856064
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85634672,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 866133
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 100118856,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 876180
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 80316653,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 886202
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 94686758,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 896269
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 98471068,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 906329
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 107602401,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 916387
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 107865010,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 926430
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 82167100,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 936480
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85579578,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 946556
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 102722600,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 956593
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 95452596,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 966646
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 110578582,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 976767
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106609434,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 986822
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 110307866,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 996931
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 111734323,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1007011
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 103860347,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1017047
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 86684420,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1027083
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 101851698,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1037145
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 98529619,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1047269
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 95218872,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1057328
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 103850874,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1067380
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106708674,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1077448
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 93020942,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1087542
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 108821838,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1097585
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 83520162,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1107658
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 101666498,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1117731
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 88259158,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1127789
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 100037907,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1137850
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 103450160,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1147905
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 102308766,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1157942
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 99767834,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1167982
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85654262,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1178087
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 90011566,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1188179
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106068542,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1198238
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 109315612,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1208319
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 108066482,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1218427
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 82148478,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1228509
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 101403396,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1238580
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 88629542,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1248630
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 88313510,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1258745
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 99513416,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1268805
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84142030,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1278840
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 98623654,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1288880
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 87925748,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1298998
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 96256986,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1309055
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 105312646,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1319099
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85200392,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1329117
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 95633934,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1339150
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 82800358,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1349186
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 89051504,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1359233
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84228554,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1369325
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 108227430,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1379363
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 101585336,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1389403
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92784162,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1399444
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 108614158,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1409557
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 106530152,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1419661
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 114769398,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1429722
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 83054418,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1439769
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 94371120,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1449815
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 92135010,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1459858
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 89650266,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1469975
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 81534428,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1480031
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 102355342,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1490140
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 83534210,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1500171
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 87217092,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1510230
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 94700854,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1520274
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 83939154,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1530327
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 100217636,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1540383
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 87758022,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1550442
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 107514882,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1560490
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85180976,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1570538
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 89783913,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1580632
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 101178718,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1590675
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 95362235,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1600765
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 116336558,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1610822
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 86558176,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1620863
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 93217612,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1630916
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 94144322,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1640959
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 107909362,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1651013
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 85601124,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1661087
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 100651166,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1671160
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 94946774,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1681208
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 111355456,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1691277
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 93105010,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1701329
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 94416486,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1711385
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 94519140,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1721422
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 91740798,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1731513
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84474906,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1741566
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 102721648,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1751625
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 83851854,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1761668
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 89900262,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 10
+      },
+      "elapsedMs": 1771751
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 91475200,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 5
+      },
+      "elapsedMs": 1781878
+    },
+    {
+      "objects": 102,
+      "strokes": 100,
+      "heap": 84119118,
+      "canvasSame": true,
+      "webglCanvases": 1,
+      "contextLoss": 0,
+      "resources": {
+        "geometries": 123,
+        "textures": 5,
+        "drawCalls": 105
+      },
+      "elapsedMs": 1791930
+    }
+  ],
+  "errors": [],
+  "pass": true
+}

@@ -1,0 +1,52 @@
+{
+  "scope": "Isolated browser IndexedDB service transactions and recovery; not recovery modal UX",
+  "results": [
+    {
+      "name": "latestRevision",
+      "pass": true
+    },
+    {
+      "name": "previousValidSnapshot",
+      "pass": true
+    },
+    {
+      "name": "corruptionRejected",
+      "pass": true
+    },
+    {
+      "name": "recoveryAndResave",
+      "pass": true
+    },
+    {
+      "name": "viewRecovered",
+      "pass": true
+    },
+    {
+      "name": "legacyDefault",
+      "pass": true
+    },
+    {
+      "name": "isolatedDelete",
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "current": "Second revision",
+    "previous": "Isolated recovery",
+    "corruptRejected": true,
+    "restored": "Isolated recovery",
+    "reopened": "Isolated recovery",
+    "view": {
+      "zoom": 2,
+      "offsetX": 61,
+      "offsetY": -42
+    },
+    "legacy": {
+      "zoom": 1,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    "legacyTheme": "night",
+    "deleted": true
+  }
+}

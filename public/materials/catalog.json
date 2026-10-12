@@ -1,0 +1,92 @@
+[
+  {
+    "id": "wood_table_001",
+    "category": "wood",
+    "source": "https://polyhaven.com/a/wood_table_001",
+    "license": "CC0-1.0",
+    "resolution": "1k",
+    "maps": {
+      "Diffuse": {
+        "path": "/materials/wood/wood_table_001/wood_table_001_diff_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_001/wood_table_001_diff_1k.jpg",
+        "bytes": 215573,
+        "upstreamMd5": "56652a7339b16a76afad20d3585f66ea",
+        "sha256": "460dd08d240f4a1f02982415048c3c5c200f385db212da18dc7e2df68bf4d0be"
+      },
+      "nor_gl": {
+        "path": "/materials/wood/wood_table_001/wood_table_001_nor_gl_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_001/wood_table_001_nor_gl_1k.jpg",
+        "bytes": 51927,
+        "upstreamMd5": "6360e09967add8baecaa5ecc55fb5e03",
+        "sha256": "9bf7ddf5721e225c20290f1772ae37f9bdfd49658f6d458259eb794e2149d3cf"
+      },
+      "Rough": {
+        "path": "/materials/wood/wood_table_001/wood_table_001_rough_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_001/wood_table_001_rough_1k.jpg",
+        "bytes": 237261,
+        "upstreamMd5": "05b60bd20a1cc4355c5d73a99b245d44",
+        "sha256": "a2ca9ae89dfe7b8e2e5e92f0aa43467845417de8a50205b5852ef0d57c7624f9"
+      }
+    }
+  },
+  {
+    "id": "metal_plate",
+    "category": "metal",
+    "source": "https://polyhaven.com/a/metal_plate",
+    "license": "CC0-1.0",
+    "resolution": "1k",
+    "maps": {
+      "Diffuse": {
+        "path": "/materials/metal/metal_plate/metal_plate_diff_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/metal_plate/metal_plate_diff_1k.jpg",
+        "bytes": 692234,
+        "upstreamMd5": "bd9daf4c04046ca392a38b8df955ed26",
+        "sha256": "c6b6739eac2c75ccc898e753d7833df24eafbdb9aa92fb6eabfb92abd1a680a5"
+      },
+      "nor_gl": {
+        "path": "/materials/metal/metal_plate/metal_plate_nor_gl_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/metal_plate/metal_plate_nor_gl_1k.jpg",
+        "bytes": 770307,
+        "upstreamMd5": "d379e66130ad6ccff217ac9b13de935d",
+        "sha256": "994f851a84d52b51e97906021a1b7070ee6eac9a789fef041132268de47d8e6b"
+      },
+      "Rough": {
+        "path": "/materials/metal/metal_plate/metal_plate_rough_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/metal_plate/metal_plate_rough_1k.jpg",
+        "bytes": 775206,
+        "upstreamMd5": "6e1c8672d804b90546a23db621515b16",
+        "sha256": "756308485ce742a52831453c296452f48cf0adead7d85adfffd34c08dce23ec1"
+      }
+    }
+  },
+  {
+    "id": "brushed_concrete",
+    "category": "stone",
+    "source": "https://polyhaven.com/a/brushed_concrete",
+    "license": "CC0-1.0",
+    "resolution": "1k",
+    "maps": {
+      "Diffuse": {
+        "path": "/materials/stone/brushed_concrete/brushed_concrete_diff_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brushed_concrete/brushed_concrete_diff_1k.jpg",
+        "bytes": 847278,
+        "upstreamMd5": "731d450cd11906e926adeb2d5caa29f9",
+        "sha256": "4054ed6eb65cd063356ffb4a88706b7d7b78c5435051c48bf0ee64290f04bc8c"
+      },
+      "nor_gl": {
+        "path": "/materials/stone/brushed_concrete/brushed_concrete_nor_gl_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brushed_concrete/brushed_concrete_nor_gl_1k.jpg",
+        "bytes": 849228,
+        "upstreamMd5": "fc8c03e505d0f2acb932dde6deae557a",
+        "sha256": "f4953a881f34627cefcc22f780d392314635e31bb41f75cf3888a5af55c21820"
+      },
+      "Rough": {
+        "path": "/materials/stone/brushed_concrete/brushed_concrete_rough_1k.jpg",
+        "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brushed_concrete/brushed_concrete_rough_1k.jpg",
+        "bytes": 701983,
+        "upstreamMd5": "e72fc05f68ea0a997a215d9701b16b2e",
+        "sha256": "24da5e4c3d17b7db1b4764b3cd1fd5c5680c27ef2c86e0d6a312f74d2d0599bd"
+      }
+    }
+  }
+]

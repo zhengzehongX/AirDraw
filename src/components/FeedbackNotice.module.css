@@ -1,0 +1,45 @@
+.host {
+  position: absolute;
+  top: calc(var(--ad-space-5) * 2);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: var(--ad-z-notice);
+  pointer-events: none;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: var(--ad-space-2);
+  padding: 7px var(--ad-space-4);
+  border-radius: var(--ad-radius-full);
+  font-size: var(--ad-text-sm);
+  font-weight: var(--ad-weight-medium);
+  letter-spacing: 0.01em;
+  color: var(--ad-text);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--ad-radius-full);
+  background: var(--ad-accent);
+  box-shadow: 0 0 12px rgba(var(--ad-accent-rgb), 0.75);
+}
+
+.pill[data-tone='success'] .dot {
+  background: rgb(var(--ad-success));
+  box-shadow: 0 0 12px rgba(var(--ad-success), 0.6);
+}
+
+.pill[data-tone='warn'] .dot {
+  background: rgb(var(--ad-warn));
+  box-shadow: 0 0 12px rgba(var(--ad-warn), 0.6);
+}
+
+.pill[data-tone='danger'] .dot {
+  background: rgb(var(--ad-danger));
+  box-shadow: 0 0 12px rgba(var(--ad-danger), 0.6);
+}

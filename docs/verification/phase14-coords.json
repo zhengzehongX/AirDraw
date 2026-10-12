@@ -1,0 +1,43 @@
+{
+  "suite": "phase14 coordinate / navigation replay",
+  "capturedAt": "2026-10-09",
+  "environment": "headless Chrome + SwiftShader, ?simulate=1, synthetic hand; Node selfcheck for pure math",
+  "probes": {
+    "p14replay": "node_modules/airdraw-probe/p14replay.mjs (2D fixed-input replay)",
+    "p14spatial": "node_modules/airdraw-probe/p14spatial.mjs (3D pan/zoom/ink invariance)",
+    "selfcheck": "npm run verify:core (Node, pure math)"
+  },
+  "twoD": {
+    "stillHandDriftPx_over_14s": 0,
+    "palmStepPx": 100,
+    "viewportStepPx": 100,
+    "duplicateResultsProcessed": 1,
+    "duplicateResultsSent": 3,
+    "inkCentroidShiftPx": 113.8,
+    "sheetShiftPx": 116,
+    "inkFollowNote": "centroid sampled on a 2px grid; residual 2.2px is sampling, not lag",
+    "selfcheckNewCases": [
+      "a still hand never drifts the sheet",
+      "a 100 px hand move moves the sheet 100 px, not 100 px per frame",
+      "two-hand zoom doubles about the hands, not the screen centre",
+      "a moving pair pans the zoomed sheet one-to-one",
+      "screen = zoom x document + offset, and panning moves only the screen point (200,100)@z2/off(100,50) -> (500,250) -> (600,250)"
+    ]
+  },
+  "threeD": {
+    "shippedScope": "two-hand open-palm zoom with frozen-camera baseline; single-palm 3D pan deferred (see openDefects)",
+    "panPrototypeFollow_worldUnits": 2.069,
+    "panPrototypeDriftWhileHeld_worldUnits": 0,
+    "zoomDistanceBefore": 13.5,
+    "zoomDistanceAfterTwoHandSpread2x": 9,
+    "zoomDistanceClamp": "DIST_MIN 9 (raw ratio asked 6.75)",
+    "zoomHeldExactly": true,
+    "strokeDataIdenticalAcrossNavigation": true,
+    "penAfterNavigation": "BLOCKED - open defect, see docs/phase14-log.md section 5"
+  },
+  "openDefects": [
+    "pen after a 3D navigation session: routing context latches UI (overTarget false, waitingForRelease false), so mayDraw stays false; suspect the recapture 'searching' window or an appMode TRANSITION sample at App.tsx:289. Assertion-free reproduction in node_modules/airdraw-probe/p14spatial.mjs.",
+    "phase13 open defect: SET_THEME visible result 1-3s late under SwiftShader, a sweep inside that window can lose its pinch.",
+    "PlayLab right-swipe paging KNOWN GAP (docs/phase7-log.md)."
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "at": "2026-10-06T03:13:54.944Z",
+  "scope": "20 independent contexts: fake camera, real CPU Worker, first/returning brand stages; permission denied/real calibration require separate acceptance",
+  "samples": [
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 0,
+      "returning": false,
+      "introMs": 2456,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 1,
+      "returning": false,
+      "introMs": 2215,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 2,
+      "returning": false,
+      "introMs": 2398,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 3,
+      "returning": false,
+      "introMs": 2346,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 4,
+      "returning": false,
+      "introMs": 2409,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 5,
+      "returning": false,
+      "introMs": 2326,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 6,
+      "returning": false,
+      "introMs": 3293,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 7,
+      "returning": false,
+      "introMs": 2694,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 8,
+      "returning": false,
+      "introMs": 3305,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 9,
+      "returning": false,
+      "introMs": 3979,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 10,
+      "returning": true,
+      "introMs": 3695,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 11,
+      "returning": true,
+      "introMs": 3768,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 12,
+      "returning": true,
+      "introMs": 12910,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 13,
+      "returning": true,
+      "introMs": 10724,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 14,
+      "returning": true,
+      "introMs": 13274,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 15,
+      "returning": true,
+      "introMs": 13213,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 16,
+      "returning": true,
+      "introMs": 7906,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 17,
+      "returning": true,
+      "introMs": 10059,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 18,
+      "returning": true,
+      "introMs": 19519,
+      "before": 0
+    },
+    {
+      "cameraRequests": 1,
+      "workers": 1,
+      "phase": "HOME",
+      "canvasCount": 1,
+      "index": 19,
+      "returning": true,
+      "introMs": 14738,
+      "before": 0
+    }
+  ],
+  "errors": [],
+  "pass": true
+}

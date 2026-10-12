@@ -1,0 +1,461 @@
+{
+ "at": "2026-10-11T05:09:41.899Z",
+ "checks": [
+  {
+   "name": "hub exposes only lab and global affordances",
+   "pass": true,
+   "detail": "device-status,dock-settings,dock-toggle,help-menu,lab-card-fireworks,lab-card-fluid,lab-card-galaxy,lab-card-ocean,lab-card-orb,lab-leave,theme-toggle,voice-toggle,workspace-back,workspace-projects"
+  },
+  {
+   "name": "a playing toy owns every pinch",
+   "pass": true,
+   "detail": "toy: lab-back,lab-canvas"
+  },
+  {
+   "name": "the toy area is not covered by invisible hit boxes",
+   "pass": true,
+   "detail": "{\"centre\":false,\"leftDock\":false,\"rightPopover\":false,\"corner\":false}"
+  },
+  {
+   "name": "a pinch on the orb grabs and charges it",
+   "pass": true,
+   "detail": "{\"charge\":{\"uniform\":0.735,\"bodyCharge\":0.735},\"grabbed\":\"primary\",\"pos\":[0.11,0.05],\"pinchPoint\":{\"x\":0.4956468933560023,\"y\":0.4976973809810432,\"z\":0},\"distance\":0.012,\"events\":[\"PINCH_START\"]}"
+  },
+  {
+   "name": "the uniform follows the body charge",
+   "pass": true,
+   "detail": "{\"uniform\":0.735,\"bodyCharge\":0.735}"
+  },
+  {
+   "name": "releasing throws the orb",
+   "pass": true,
+   "detail": "{\"charge\":{\"uniform\":0.387,\"bodyCharge\":0.387},\"grabbed\":\"none\",\"speed\":4.74,\"events\":[\"PINCH_MOVE\",\"PINCH_HOLD\",\"PINCH_MOVE\",\"PINCH_HOLD\",\"PINCH_MOVE\",\"PINCH_HOLD\",\"PINCH_END\"]}"
+  },
+  {
+   "name": "the five states are reachable with real reasons",
+   "pass": true,
+   "detail": "ready: | waiting: | paused:"
+  },
+  {
+   "name": "hand loss pauses rather than pretending",
+   "pass": true,
+   "detail": "{\"status\":\"paused\",\"detail\":null}"
+  },
+  {
+   "name": "every toy mounts, answers and reports no error",
+   "pass": false,
+   "detail": "orb:ready/12 galaxy:ready/12 fluid:ready/12 ocean:ready/9 fireworks:waiting/12"
+  },
+  {
+   "name": "a failed mount explains itself and recovers on retry",
+   "pass": true,
+   "detail": "{\"failed\":{\"status\":\"failed\",\"detail\":\"探针注入：测试加载失败态\",\"chrome\":\"failed\"},\"retryVisible\":true,\"recovered\":{\"status\":\"waiting\",\"error\":null,\"hasToy\":true}}"
+  },
+  {
+   "name": "leaving by hand returns to the rail",
+   "pass": true,
+   "detail": "{\"clickResult\":\"ok\",\"phase\":\"HUB\",\"owner\":\"ui\",\"activations\":1,\"hubVisible\":true}"
+  },
+  {
+   "name": "exiting releases the toy without a second canvas",
+   "pass": true,
+   "detail": "{\"owner\":\"ui\",\"scope\":\"playlab\",\"phase\":\"HUB\",\"status\":\"loading\",\"toy\":false,\"camDiagnostics\":null,\"nodes\":2,\"gl\":{\"geometries\":1,\"textures\":2},\"workers\":0}"
+  },
+  {
+   "name": "no runtime or console exceptions",
+   "pass": true,
+   "detail": "0/0"
+  }
+ ],
+ "measurements": {
+  "hub_regions": {
+   "owner": "ui",
+   "scope": "playlab",
+   "count": 14,
+   "live": [
+    {
+     "id": "device-status",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1014,
+      "t": -8,
+      "r": 1108,
+      "b": 48
+     }
+    },
+    {
+     "id": "dock-settings",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1368,
+      "t": -8,
+      "r": 1424,
+      "b": 48
+     }
+    },
+    {
+     "id": "dock-toggle",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1308,
+      "t": -8,
+      "r": 1364,
+      "b": 48
+     }
+    },
+    {
+     "id": "help-menu",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1248,
+      "t": -8,
+      "r": 1304,
+      "b": 48
+     }
+    },
+    {
+     "id": "lab-card-fireworks",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1532,
+      "t": 356,
+      "r": 1728,
+      "b": 532
+     }
+    },
+    {
+     "id": "lab-card-fluid",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1091,
+      "t": 358,
+      "r": 1258,
+      "b": 531
+     }
+    },
+    {
+     "id": "lab-card-galaxy",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 868,
+      "t": 358,
+      "r": 1027,
+      "b": 516
+     }
+    },
+    {
+     "id": "lab-card-ocean",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1312,
+      "t": 357,
+      "r": 1492,
+      "b": 531
+     }
+    },
+    {
+     "id": "lab-card-orb",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 610,
+      "t": 319,
+      "r": 830,
+      "b": 563
+     }
+    },
+    {
+     "id": "lab-leave",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 596,
+      "t": 153,
+      "r": 680,
+      "b": 217
+     }
+    },
+    {
+     "id": "theme-toggle",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1188,
+      "t": -8,
+      "r": 1244,
+      "b": 48
+     }
+    },
+    {
+     "id": "voice-toggle",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 1112,
+      "t": -8,
+      "r": 1184,
+      "b": 48
+     }
+    },
+    {
+     "id": "workspace-back",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 16,
+      "t": -8,
+      "r": 72,
+      "b": 48
+     }
+    },
+    {
+     "id": "workspace-projects",
+     "scope": "playlab",
+     "activates": true,
+     "rect": {
+      "l": 155,
+      "t": -8,
+      "r": 211,
+      "b": 48
+     }
+    }
+   ]
+  },
+  "active_regions": {
+   "owner": "toy",
+   "scope": "playlab",
+   "count": 2,
+   "live": [
+    {
+     "id": "lab-back",
+     "scope": "toy",
+     "activates": true,
+     "rect": {
+      "l": 720,
+      "t": 705,
+      "r": 817,
+      "b": 768
+     }
+    },
+    {
+     "id": "lab-canvas",
+     "scope": "toy",
+     "activates": true,
+     "rect": {
+      "l": 624,
+      "t": 705,
+      "r": 708,
+      "b": 768
+     }
+    }
+   ]
+  },
+  "centre_blocked": {
+   "centre": false,
+   "leftDock": false,
+   "rightPopover": false,
+   "corner": false
+  },
+  "orb_grab_sequence": {
+   "radius": null,
+   "afterOpen": {
+    "charge": {
+     "uniform": 0,
+     "bodyCharge": 0
+    },
+    "pos": [
+     0.14,
+     0.14
+    ],
+    "grabbed": "none",
+    "gestures": [
+     "HAND_OPEN"
+    ]
+   },
+   "during": {
+    "charge": {
+     "uniform": 0.735,
+     "bodyCharge": 0.735
+    },
+    "grabbed": "primary",
+    "pos": [
+     0.11,
+     0.05
+    ],
+    "pinchPoint": {
+     "x": 0.4956468933560023,
+     "y": 0.4976973809810432,
+     "z": 0
+    },
+    "distance": 0.012,
+    "events": [
+     "PINCH_START"
+    ]
+   },
+   "afterRelease": {
+    "charge": {
+     "uniform": 0.387,
+     "bodyCharge": 0.387
+    },
+    "grabbed": "none",
+    "speed": 4.74,
+    "events": [
+     "PINCH_MOVE",
+     "PINCH_HOLD",
+     "PINCH_MOVE",
+     "PINCH_HOLD",
+     "PINCH_MOVE",
+     "PINCH_HOLD",
+     "PINCH_END"
+    ]
+   }
+  },
+  "lab_states": {
+   "seen": [
+    "ready:",
+    "waiting:",
+    "paused:"
+   ],
+   "withHand": {
+    "status": "waiting",
+    "detail": null
+   },
+   "withoutHand": {
+    "status": "paused",
+    "detail": null
+   },
+   "chromeStatus": "paused",
+   "statusText": "已暂停"
+  },
+  "perToy": [
+   {
+    "id": "orb",
+    "nodesBefore": 7,
+    "nodesAfter": 7,
+    "events": [
+     "PINCH_END",
+     "PINCH_HOLD",
+     "PINCH_MOVE",
+     "PINCH_START"
+    ],
+    "eventCount": 12,
+    "interactive": true,
+    "status": "ready",
+    "geometries": 4,
+    "textures": 0,
+    "error": null
+   },
+   {
+    "id": "galaxy",
+    "nodesBefore": 5,
+    "nodesAfter": 5,
+    "events": [
+     "PINCH_END",
+     "PINCH_HOLD",
+     "PINCH_MOVE",
+     "PINCH_START"
+    ],
+    "eventCount": 12,
+    "interactive": true,
+    "status": "ready",
+    "geometries": 3,
+    "textures": 0,
+    "error": null
+   },
+   {
+    "id": "fluid",
+    "nodesBefore": 4,
+    "nodesAfter": 4,
+    "events": [
+     "PINCH_END",
+     "PINCH_HOLD",
+     "PINCH_MOVE",
+     "PINCH_START"
+    ],
+    "eventCount": 12,
+    "interactive": true,
+    "status": "ready",
+    "geometries": 3,
+    "textures": 8,
+    "error": null
+   },
+   {
+    "id": "ocean",
+    "nodesBefore": 5,
+    "nodesAfter": 5,
+    "events": [
+     "PINCH_END",
+     "PINCH_MOVE",
+     "PINCH_START"
+    ],
+    "eventCount": 9,
+    "interactive": true,
+    "status": "ready",
+    "geometries": 3,
+    "textures": 2,
+    "error": null
+   },
+   {
+    "id": "fireworks",
+    "nodesBefore": 4,
+    "nodesAfter": 4,
+    "events": [
+     "PINCH_END",
+     "PINCH_HOLD",
+     "PINCH_MOVE",
+     "PINCH_START"
+    ],
+    "eventCount": 12,
+    "interactive": true,
+    "status": "waiting",
+    "geometries": 2,
+    "textures": 2,
+    "error": null
+   }
+  ],
+  "failed_and_retry": {
+   "failed": {
+    "status": "failed",
+    "detail": "探针注入：测试加载失败态",
+    "chrome": "failed"
+   },
+   "retryVisible": true,
+   "recovered": {
+    "status": "waiting",
+    "error": null,
+    "hasToy": true
+   }
+  },
+  "exit_by_hand": {
+   "clickResult": "ok",
+   "phase": "HUB",
+   "owner": "ui",
+   "activations": 1,
+   "hubVisible": true
+  },
+  "after_back": {
+   "owner": "ui",
+   "scope": "playlab",
+   "phase": "HUB",
+   "status": "loading",
+   "toy": false,
+   "camDiagnostics": null,
+   "nodes": 2,
+   "gl": {
+    "geometries": 1,
+    "textures": 2
+   },
+   "workers": 0
+  },
+  "pageErrors": [],
+  "consoleErrors": []
+ }
+}

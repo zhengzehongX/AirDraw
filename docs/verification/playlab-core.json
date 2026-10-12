@@ -1,0 +1,237 @@
+{
+  "at": "2026-10-11T07:55:33.562Z",
+  "results": [
+    {
+      "name": "swipe fixture actually crosses the threshold",
+      "pass": true,
+      "detail": "travel 0.32 vs required 0.200"
+    },
+    {
+      "name": "a left swipe commits once",
+      "pass": true
+    },
+    {
+      "name": "a right swipe commits once",
+      "pass": true
+    },
+    {
+      "name": "progress reaches the commit edge",
+      "pass": true
+    },
+    {
+      "name": "progress stays inside −1..1",
+      "pass": true
+    },
+    {
+      "name": "idle progress is zero",
+      "pass": true
+    },
+    {
+      "name": "30 waves switch exactly 30 pages",
+      "pass": true,
+      "detail": "commits=30"
+    },
+    {
+      "name": "slow drift never commits",
+      "pass": true
+    },
+    {
+      "name": "a short shuffle does not commit",
+      "pass": true
+    },
+    {
+      "name": "a mostly-vertical move does not commit",
+      "pass": true
+    },
+    {
+      "name": "waving back and forth does not commit",
+      "pass": true
+    },
+    {
+      "name": "a pinch mid-reach cancels the swipe",
+      "pass": true
+    },
+    {
+      "name": "losing the hand mid-swipe cancels it",
+      "pass": true
+    },
+    {
+      "name": "an unstable hand cannot swipe",
+      "pass": true
+    },
+    {
+      "name": "a closed hand cannot swipe",
+      "pass": true
+    },
+    {
+      "name": "an edge-on hand cannot swipe",
+      "pass": true
+    },
+    {
+      "name": "a locked context cannot swipe",
+      "pass": true
+    },
+    {
+      "name": "suppression blocks the swipe",
+      "pass": true
+    },
+    {
+      "name": "one wave cannot chain into a second page",
+      "pass": true
+    },
+    {
+      "name": "a second wave after the cooldown does commit",
+      "pass": true
+    },
+    {
+      "name": "swipe distance is scale invariant",
+      "pass": true
+    },
+    {
+      "name": "an open lab accepts a swipe",
+      "pass": true
+    },
+    {
+      "name": "drawing locks the page",
+      "pass": true
+    },
+    {
+      "name": "an established pen keeps its hand (equal rank is first come, first served)",
+      "pass": true
+    },
+    {
+      "name": "the holder is the highest priority action",
+      "pass": true
+    },
+    {
+      "name": "a page turn is locked while a grab runs",
+      "pass": true
+    },
+    {
+      "name": "releasing everything unlocks the page",
+      "pass": true
+    },
+    {
+      "name": "a running swipe is not stolen by a hover",
+      "pass": true
+    },
+    {
+      "name": "a grab may still begin over a swipe",
+      "pass": true
+    },
+    {
+      "name": "hand loss clears the floor and blocks play",
+      "pass": true
+    },
+    {
+      "name": "safety releases when the hand returns",
+      "pass": true
+    },
+    {
+      "name": "a fist reads as closed",
+      "pass": true,
+      "detail": "openness=0.00"
+    },
+    {
+      "name": "an open hand reads as open",
+      "pass": true,
+      "detail": "openness=0.89"
+    },
+    {
+      "name": "openness stays inside 0..1",
+      "pass": true
+    },
+    {
+      "name": "palm centre sits between wrist and knuckles",
+      "pass": true,
+      "detail": "{\"x\":0.496,\"y\":0.69,\"z\":0}"
+    },
+    {
+      "name": "palm centre ignores a missing hand",
+      "pass": true
+    },
+    {
+      "name": "a flat palm faces the camera",
+      "pass": true,
+      "detail": "facing=0.85"
+    },
+    {
+      "name": "an edge-on palm is rejected",
+      "pass": true,
+      "detail": "facing=0.00"
+    },
+    {
+      "name": "no metric landmarks is not a crash",
+      "pass": true
+    },
+    {
+      "name": "roll reads the wrist→knuckle angle",
+      "pass": true
+    },
+    {
+      "name": "velocity tracks a constant drag",
+      "pass": true,
+      "detail": "vx=0.99/s"
+    },
+    {
+      "name": "one outlier frame cannot exceed the physical speed cap",
+      "pass": true,
+      "detail": "{\"x\":2.6575065358181136,\"y\":1.9428603716198178,\"z\":0}"
+    },
+    {
+      "name": "reset clears the motion history",
+      "pass": true
+    },
+    {
+      "name": "tier high maps to the high profile",
+      "pass": true
+    },
+    {
+      "name": "a weak detection tier lowers the picture",
+      "pass": true
+    },
+    {
+      "name": "three slow frames lower the level",
+      "pass": true,
+      "detail": "balanced"
+    },
+    {
+      "name": "eleven fast frames are not enough to climb back",
+      "pass": true,
+      "detail": "balanced after 11"
+    },
+    {
+      "name": "twelve good frames climb one level",
+      "pass": true,
+      "detail": "high"
+    },
+    {
+      "name": "a manual budget is not overridden by the governor",
+      "pass": true
+    },
+    {
+      "name": "releasing the budget hands control back",
+      "pass": true
+    },
+    {
+      "name": "the shipped intensity leaves swipe gates untouched",
+      "pass": true
+    },
+    {
+      "name": "a UI press blocks a toy from starting",
+      "pass": true
+    },
+    {
+      "name": "a toy alone cannot block a UI press",
+      "pass": true
+    },
+    {
+      "name": "a lost hand outranks everything already held",
+      "pass": true
+    },
+    {
+      "name": "clearing leaves no owner",
+      "pass": true
+    }
+  ]
+}

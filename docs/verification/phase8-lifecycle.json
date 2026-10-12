@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-06T03:24:52.135Z",
+  "scope": "Fake camera, real Worker; injected denial/worker failure/mute/visibility events, not physical unplug or browser permission dialog acceptance",
+  "results": [
+    {
+      "name": "camera denial shows ERROR without worker",
+      "pass": true
+    },
+    {
+      "name": "permission retry warms camera",
+      "pass": true
+    },
+    {
+      "name": "worker retry reuses live camera and never overlaps workers",
+      "pass": true
+    },
+    {
+      "name": "mute enters DEGRADED",
+      "pass": true
+    },
+    {
+      "name": "unmute warms same stream",
+      "pass": true
+    },
+    {
+      "name": "visibility resync does not request camera again",
+      "pass": true
+    },
+    {
+      "name": "Help Gallery PlayLab toy Home preserve shared camera",
+      "pass": true
+    },
+    {
+      "name": "unsupported speech leaves camera operational",
+      "pass": true
+    },
+    {
+      "name": "dispose releases tracks and worker",
+      "pass": true
+    },
+    {
+      "name": "no page exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

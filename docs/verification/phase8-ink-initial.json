@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-06T02:42:20.195Z",
+  "scope": "Synthetic 21-landmark replay, SwiftShader; not human distance/contact accuracy",
+  "results": [
+    {
+      "name": "30 clearly separated cycles make no ink",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "30 close pinch cycles start ink",
+      "pass": false,
+      "detail": 24
+    },
+    {
+      "name": "30s holding survives short dropouts as one stroke",
+      "pass": false,
+      "detail": {
+        "strokes": 4,
+        "segments": 1,
+        "points": 1,
+        "missingFrames": 15
+      }
+    },
+    {
+      "name": "no exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,170 @@
+{
+  "scope": "Isolated synthetic hands and SwiftShader; no physical tracking acceptance",
+  "results": [
+    {
+      "name": "Hello holds until explicit confirmation",
+      "pass": true
+    },
+    {
+      "name": "no visible theme switch",
+      "pass": true
+    },
+    {
+      "name": "legacy theme request stays day",
+      "pass": true,
+      "evidence": "day"
+    },
+    {
+      "name": "stationary cursor equals ink at zoom 0.5",
+      "pass": true,
+      "evidence": {
+        "zoom": 0.5,
+        "penDown": true,
+        "count": 1,
+        "after": 1,
+        "error": 0
+      }
+    },
+    {
+      "name": "static hold adds no points at zoom 0.5",
+      "pass": true,
+      "evidence": {
+        "zoom": 0.5,
+        "penDown": true,
+        "count": 1,
+        "after": 1,
+        "error": 0
+      }
+    },
+    {
+      "name": "stationary cursor equals ink at zoom 1",
+      "pass": true,
+      "evidence": {
+        "zoom": 1,
+        "penDown": true,
+        "count": 1,
+        "after": 1,
+        "error": 0
+      }
+    },
+    {
+      "name": "static hold adds no points at zoom 1",
+      "pass": true,
+      "evidence": {
+        "zoom": 1,
+        "penDown": true,
+        "count": 1,
+        "after": 1,
+        "error": 0
+      }
+    },
+    {
+      "name": "stationary cursor equals ink at zoom 2",
+      "pass": true,
+      "evidence": {
+        "zoom": 2,
+        "penDown": true,
+        "count": 1,
+        "after": 1,
+        "error": 1.1368683772161603e-13
+      }
+    },
+    {
+      "name": "static hold adds no points at zoom 2",
+      "pass": true,
+      "evidence": {
+        "zoom": 2,
+        "penDown": true,
+        "count": 1,
+        "after": 1,
+        "error": 1.1368683772161603e-13
+      }
+    },
+    {
+      "name": "stationary cursor equals ink at zoom 4",
+      "pass": true,
+      "evidence": {
+        "zoom": 4,
+        "penDown": true,
+        "count": 1,
+        "after": 1,
+        "error": 0
+      }
+    },
+    {
+      "name": "static hold adds no points at zoom 4",
+      "pass": true,
+      "evidence": {
+        "zoom": 4,
+        "penDown": true,
+        "count": 1,
+        "after": 1,
+        "error": 0
+      }
+    },
+    {
+      "name": "new project resets and saved view restores",
+      "pass": true,
+      "evidence": {
+        "reset": {
+          "zoom": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "restored": {
+          "zoom": 2.4,
+          "offsetX": 137,
+          "offsetY": -83
+        },
+        "expected": {
+          "zoom": 2.4,
+          "offsetX": 137,
+          "offsetY": -83
+        },
+        "strokes": 4
+      }
+    },
+    {
+      "name": "workspace fits 1920x1080",
+      "pass": true,
+      "evidence": {
+        "width": 1920,
+        "scroll": 1920,
+        "canvases": 1
+      }
+    },
+    {
+      "name": "workspace fits 1440x900",
+      "pass": true,
+      "evidence": {
+        "width": 1440,
+        "scroll": 1440,
+        "canvases": 1
+      }
+    },
+    {
+      "name": "workspace fits 1366x768",
+      "pass": true,
+      "evidence": {
+        "width": 1366,
+        "scroll": 1366,
+        "canvases": 1
+      }
+    },
+    {
+      "name": "workspace fits 768x768",
+      "pass": true,
+      "evidence": {
+        "width": 768,
+        "scroll": 768,
+        "canvases": 1
+      }
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "evidence": []
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-06T03:31:36.788Z",
+  "scope": "Synthetic 21-landmark replay, SwiftShader; not human distance/contact accuracy",
+  "results": [
+    {
+      "name": "30 clearly separated cycles make no ink",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "30 close pinch cycles start ink",
+      "pass": true,
+      "detail": 30
+    },
+    {
+      "name": "30s holding survives short dropouts with useful sampling",
+      "pass": true,
+      "detail": {
+        "strokes": 1,
+        "segments": 1,
+        "points": 258,
+        "missingFrames": 40,
+        "maxFrameGap": 443.6000000014901,
+        "lateFrames": 1
+      }
+    },
+    {
+      "name": "no exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": [],
+  "replay": {
+    "confirmed": 30,
+    "falseStarts": 0,
+    "before": 0,
+    "afterNear": 0,
+    "continuousStrokeCount": 1,
+    "segments": 1,
+    "points": 258,
+    "missing": 40,
+    "maxFrameGap": 443.6000000014901,
+    "lateFrames": 1,
+    "maxRenderGap": 479.20000000000005,
+    "renderFPS": 53.518284349414365,
+    "failures": []
+  }
+}

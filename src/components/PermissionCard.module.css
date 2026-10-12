@@ -1,0 +1,93 @@
+.screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--ad-space-5);
+  z-index: var(--ad-z-sheet);
+}
+
+.card {
+  width: min(430px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ad-space-4);
+  padding: var(--ad-space-6) var(--ad-space-6) var(--ad-space-5);
+  border-radius: var(--ad-radius-xl);
+  text-align: center;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ad-text-display);
+  font-weight: var(--ad-weight-semi);
+  letter-spacing: -0.02em;
+  color: var(--ad-text);
+}
+
+.lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ad-space-2);
+}
+
+.line {
+  font-size: var(--ad-text-md);
+  line-height: 1.6;
+  color: var(--ad-text-dim);
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  gap: var(--ad-space-2);
+  margin: 0;
+  padding-top: var(--ad-space-1);
+  font-size: var(--ad-text-caption);
+  font-weight: var(--ad-weight-medium);
+  letter-spacing: 0.02em;
+  color: var(--ad-text-faint);
+}
+
+/* Refusing the camera is a legitimate choice, so it gets a real control of the
+   same size as everything else — not a caption the user has to discover. */
+.decline {
+  min-height: var(--ad-hit-comfort);
+  padding: 0 var(--ad-space-4);
+  border-radius: var(--ad-radius-sm);
+  border: 1px solid var(--ad-glass-border);
+  font-size: var(--ad-text-caption);
+  color: var(--ad-text-dim);
+  transition: color var(--ad-motion-fast) var(--ad-ease), background var(--ad-motion-fast) var(--ad-ease);
+}
+
+.decline:hover,
+.decline:focus-visible {
+  color: var(--ad-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.spinner {
+  width: 11px;
+  height: 11px;
+  border-radius: var(--ad-radius-full);
+  border: 1.5px solid rgba(var(--ad-accent-rgb), 0.28);
+  border-top-color: var(--ad-accent);
+  animation: ad-permission-spin 900ms linear infinite;
+}
+
+.stage[data-busy='false'] .spinner {
+  animation: none;
+  border-color: rgba(var(--ad-success), 0.5);
+  border-top-color: rgb(var(--ad-success));
+}
+
+@keyframes ad-permission-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

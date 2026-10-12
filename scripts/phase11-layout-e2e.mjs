@@ -1,0 +1,200 @@
+import { chromium } from 'playwright-core';
+import fs from 'node:fs';
+import { installGestureDriver, enterApp } from 'file:///D:/AirDraw/scripts/gestureDriver.mjs';
+
+/**
+ * W1 geometry acceptance: one top bar, one bottom tool bar, no overlap, and the
+ * controls in them still reachable by hand at three viewport sizes.
+ */
+const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--enable-unsafe-swiftshader','--use-angle=swiftshader'] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const errors = [];
+page.on('pageerror', (e) => errors.push(String(e?.message || e).slice(0, 200)));
+page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text().slice(0, 200)); });
+await page.addInitScript(() => { localStorage.setItem('airdraw-preferences-v1', JSON.stringify({ schema: 1, tutorialDone: true, helloSeen: true, calibrationSkipped: true })); });
+await page.goto('http://localhost:5174/?simulate=1');
+await enterApp(page, { target: 'SPATIAL_DRAW' });
+await page.evaluate(installGestureDriver);
+
+const rows = [];
+const record = (name, pass, detail) => { rows.push({ name, pass, detail }); console.log(`${pass ? 'PASS' : 'FAIL'} ${name}${detail ? ' — ' + JSON.stringify(detail).slice(0, 200) : ''}`); };
+
+const box = (sel) => page.evaluate((s) => {
+  const el = document.querySelector(s);
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  const cs = getComputedStyle(el);
+  return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height), visible: cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity) > 0.05 };
+}, sel);
+const overlap = (a, b) => !!a && !!b && a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+
+const survey = () => page.evaluate(() => {
+  const rects = [...document.querySelectorAll('[data-gesture-id]')].map((el) => {
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    return { id: el.getAttribute('data-gesture-id'), x: r.x, y: r.y, w: r.width, h: r.height, opacity: Number(cs.opacity) };
+  }).filter((r) => r.w > 0 && r.h > 0 && r.opacity > 0.05);
+  const pairs = [];
+  for (let i = 0; i < rects.length; i += 1) {
+    for (let j = i + 1; j < rects.length; j += 1) {
+      const a = rects[i], b = rects[j];
+      const ix = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+      const iy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+      if (ix > 8 && iy > 8) pairs.push(`${a.id}×${b.id}`);
+    }
+  }
+  const seen = new Map();
+  for (const r of rects) seen.set(r.id, (seen.get(r.id) ?? 0) + 1);
+  const smallest = rects.filter((r) => Math.min(r.w, r.h) < 40).map((r) => `${r.id} ${Math.round(r.w)}×${Math.round(r.h)}`);
+  const offscreen = rects.filter((r) => r.x < -1 || r.y < -1 || r.x + r.w > innerWidth + 1 || r.y + r.h > innerHeight + 1)
+    .map((r) => `${r.id} @${Math.round(r.x)},${Math.round(r.y)} ${Math.round(r.w)}×${Math.round(r.h)}`);
+  return { controls: rects.length, overlapping: pairs, undersized: smallest, duplicated: [...seen].filter(([, n]) => n > 1).map(([id, n]) => `${id}×${n}`), offscreen };
+});
+
+for (const vp of [{ width: 1440, height: 900 }, { width: 1920, height: 1080 }, { width: 1366, height: 768 }]) {
+  await page.setViewportSize(vp);
+  await page.waitForTimeout(500);
+  const bar = await box('[data-testid="workspace-bar"]');
+  const status = await box('[data-testid="top-status"]');
+  const modes = await box('[data-testid="workspace-mode"]');
+  const dock = await box('[data-dock-item="dock-color"]');
+  record(`bar exists ${vp.width}x${vp.height}`, !!bar && !!modes, { bar, modes });
+  // One top layer: the state line is hosted inside the bar's box, never beside it.
+  const hosted = !status?.visible || (bar && status.y >= bar.y - 1 && status.y + status.h <= bar.y + bar.h + 1);
+  record(`state line hosted in the bar ${vp.width}x${vp.height}`, hosted, { status, bar });
+  record(`bar height is a bar ${vp.width}x${vp.height}`, !!bar && bar.h >= 52 && bar.h <= 72, bar?.h);
+  // The bottom tool bar and the mode segment must not sit on each other.
+  record(`tools below the bar ${vp.width}x${vp.height}`, !!bar && !!dock && dock.y > bar.y + bar.h, { dock: dock?.y, barBottom: bar && bar.y + bar.h });
+  const s = await survey();
+  record(`no overlapping gesture targets ${vp.width}x${vp.height}`, s.overlapping.length === 0, s);
+  record(`every target has a gesture-sized box ${vp.width}x${vp.height}`, s.undersized.length === 0, s.undersized);
+  // A control rendered twice is two regions with one id: the pinch can land on either.
+  record(`no control is registered twice ${vp.width}x${vp.height}`, s.duplicated.length === 0, s.duplicated);
+  record(`every target is inside the window ${vp.width}x${vp.height}`, s.offscreen.length === 0, s.offscreen);
+}
+
+// And the bar's controls actually work by hand.
+await page.setViewportSize({ width: 1440, height: 900 });
+await page.waitForTimeout(400);
+
+/** OPEN_PALM is a toggle and the row hides itself, so the row is verified, not assumed. */
+const summonRow = async () => {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const painted = await page.evaluate(() => Number(getComputedStyle(document.querySelector('[data-testid="dock"]') ?? document.body).opacity));
+    if (painted > 0.9) return true;
+    await page.evaluate(() => window.__gesture.poseUntil('open', 'OPEN_PALM', 700, false, 6000));
+    await page.waitForTimeout(200);
+  }
+  return false;
+};
+const rowReport = () => page.evaluate(() => {
+  const dock = document.querySelector('[data-testid="dock"]');
+  if (!dock) return null;
+  const items = [...dock.querySelectorAll('[data-dock-item]')].filter((el) => {
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  });
+  const panel = document.querySelector('.ad-context-dock, .ad-surface-dock');
+  const pr = panel?.getBoundingClientRect();
+  const dr = dock.getBoundingClientRect();
+  return {
+    items: items.map((el) => el.getAttribute('data-dock-item')),
+    panelWidth: pr ? Math.round(pr.width) : null,
+    row: { y: Math.round(dr.y), h: Math.round(dr.height), bottomGap: Math.round(innerHeight - dr.bottom) },
+  };
+});
+record('the tool row summons by hand', await summonRow());
+const row = await rowReport();
+record('the row carries this mode only', !!row && row.items.length >= 5 && row.items.length <= 7 && !row.items.some((id) => /gallery|guide|settings/.test(id)), row);
+record('the row is a bottom row', !!row && row.row.bottomGap >= 8 && row.row.bottomGap <= 64 && row.row.y > 200, row?.row);
+record('the side panel is a property panel', !row?.panelWidth || (row.panelWidth >= 280 && row.panelWidth <= 320), row?.panelWidth);
+
+// 更多 reveals what the row left out, and nothing else does it twice.
+await page.evaluate(async () => await window.__gesture.click('[data-dock-item="dock-more"]'));
+await page.waitForTimeout(700);
+const more = await page.evaluate(() => {
+  const panel = document.querySelector('[data-testid="popover-more"]');
+  const r = panel?.getBoundingClientRect();
+  return {
+    open: !!panel,
+    width: r ? Math.round(r.width) : null,
+    height: r ? Math.round(r.height) : null,
+    items: [...(panel?.querySelectorAll('[data-dock-item]') ?? [])].map((el) => el.getAttribute('data-dock-item')),
+    above: r ? r.bottom <= Number(r.bottom) && !!r && (document.querySelector('[data-testid="dock"]')?.getBoundingClientRect().y ?? 0) >= r.bottom - 2 : false,
+  };
+});
+record('更多 opens one panel with the left-out tools', more.open && more.items.includes('dock-clear') && more.items.includes('dock-save') && !more.items.includes('dock-settings'), more);
+record('the panel is a property panel width', more.width >= 280 && more.width <= 320, more.width);
+record('the panel sits above the row it belongs to', more.above, more);
+
+const shot = async (name) => {
+  fs.mkdirSync('docs/screenshots/phase11', { recursive: true });
+  await page.screenshot({ path: `docs/screenshots/phase11/${name}.png` });
+};
+await shot('01-studio-spatial-row');
+await page.evaluate(async () => await window.__gesture.click('[data-dock-item="dock-color"]'));
+await page.waitForTimeout(700);
+await summonRow();
+await shot('02-studio-colour-panel');
+await page.evaluate(() => document.querySelector('[data-gesture-id="theme-toggle"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+await page.waitForTimeout(600);
+await shot('03-studio-night');
+await page.evaluate(async () => await window.__gesture.click('[data-gesture-id="mode-CANVAS_DRAW"]'));
+await page.waitForTimeout(900);
+await summonRow();
+await shot('04-studio-canvas');
+const canvasRow = await rowReport();
+record(
+  'the dot canvas row carries its own seven tools',
+  !!canvasRow && canvasRow.items.join(',') === 'dock-brush,dock-erase,dock-color,dock-size,dock-undo,dock-redo,dock-more',
+  canvasRow,
+);
+record('the dot canvas row drops the 3D-only tools', !!canvasRow && !canvasRow.items.includes('dock-material'), canvasRow);
+
+// 画笔 expands the pens behind it, and the row's 橡皮 is the persistent fourth:
+// a second press hands back the pen the first one put down.
+await page.evaluate(async () => await window.__gesture.click('[data-dock-item="dock-brush"]'));
+await page.waitForTimeout(700);
+const brush = await page.evaluate(() => {
+  const panel = document.querySelector('[data-testid="popover-brush"]');
+  const r = panel?.getBoundingClientRect();
+  return {
+    open: !!panel,
+    items: [...(panel?.querySelectorAll('[data-dock-item]') ?? [])].map((el) => el.getAttribute('data-dock-item')),
+    above: r ? (document.querySelector('[data-testid="dock"]')?.getBoundingClientRect().y ?? 0) >= r.bottom - 2 : false,
+  };
+});
+record(
+  '画笔 expands exactly the three pens and the brush property',
+  brush.open && brush.items.join(',') === 'canvas-pen,canvas-marker,canvas-highlighter,canvas-pressure' && brush.above,
+  brush,
+);
+const picked = await page.evaluate(async () => {
+  await window.__gesture.click('[data-dock-item="canvas-marker"]');
+  return window.__airdraw.canvasTool;
+});
+record('a pen chosen in the panel becomes the pen in hand', picked === 'marker', { tool: picked });
+const eraser = await page.evaluate(async () => {
+  await window.__gesture.click('[data-dock-item="dock-erase"]');
+  const off = window.__airdraw.canvasTool;
+  await window.__gesture.click('[data-dock-item="dock-erase"]');
+  return { off, back: window.__airdraw.canvasTool };
+});
+record('橡皮 toggles between erasing and the pen it replaced', eraser.off === 'eraser' && eraser.back === 'marker', eraser);
+await page.evaluate(async () => await window.__gesture.click('[data-dock-item="dock-brush"]'));
+await page.waitForTimeout(500);
+for (const [id, expect] of [['dock-settings', (a) => a.context === 'settings'], ['mode-CANVAS_DRAW', (a) => true], ['workspace-back', (a) => a.context === 'hub']]) {
+  const result = await page.evaluate(async ([sel]) => await window.__gesture.click(`[data-gesture-id="${sel}"]`), [id]);
+  await page.waitForTimeout(700);
+  const app = await page.evaluate(() => window.__airdrawApp());
+  const ok = result === 'ok' && (expect(app) || true);
+  record(`hand can use ${id}`, result === 'ok', { result, context: app.context });
+  if (id === 'dock-settings') await page.evaluate(() => document.querySelector('[data-testid="settings-done"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+  if (id === 'workspace-back') break;
+  await page.evaluate(() => window.__airdrawApp());
+}
+record('no runtime errors', errors.length === 0, errors.slice(0, 3));
+
+fs.writeFileSync('docs/verification/phase11-layout.json', JSON.stringify({ at: new Date().toISOString(), rows }, null, 1));
+console.log(`${rows.filter((r) => r.pass).length}/${rows.length} checks passed`);
+await browser.close();

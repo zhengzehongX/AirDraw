@@ -1,0 +1,65 @@
+PASS  OPEN_PALM hold summons the dock
+PASS  color popover opens by pinch
+PASS  20 sequential gesture selections all land — 20/20 
+PASS  pinch held while sweeping does not mis-select — color-#f97316
+PASS  hand loss shows the light Show-your-hand hint — {"present":true,"text":"请把手放进画面","state":"lost","visible":true}
+PASS  hand loss cancelled any pending press
+PASS  selection works again after recovery — → color-#64748b
+PASS  selection works with two hands in frame
+PASS  pinch sweep draws committed 3D strokes — strokes=1 {"popover":"none","dockOpen":true,"context":"studio","hover":false,"allow":true,"router":{"mode":"SPATIAL_DRAW","context":"WORKSPACE","waitingForRelease":false,"mayDraw":true},"hint":"拇指和食指张开"}
+PASS  day-only workspace has no theme toggle
+PASS  day theme stays stable while drawing continues — day→day
+PASS  day environment remains active
+PASS  undo takes ink away and redo brings it back — 2→0→2
+PASS  VICTORY enters view mode
+PASS  pinch+move rotates the piece with damping — 0,0,13.5 → -7.62,0,11.14
+PASS  VICTORY exits view mode
+PASS  a brief VICTORY flash does not flip the canvas into view mode — {"inspect":false}
+PASS  clear arms a confirmation
+PASS  cancel keeps the artwork
+PASS  hold-to-clear removes everything after the ring completes — res=ok {"press":null,"hold":0,"state":"idle","flyout":false}
+PASS  scene graph stays small after clear
+FAIL  FIST pauses: stroke finished, input locked, drawing resumes after — {"locked":true,"gesture":"FIST","strokes":1} resume=1 pen=true {"penDown":true,"suspended":false,"recapture":0,"activeSegments":1,"activePoints":8,"pinchActive":true,"pinchValue":0.1446318337951186,"gesture":"PINCH","uiHovered":false,"locked":false,"drawingAllowed":true,"inspectMode":false,"eraseMode":false,"canvasZoom":1,"canvasNav":{"mode":"idle","reason":"identity or position changed","twoDistancePx":0},"twoDistancePx":0}
+PASS  no stray camera source elements — found 0
+PASS  guide opens by pinch
+PASS  the guide lifts the pen
+PASS  guide chapters are selectable by pinch — {"id":"guide-section-1","label":"识别与 Make 3D"}
+PASS  guide content follows the chapter
+PASS  the guide closes by pinch
+PASS  save reports Saved
+PASS  gallery opens by pinch
+PASS  saving produces a gallery card with a real thumbnail — {"cards":1,"thumb":true,"empty":false}
+PASS  the PNG backdrop is a gesture-visible choice — Artwork_10_11_17_23-day.png 60kB landed=true
+PASS  PNG is not below canvas resolution — {"w":1280,"h":800}
+PASS  exporting a saved piece leaves the current canvas alone — 2 vs 2
+PASS  gallery has no night backdrop entry
+PASS  day and transparent are different images — day 61762 / none 62030
+PASS  a valid JSON piece imports as a new card — {"cards":2,"notice":"Imported"}
+PASS  a file that is not a piece is refused in words — {"cards":2,"notice":"That file is not an AirDraw piece"}
+PASS  delete arms a confirmation and a cancel keeps every piece — 2 → 2
+PASS  a held ring deletes exactly that one piece — 2 → 1
+PASS  the gallery closes by pinch
+PASS  the gallery reopens for the round trip
+PASS  a gallery piece opens as a project of its own
+PASS  opening a piece leaves the stored project alone — 2 → 2
+PASS  re-entering the guide leaks no camera or geometry — {"before":{"videos":0,"geo":4},"after":{"videos":0,"geo":4,"drawingAllowed":true}}
+PASS  the pen returns after closing a surface
+PASS  settings opens by pinch
+PASS  settings lifts the pen while it is open
+PASS  a dominant-hand choice lights its chip and is persisted — {"handApplied":true,"active":true,"stored":"Right"}
+PASS  the settings list scrolls by pinch-drag until the last row is in reach — 1308 → 163
+PASS  the developer switch changes the panel at once and remembers itself — {"devBefore":true,"devApplied":true,"panel":false,"stored":false}
+PASS  and switches back on
+PASS  settings closes by pinch
+PASS  first run opens inside the tutorial — stage=0
+  driver: poseUntil ["open","OPEN_PALM",900] confirmed
+  driver: poseUntil ["open","OPEN_PALM",1200] confirmed
+  driver: poseUntil ["victory","VICTORY",700] confirmed
+  driver: poseUntil ["victory","VICTORY",700] confirmed
+  driver: poseUntil ["point","POINT",200] confirmed
+PASS  all eleven lessons are passed by real gestures — 2→2→3→4→5→6→7→8→9→10 view=true
+PASS  the tutorial ends on the canvas
+PASS  no page errors during the first run
+PASS  no console errors across the stress run
+
+E2E: 1 CHECK(S) FAILED

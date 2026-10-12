@@ -1,0 +1,77 @@
+{
+  "input": "synthetic Node hand frames, no camera/GPU",
+  "results": [
+    {
+      "name": "stationary CSS noise does not accumulate drift",
+      "pass": true
+    },
+    {
+      "name": "intentional movement has no trailing offset",
+      "pass": true
+    },
+    {
+      "name": "identity reset accepts a fresh anchor",
+      "pass": true
+    },
+    {
+      "name": "NEAR and candidate CONTACT produce no pinch",
+      "pass": true
+    },
+    {
+      "name": "primary START cannot start secondary",
+      "pass": true
+    },
+    {
+      "name": "secondary can independently START",
+      "pass": true
+    },
+    {
+      "name": "held primary keeps session ID",
+      "pass": true
+    },
+    {
+      "name": "primary release does not end secondary",
+      "pass": true
+    },
+    {
+      "name": "UI capture cancels secondary",
+      "pass": true
+    },
+    {
+      "name": "held pinch cannot restart after UI capture",
+      "pass": true
+    },
+    {
+      "name": "fresh secondary pinch after release restarts",
+      "pass": true
+    },
+    {
+      "name": "loss cancels instead of throwing",
+      "pass": true
+    },
+    {
+      "name": "identity epoch ends grab without immediate recapture",
+      "pass": true
+    },
+    {
+      "name": "orb secondary-only grab belongs to secondary",
+      "pass": true
+    },
+    {
+      "name": "orb loss releases missing hand",
+      "pass": true
+    },
+    {
+      "name": "fireworks secondary alone charges only secondary",
+      "pass": true
+    },
+    {
+      "name": "fireworks secondary alone launches",
+      "pass": true
+    },
+    {
+      "name": "fireworks cancellation has no burst",
+      "pass": true
+    }
+  ]
+}

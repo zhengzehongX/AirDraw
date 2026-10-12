@@ -1,0 +1,183 @@
+{
+  "at": "2026-10-11T01:16:02.291Z",
+  "results": [
+    {
+      "name": "first run opens the tutorial without auto-starting calibration",
+      "pass": true,
+      "detail": {
+        "context": "tutorial",
+        "returnTo": "studio",
+        "launchStage": "home-ready",
+        "tutorialStep": 2,
+        "dockOpen": false,
+        "popover": "none",
+        "confirmClear": false,
+        "inspect": false,
+        "eraseMode": false,
+        "helpSection": 0,
+        "practiceGesture": null,
+        "galleryFocus": 0
+      }
+    },
+    {
+      "name": "tutorial coach visible and reachable 1440x900",
+      "pass": true,
+      "detail": {
+        "x": 48,
+        "y": 88,
+        "width": 430,
+        "height": 176
+      }
+    },
+    {
+      "name": "tutorial coach visible and reachable 1366x768",
+      "pass": true,
+      "detail": {
+        "x": 48,
+        "y": 88,
+        "width": 430,
+        "height": 176
+      }
+    },
+    {
+      "name": "tutorial coach visible and reachable 390x844",
+      "pass": true,
+      "detail": {
+        "x": 48,
+        "y": 88,
+        "width": 294,
+        "height": 200
+      }
+    },
+    {
+      "name": "tutorial coach sits on screen, clear of the tool row",
+      "pass": true,
+      "detail": {
+        "x": 48,
+        "y": 88,
+        "width": 430,
+        "height": 176,
+        "clearOfRow": true,
+        "row": {
+          "x": 316,
+          "y": 780,
+          "width": 520,
+          "height": 96
+        }
+      }
+    },
+    {
+      "name": "tutorial reaches confirmation step",
+      "pass": true
+    },
+    {
+      "name": "confirmation enables writing lesson",
+      "pass": true
+    },
+    {
+      "name": "uncalibrated defaults produce actual ink",
+      "pass": true,
+      "detail": "请让主手进入画面"
+    },
+    {
+      "name": "writing advances to lift lesson",
+      "pass": true
+    },
+    {
+      "name": "second stroke advances beyond writing",
+      "pass": true
+    },
+    {
+      "name": "skipping the tutorial lands in the studio",
+      "pass": true
+    },
+    {
+      "name": "studio offers calibration without blocking it",
+      "pass": true
+    },
+    {
+      "name": "calibration offer centred 1440x900",
+      "pass": true,
+      "detail": {
+        "dx": 0,
+        "dy": 0,
+        "box": {
+          "x": 490,
+          "y": 325.90625,
+          "width": 460,
+          "height": 248.1875
+        }
+      }
+    },
+    {
+      "name": "calibration offer centred 1366x768",
+      "pass": true,
+      "detail": {
+        "dx": 0,
+        "dy": 0,
+        "box": {
+          "x": 453,
+          "y": 259.90625,
+          "width": 460,
+          "height": 248.1875
+        }
+      }
+    },
+    {
+      "name": "calibration offer centred 390x844",
+      "pass": true,
+      "detail": {
+        "dx": 0,
+        "dy": 0,
+        "box": {
+          "x": 16,
+          "y": 285.109375,
+          "width": 358,
+          "height": 273.78125
+        }
+      }
+    },
+    {
+      "name": "the offer does not swallow the pen",
+      "pass": true,
+      "detail": "stroke3d,stroke3d,stroke3d"
+    },
+    {
+      "name": "以后再说 dismisses the offer",
+      "pass": true
+    },
+    {
+      "name": "校准 opens the panel",
+      "pass": true
+    },
+    {
+      "name": "calibration panel centred",
+      "pass": true,
+      "detail": {
+        "dx": 0,
+        "dy": 0,
+        "box": {
+          "x": 510,
+          "y": 255.90625,
+          "width": 420,
+          "height": 388.1875
+        }
+      }
+    },
+    {
+      "name": "three cycles finish calibration",
+      "pass": true
+    },
+    {
+      "name": "calibration writes a personal profile",
+      "pass": true,
+      "detail": "{\"contact\":0.1642023804987281,\"release\":0.3119845229475834,\"projection\":0.16370713288465805,\"z\":0.04,\"palmScale\":0.01992234925906079,\"contactDistance\":0.0032712971734648534,\"releaseDistance\":0.006215464629583222,\"calibrationHand\":\"Right\",\"dominantHand\":\"auto\",\"calibratedAt\":\"2026-10-11T01:16:00.412Z\",\"pointerSensitivity\":1,\"camera\":{},\"version\":2}"
+    },
+    {
+      "name": "no runtime exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

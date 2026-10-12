@@ -1,0 +1,418 @@
+{
+ "at": "2026-10-11T05:10:22.800Z",
+ "rows": [
+  {
+   "name": "bar exists 1440x900",
+   "pass": true,
+   "detail": {
+    "bar": {
+     "x": 0,
+     "y": 0,
+     "w": 1440,
+     "h": 64,
+     "visible": true
+    },
+    "modes": {
+     "x": 555,
+     "y": 0,
+     "w": 330,
+     "h": 75,
+     "visible": true
+    }
+   }
+  },
+  {
+   "name": "state line hosted in the bar 1440x900",
+   "pass": true,
+   "detail": {
+    "status": {
+     "x": 1000,
+     "y": 19,
+     "w": 98,
+     "h": 16,
+     "visible": true
+    },
+    "bar": {
+     "x": 0,
+     "y": 0,
+     "w": 1440,
+     "h": 64,
+     "visible": true
+    }
+   }
+  },
+  {
+   "name": "bar height is a bar 1440x900",
+   "pass": true,
+   "detail": 64
+  },
+  {
+   "name": "tools below the bar 1440x900",
+   "pass": true,
+   "detail": {
+    "dock": 819,
+    "barBottom": 64
+   }
+  },
+  {
+   "name": "no overlapping gesture targets 1440x900",
+   "pass": true,
+   "detail": {
+    "controls": 19,
+    "overlapping": [],
+    "undersized": [],
+    "duplicated": [],
+    "offscreen": []
+   }
+  },
+  {
+   "name": "every target has a gesture-sized box 1440x900",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "no control is registered twice 1440x900",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "every target is inside the window 1440x900",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "bar exists 1920x1080",
+   "pass": true,
+   "detail": {
+    "bar": {
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 64,
+     "visible": true
+    },
+    "modes": {
+     "x": 795,
+     "y": 0,
+     "w": 330,
+     "h": 75,
+     "visible": true
+    }
+   }
+  },
+  {
+   "name": "state line hosted in the bar 1920x1080",
+   "pass": true,
+   "detail": {
+    "status": {
+     "x": 1452,
+     "y": 19,
+     "w": 98,
+     "h": 16,
+     "visible": true
+    },
+    "bar": {
+     "x": 0,
+     "y": 0,
+     "w": 1920,
+     "h": 64,
+     "visible": true
+    }
+   }
+  },
+  {
+   "name": "bar height is a bar 1920x1080",
+   "pass": true,
+   "detail": 64
+  },
+  {
+   "name": "tools below the bar 1920x1080",
+   "pass": true,
+   "detail": {
+    "dock": 999,
+    "barBottom": 64
+   }
+  },
+  {
+   "name": "no overlapping gesture targets 1920x1080",
+   "pass": true,
+   "detail": {
+    "controls": 19,
+    "overlapping": [],
+    "undersized": [],
+    "duplicated": [],
+    "offscreen": []
+   }
+  },
+  {
+   "name": "every target has a gesture-sized box 1920x1080",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "no control is registered twice 1920x1080",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "every target is inside the window 1920x1080",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "bar exists 1366x768",
+   "pass": true,
+   "detail": {
+    "bar": {
+     "x": 0,
+     "y": 0,
+     "w": 1366,
+     "h": 64,
+     "visible": true
+    },
+    "modes": {
+     "x": 518,
+     "y": 0,
+     "w": 330,
+     "h": 75,
+     "visible": true
+    }
+   }
+  },
+  {
+   "name": "state line hosted in the bar 1366x768",
+   "pass": true,
+   "detail": {
+    "status": {
+     "x": 926,
+     "y": 19,
+     "w": 98,
+     "h": 16,
+     "visible": true
+    },
+    "bar": {
+     "x": 0,
+     "y": 0,
+     "w": 1366,
+     "h": 64,
+     "visible": true
+    }
+   }
+  },
+  {
+   "name": "bar height is a bar 1366x768",
+   "pass": true,
+   "detail": 64
+  },
+  {
+   "name": "tools below the bar 1366x768",
+   "pass": true,
+   "detail": {
+    "dock": 687,
+    "barBottom": 64
+   }
+  },
+  {
+   "name": "no overlapping gesture targets 1366x768",
+   "pass": true,
+   "detail": {
+    "controls": 19,
+    "overlapping": [],
+    "undersized": [],
+    "duplicated": [],
+    "offscreen": []
+   }
+  },
+  {
+   "name": "every target has a gesture-sized box 1366x768",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "no control is registered twice 1366x768",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "every target is inside the window 1366x768",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "the tool row summons by hand",
+   "pass": true
+  },
+  {
+   "name": "the row carries this mode only",
+   "pass": true,
+   "detail": {
+    "items": [
+     "dock-color",
+     "dock-material",
+     "dock-size",
+     "dock-undo",
+     "dock-redo",
+     "dock-erase",
+     "dock-more"
+    ],
+    "panelWidth": 287,
+    "row": {
+     "y": 780,
+     "h": 96,
+     "bottomGap": 24
+    }
+   }
+  },
+  {
+   "name": "the row is a bottom row",
+   "pass": true,
+   "detail": {
+    "y": 780,
+    "h": 96,
+    "bottomGap": 24
+   }
+  },
+  {
+   "name": "the side panel is a property panel",
+   "pass": true,
+   "detail": 287
+  },
+  {
+   "name": "更多 opens one panel with the left-out tools",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "width": 320,
+    "height": 200,
+    "items": [
+     "dock-clear",
+     "dock-save",
+     "dock-view",
+     "dock-center"
+    ],
+    "above": true
+   }
+  },
+  {
+   "name": "the panel is a property panel width",
+   "pass": true,
+   "detail": 320
+  },
+  {
+   "name": "the panel sits above the row it belongs to",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "width": 320,
+    "height": 200,
+    "items": [
+     "dock-clear",
+     "dock-save",
+     "dock-view",
+     "dock-center"
+    ],
+    "above": true
+   }
+  },
+  {
+   "name": "the dot canvas row carries its own seven tools",
+   "pass": true,
+   "detail": {
+    "items": [
+     "dock-brush",
+     "dock-erase",
+     "dock-color",
+     "dock-size",
+     "dock-undo",
+     "dock-redo",
+     "dock-more"
+    ],
+    "panelWidth": 287,
+    "row": {
+     "y": 780,
+     "h": 96,
+     "bottomGap": 24
+    }
+   }
+  },
+  {
+   "name": "the dot canvas row drops the 3D-only tools",
+   "pass": true,
+   "detail": {
+    "items": [
+     "dock-brush",
+     "dock-erase",
+     "dock-color",
+     "dock-size",
+     "dock-undo",
+     "dock-redo",
+     "dock-more"
+    ],
+    "panelWidth": 287,
+    "row": {
+     "y": 780,
+     "h": 96,
+     "bottomGap": 24
+    }
+   }
+  },
+  {
+   "name": "画笔 expands exactly the three pens and the brush property",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "items": [
+     "canvas-pen",
+     "canvas-marker",
+     "canvas-highlighter",
+     "canvas-pressure"
+    ],
+    "above": true
+   }
+  },
+  {
+   "name": "a pen chosen in the panel becomes the pen in hand",
+   "pass": true,
+   "detail": {
+    "tool": "marker"
+   }
+  },
+  {
+   "name": "橡皮 toggles between erasing and the pen it replaced",
+   "pass": true,
+   "detail": {
+    "off": "eraser",
+    "back": "marker"
+   }
+  },
+  {
+   "name": "hand can use dock-settings",
+   "pass": true,
+   "detail": {
+    "result": "ok",
+    "context": "settings"
+   }
+  },
+  {
+   "name": "hand can use mode-CANVAS_DRAW",
+   "pass": true,
+   "detail": {
+    "result": "ok",
+    "context": "studio"
+   }
+  },
+  {
+   "name": "hand can use workspace-back",
+   "pass": true,
+   "detail": {
+    "result": "ok",
+    "context": "hub"
+   }
+  },
+  {
+   "name": "no runtime errors",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+.wordmark {
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.accent {
+  background: linear-gradient(100deg, var(--ad-accent), #a78bfa 60%, #f472b6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

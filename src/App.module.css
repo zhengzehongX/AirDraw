@@ -1,0 +1,196 @@
+.workspace {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  /* The workspace is a grid, not a stack of overlays: the bar takes a row, the rail
+     takes a column, and the creation stage gets what is left. With no bar and no rail
+     the single cell is the whole window, which is what the hub and the welcome field
+     have always assumed. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    "bar bar"
+    "stage rail";
+}
+
+/*
+ * The board still spans the window, because the pointer that draws on it has to reach
+ * the bar and the rail too — one mapping, window space, for cursor, ink and camera.
+ * The rail is nevertheless a real column, and the bottom row centres itself on what
+ * the column leaves (`--rail-w`), which is the part of "yield to the panel" that does
+ * not require re-deriving the input frame.
+ */
+.stage {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+.workspace[data-rail='open'] {
+  --rail-w: var(--ad-panel-w);
+}
+
+.workspace[data-rail='closed'] {
+  --rail-w: 72px;
+}
+.workspace[data-mode='MODEL_CONTROL'] .rail{background:var(--ad-bg);}
+
+.rail {
+  grid-area: rail;
+  /* A static grid item would paint under the absolutely-positioned board, and the rail
+     is meant to sit on top of the canvas edge it overlaps. */
+  position: relative;
+  z-index: 46;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ad-space-2);
+  width: var(--ad-panel-w);
+  min-height: 0;
+  /* No horizontal padding: the panel fills the column, so the column's width *is* the
+     panel width the layout suite measures, and nothing gets a second inset. */
+  padding: var(--ad-space-2) 0 var(--ad-space-3);
+  border-left: 1px solid color-mix(in srgb, var(--ad-glass-border, #ffffff) 10%, transparent);
+  background: color-mix(in srgb, var(--ad-bg) 55%, transparent);
+}
+
+/* Collapsing gives the width back to the board, so the strip is the button, not a
+   shrunken panel — and the stage grows because the grid column is `auto`. */
+.rail[data-open='false'] {
+  width: 72px;
+  padding: var(--ad-space-2) 10px;
+  align-items: center;
+}
+
+.railHead {
+  /* The panels below are positioned (they scroll inside themselves), so the header has
+     to claim its own layer or the first panel paints over the collapse button. */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ad-space-2);
+  min-height: 40px;
+  padding: 0 var(--ad-space-3) var(--ad-space-1);
+  border-bottom: 1px solid color-mix(in srgb, var(--ad-text) 10%, transparent);
+}
+
+.railTitle {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: var(--ad-text-md);
+  font-weight: var(--ad-weight-semi);
+  letter-spacing: var(--ad-tracking-tight);
+}
+
+.railObject {
+  font-style: normal;
+  font-size: var(--ad-text-caption);
+  font-weight: var(--ad-weight-regular);
+  color: var(--ad-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The collapse control is the one icon-only button in the column: the words are in its
+   tooltip and accessible name, and a 288px column cannot carry both beside a title. */
+.railHead :global(.ad-tool-button) {
+  flex: 0 0 auto;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px;
+}
+
+.railHead :global(.ad-tool-button) > span {
+  display: none;
+}
+
+.rail[data-open='false'] .railHead :global(.ad-icon) {
+  transform: rotate(180deg);
+}
+
+/* The property panels used to float over the canvas at a fixed right offset; in the
+   column they fill it, and only their own body scrolls — the column never does, so a
+   long list cannot push the panel's title out of reach. */
+.rail > section,
+.rail :global(.ad-context-dock),
+.rail :global(.ad-surface-dock) {
+  position: relative;
+  inset: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  /* These panels centred themselves with `translateY(-50%)` while they floated over the
+     canvas; in a column flow that shift throws their first rows above the window. */
+  transform: none;
+  z-index: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: auto;
+  max-height: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.rail > section > *,
+.rail :global(.ad-context-dock) > *,
+.rail :global(.ad-surface-dock) > * {
+  flex: 0 0 auto;
+}
+
+.rail :global(.ad-tool-grid),
+.rail > section > p {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Dev-only read-out: same column, below the panel, never over the tools. */
+.rail > section[data-testid='debug-panel'] {
+  flex: 0 1 40%;
+  overflow-y: auto;
+}
+
+@media (max-width: 1100px) {
+  /* One variable feeds both the column width and the row's centring, so the two can
+     never disagree about how much board is left. */
+  .workspace[data-rail='open'] {
+    --rail-w: 264px;
+  }
+
+  .rail {
+    width: var(--rail-w);
+  }
+}
+
+.inspectSurface {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+}
+
+.ready {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ad-z-overlay);
+  pointer-events: none;
+  animation: ad-ready-fade 1.6s var(--ad-ease) forwards;
+}
+
+@keyframes ad-ready-fade {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

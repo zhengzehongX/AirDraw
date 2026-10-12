@@ -1,0 +1,233 @@
+{
+ "at": "2026-10-11T08:07:29.477Z",
+ "rows": [
+  {
+   "item": "导航",
+   "check": "手势呼出 Dock 并进入设置",
+   "verdict": "PASS",
+   "detail": "{\"dockOpen\":true,\"tapped\":true,\"settings\":true}"
+  },
+  {
+   "item": "pointerSensitivity",
+   "check": "①鼠标可操作",
+   "verdict": "PASS",
+   "detail": "1 → 1.55"
+  },
+  {
+   "item": "pointerSensitivity",
+   "check": "①键盘可操作",
+   "verdict": "PASS",
+   "detail": "1.55 → 1.6"
+  },
+  {
+   "item": "pointerSensitivity",
+   "check": "①捏合拖拽可操作",
+   "verdict": "PASS",
+   "detail": "ok 1.6 → 0.95"
+  },
+  {
+   "item": "pointerSensitivity",
+   "check": "③服务已应用",
+   "verdict": "PASS",
+   "detail": "{\"prefs\":0.95,\"expected\":0.95,\"service\":0.95}"
+  },
+  {
+   "item": "pointerSmoothing",
+   "check": "①鼠标可操作",
+   "verdict": "PASS",
+   "detail": "0.5 → 0.95"
+  },
+  {
+   "item": "pointerSmoothing",
+   "check": "①键盘可操作",
+   "verdict": "PASS",
+   "detail": "0.95 → 1"
+  },
+  {
+   "item": "pointerSmoothing",
+   "check": "①捏合拖拽可操作",
+   "verdict": "PASS",
+   "detail": "ok 1 → 0.35"
+  },
+  {
+   "item": "pointerSmoothing",
+   "check": "③服务已应用",
+   "verdict": "PASS",
+   "detail": "{\"prefs\":0.35,\"expected\":1.6644,\"service\":1.6643542081017677}"
+  },
+  {
+   "item": "pinchAssist",
+   "check": "①鼠标可操作",
+   "verdict": "PASS",
+   "detail": "0 → 0.85"
+  },
+  {
+   "item": "pinchAssist",
+   "check": "①键盘可操作",
+   "verdict": "PASS",
+   "detail": "0.85 → 0.95"
+  },
+  {
+   "item": "pinchAssist",
+   "check": "①捏合拖拽可操作",
+   "verdict": "PASS",
+   "detail": "ok 0.95 → 0.3"
+  },
+  {
+   "item": "pinchAssist",
+   "check": "③服务已应用",
+   "verdict": "PASS",
+   "detail": "{\"prefs\":0.3,\"expected\":0.3,\"service\":0.3}"
+  },
+  {
+   "item": "gestureHoldMs",
+   "check": "①鼠标可操作",
+   "verdict": "PASS",
+   "detail": "700 → 1300"
+  },
+  {
+   "item": "gestureHoldMs",
+   "check": "①键盘可操作",
+   "verdict": "PASS",
+   "detail": "1300 → 1400"
+  },
+  {
+   "item": "gestureHoldMs",
+   "check": "①捏合拖拽可操作",
+   "verdict": "PASS",
+   "detail": "ok 1400 → 750"
+  },
+  {
+   "item": "gestureHoldMs",
+   "check": "③服务已应用",
+   "verdict": "n/a",
+   "detail": "消费处直接读 prefs（App 的张掌计时用 gestureHoldMs）"
+  },
+  {
+   "item": "toyIntensity",
+   "check": "①鼠标可操作",
+   "verdict": "PASS",
+   "detail": "0.5 → 1"
+  },
+  {
+   "item": "toyIntensity",
+   "check": "①键盘可操作",
+   "verdict": "PASS",
+   "detail": "1 → 0.9"
+  },
+  {
+   "item": "toyIntensity",
+   "check": "①捏合拖拽可操作",
+   "verdict": "PASS",
+   "detail": "ok 0.9 → 0.35"
+  },
+  {
+   "item": "toyIntensity",
+   "check": "③服务已应用",
+   "verdict": "PASS",
+   "detail": "{\"prefs\":0.35,\"expected\":0.91,\"service\":0.91}"
+  },
+  {
+   "item": "voiceVolume",
+   "check": "①鼠标可操作",
+   "verdict": "PASS",
+   "detail": "0.35 → 0.8"
+  },
+  {
+   "item": "voiceVolume",
+   "check": "①键盘可操作",
+   "verdict": "PASS",
+   "detail": "0.8 → 0.9"
+  },
+  {
+   "item": "voiceVolume",
+   "check": "①捏合拖拽可操作",
+   "verdict": "PASS",
+   "detail": "ok 0.9 → 0.35"
+  },
+  {
+   "item": "voiceVolume",
+   "check": "③服务已应用",
+   "verdict": "PASS",
+   "detail": "{\"prefs\":0.35,\"expected\":0.35,\"service\":0.35}"
+  },
+  {
+   "item": "平滑程度",
+   "check": "④效果有变化",
+   "verdict": "PASS",
+   "detail": "{\"smoothResponse\":0.6434,\"crispResponse\":0.824,\"pinchEnter\":null,\"assist\":0.3}"
+  },
+  {
+   "item": "日间产品",
+   "check": "夜间入口移除且环境保持日间",
+   "verdict": "PASS",
+   "detail": "{\"attr\":\"day\",\"nightControls\":0}"
+  },
+  {
+   "item": "界面语言",
+   "check": "①②③切换生效",
+   "verdict": "PASS",
+   "detail": "{\"pref\":\"en\",\"htmlLang\":\"en\",\"heading\":\"Camera & hands\",\"smoothingLabel\":\"Camera|Simulated input||Dominant hand|Pointer sensitivity|Default|0.95|||||Pointer smoothing|Moves only the filter’s resting floor; recognition is untouched|35%\"}"
+  },
+  {
+   "item": "界面语言",
+   "check": "②切回中文",
+   "verdict": "PASS",
+   "detail": "zh"
+  },
+  {
+   "item": "玩具细节/粒子",
+   "check": "③服务已应用",
+   "verdict": "PASS",
+   "detail": "{\"pref\":\"performance\",\"locked\":\"performance\",\"current\":\"performance\",\"particles\":9000}"
+  },
+  {
+   "item": "玩具细节/粒子",
+   "check": "自动档交还给调度器",
+   "verdict": "PASS",
+   "detail": "{\"locked\":null,\"current\":\"performance\"}"
+  },
+  {
+   "item": "全部字段",
+   "check": "⑤刷新后存储仍在",
+   "verdict": "PASS",
+   "detail": "{\"before\":23,\"stored\":0.95,\"theme\":\"day\",\"ui\":\"system\",\"hold\":750}"
+  },
+  {
+   "item": "导航",
+   "check": "刷新后仍可进入设置",
+   "verdict": "PASS",
+   "detail": "{\"dockOpen\":true,\"tapped\":true,\"settings\":true}"
+  },
+  {
+   "item": "全部字段",
+   "check": "⑤刷新后服务自动应用",
+   "verdict": "PASS",
+   "detail": "{\"stored\":{\"pointerSensitivity\":0.95,\"pointerSmoothing\":0.35,\"pinchAssist\":0.3,\"gestureHoldMs\":750,\"toyIntensity\":0.35,\"voiceVolume\":0.35,\"panSpeed\":1,\"zoomSensitivity\":1,\"dotDensity\":0.5,\"theme\":\"day\",\"dominantHand\":\"auto\",\"reducedMotion\":\"system\",\"uiLanguage\":\"system\",\"voiceLanguage\":\"zh-CN\",\"toyDetail\":\"auto\",\"devMode\":false,\"voiceFeedback\":false,\"schema\":1,\"tutorialDone\":true,\"helloSeen\":true,\"brush\":{\"color\":\"#22d3ee\",\"width\":10,\"material\":\"candy\"},\"calibrationSkipped\":false,\"voiceWakePhrase\":\"你好，AirDraw\"},\"applied\":{\"gain\":0.95,\"smoothing\":1.6643542081017677,\"assist\":0.3},\"early\":{\"gain\":0.95,\"smoothing\":1.6643542081017677,\"assist\":0.3,\"hand\":\"auto\",\"theme\":\"day\",\"lang\":\"zh-CN\"},\"smoothingFromPref\":null}"
+  },
+  {
+   "item": "恢复全部默认",
+   "check": "①③一次性复位",
+   "verdict": "PASS",
+   "detail": "{\"stored\":{\"pointerSensitivity\":1,\"pointerSmoothing\":0.5,\"pinchAssist\":0,\"gestureHoldMs\":700,\"toyIntensity\":0.5,\"voiceVolume\":0.35,\"panSpeed\":1,\"zoomSensitivity\":1,\"dotDensity\":0.5,\"theme\":\"day\",\"dominantHand\":\"auto\",\"reducedMotion\":\"system\",\"uiLanguage\":\"zh\",\"voiceLanguage\":\"zh-CN\",\"toyDetail\":\"auto\",\"devMode\":false,\"voiceFeedback\":false,\"schema\":1,\"tutorialDone\":false,\"helloSeen\":false,\"brush\":{\"color\":\"#22d3ee\",\"width\":10,\"material\":\"candy\"},\"calibrationSkipped\":false,\"voiceWakePhrase\":\"你好，AirDraw\"},\"trackingKey\":null,\"calibrationKey\":null,\"themeMirror\":null,\"gain\":1,\"assist\":0,\"intensity\":1,\"locked\":null}"
+  },
+  {
+   "item": "存储键",
+   "check": "主题不再双写",
+   "verdict": "PASS",
+   "detail": "{\"airdrawTheme\":null}"
+  },
+  {
+   "item": "输入排他",
+   "check": "玩具内只有玩具的控件可点",
+   "verdict": "PASS",
+   "detail": "{\"enteredLab\":\"playlab\",\"live\":[\"lab-canvas\",\"lab-back\"],\"owner\":\"toy\",\"status\":\"ready\",\"context\":\"playlab\",\"activationsDuringEnter\":0}"
+  },
+  {
+   "item": "运行时",
+   "check": "无异常",
+   "verdict": "PASS",
+   "detail": "[]"
+  }
+ ]
+}

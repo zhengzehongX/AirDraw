@@ -1,0 +1,6 @@
+import type {Stroke,MaterialPresetId} from '../types/drawing';
+export type Transform={position:[number,number,number];rotation:[number,number,number,number];scale:[number,number,number]};
+export type SceneObject={id:string;type:'stroke2d'|'stroke3d'|'model'|'solid'|'group'|'light'|'camera'|'background';name:string;visible:boolean;locked:boolean;transform:Transform;material:{preset:MaterialPresetId;color:string};createdAt:number;updatedAt:number;modeSource:'CANVAS_DRAW'|'SPATIAL_DRAW'|'MODEL_CONTROL';parentId?:string;stroke?:Stroke;assetId?:string;text?:string;recognition?:'geometry'|'text';conversion?:{method:'Extrude'|'Tube'|'Outline'|'Relief';sourceId:string;depth:number;bevel:number;smooth:number};};
+export type Project={id:string;schemaVersion:2;name:string;createdAt:number;updatedAt:number;objects:SceneObject[];assets:Record<string,{name:string;data:string}>;theme:'day'|'night';paper:'white'|'dark'|'transparent';camera:{yaw:number;pitch:number;distance:number};thumbnail:string|null;};
+export const identityTransform=():Transform=>({position:[0,0,0],rotation:[0,0,0,1],scale:[1,1,1]});
+export const newProject=(name='Untitled'):Project=>{const now=Date.now();return{id:crypto.randomUUID(),schemaVersion:2,name,createdAt:now,updatedAt:now,objects:[],assets:{},theme:'day',paper:'white',camera:{yaw:0,pitch:0,distance:13.5},thumbnail:null};};

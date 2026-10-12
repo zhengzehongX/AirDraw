@@ -1,0 +1,74 @@
+{
+  "at": "2026-10-06T03:11:35.022Z",
+  "scope": "Fake camera + real CPU MediaPipe Worker; mocked SpeechRecognition transcript events, not real microphone recognition",
+  "results": [
+    {
+      "name": "no camera request before explicit Enter",
+      "pass": true
+    },
+    {
+      "name": "camera warms up to READY",
+      "pass": true,
+      "detail": "READY"
+    },
+    {
+      "name": "one camera and one worker",
+      "pass": true
+    },
+    {
+      "name": "six valid frames before ready",
+      "pass": true
+    },
+    {
+      "name": "30 mode switches preserve shared stream/worker/canvas",
+      "pass": true
+    },
+    {
+      "name": "worker inference returns frames",
+      "pass": true
+    },
+    {
+      "name": "interrupted camera recovers using same worker",
+      "pass": true
+    },
+    {
+      "name": "without wake no command executes",
+      "pass": true
+    },
+    {
+      "name": "30 grammar-driven voice commands complete",
+      "pass": true,
+      "detail": {
+        "speechRestarts": 0,
+        "commandsHandled": 30,
+        "unmatched": 0
+      }
+    },
+    {
+      "name": "interim wake and final full phrase execute once",
+      "pass": true
+    },
+    {
+      "name": "dangerous command requires confirmation",
+      "pass": true
+    },
+    {
+      "name": "cancel closes confirmation",
+      "pass": true
+    },
+    {
+      "name": "speech restarts are delayed and counted",
+      "pass": true
+    },
+    {
+      "name": "microphone denial leaves camera ready",
+      "pass": true
+    },
+    {
+      "name": "no browser exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

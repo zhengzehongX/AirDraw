@@ -1,0 +1,69 @@
+{
+  "scope": "Synthetic input; explicit release and visible-control preconditions, no physical hand acceptance",
+  "results": [
+    {
+      "name": "FIST finishes ink and explicit released re-anchor resumes",
+      "pass": true,
+      "evidence": {
+        "initial": 0,
+        "down": true,
+        "locked": true,
+        "afterFist": 1,
+        "resumed": true,
+        "after": 2,
+        "before": {
+          "mode": "SPATIAL_DRAW",
+          "context": "WORKSPACE",
+          "waitingForRelease": false,
+          "mayDraw": true
+        },
+        "final": {
+          "penDown": false,
+          "suspended": false,
+          "recapture": 0,
+          "activeSegments": 0,
+          "activePoints": 0,
+          "pinchActive": false,
+          "pinchValue": 0.8630747123996124,
+          "gesture": "POINT",
+          "uiHovered": false,
+          "locked": false,
+          "drawingAllowed": true,
+          "inspectMode": false,
+          "eraseMode": false,
+          "canvasZoom": 1,
+          "canvasNav": {
+            "mode": "idle",
+            "reason": "identity or position changed",
+            "twoDistancePx": 0
+          },
+          "twoDistancePx": 0
+        }
+      }
+    },
+    {
+      "name": "shared command history undoes and redoes committed ink",
+      "pass": true,
+      "evidence": {
+        "before": 2,
+        "undone": 1,
+        "redone": 2
+      }
+    },
+    {
+      "name": "visible Developer switch toggles through gesture",
+      "pass": true,
+      "evidence": {
+        "action": "ok",
+        "stored": false,
+        "panel": false
+      }
+    },
+    {
+      "name": "no page errors",
+      "pass": true,
+      "evidence": []
+    }
+  ],
+  "errors": []
+}

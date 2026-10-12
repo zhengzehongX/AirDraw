@@ -1,0 +1,277 @@
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { cameraService } from '../services/handTracking/CameraService';
+import { voiceAssistant } from '../voice/VoiceAssistantService';
+import { useText } from '../i18n';
+import type { SaveState } from '../project/workspace';
+import { GestureButton } from './GestureButton';
+import styles from './WorkspaceBar.module.css';
+
+export type DominantHand = 'auto' | 'Left' | 'Right';
+
+export type WorkspaceBarProps = {
+  projectName: string;
+  saveState: SaveState;
+  /** Back goes to the feature hub; the draft is already durable, so nothing is asked. */
+  onBack: () => void;
+  onRename: () => void;
+  onOpenProjects: () => void;
+  onOpenGallery: () => void;
+  onOpenGuide: () => void;
+  onRestartTutorial: () => void;
+  onOpenSettings: () => void;
+  onToggleTheme: () => void;
+  onToggleCameraPreview: () => void;
+  onSetHand: (hand: DominantHand) => void;
+  hand: DominantHand;
+  /** The explicit tool-row entry: an open palm belongs to the board, not the menu. */
+  onToggleToolbar: () => void;
+  toolbarOpen: boolean;
+  /** 暂停手势 — reachable from any workspace screen, at any time. */
+  gesturesPaused: boolean;
+  onToggleGestures: () => void;
+  /** Hand presence is a fact about input, not an error to dismiss. */
+  handPresent: boolean;
+  cameraPreviewOpen: boolean;
+  reduced: boolean;
+  /**
+   * Which context may receive these pinches. The bar is one row of globals, but a
+   * region with no scope is hit-tested on *every* screen — that is how a tutorial
+   * dwell ends up opening Settings through the lesson.
+   */
+  scope?: string;
+  /** The mode segment, passed in so the bar stays the owner of the row's layout. */
+  centre?: React.ReactNode;
+  /** What the assistant heard, anchored to the voice button rather than the viewport. */
+  voice?: React.ReactNode;
+};
+
+type MenuProps = {
+  id: string;
+  label: string;
+  scope?: string;
+  icon?: React.ReactNode;
+  /** A live word or dot in the trigger, e.g. the device readiness. */
+  triggerExtra?: React.ReactNode;
+  active?: boolean;
+  children: React.ReactNode;
+  align?: 'left' | 'right';
+};
+
+/**
+ * A bar menu: one gesture-addressable trigger, one anchored panel. Menus are how the
+ * bar keeps three zones instead of eleven buttons — every entry stays reachable by
+ * hand, pointer and keyboard, just one level down.
+ */
+function BarMenu({ id, label, scope, icon, triggerExtra, active, children, align = 'right' }: MenuProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (event: PointerEvent) => {
+      if (!ref.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('pointerdown', onDown);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+  return (
+    <div className={styles.menu} ref={ref} data-open={open ? 'true' : 'false'}>
+      <GestureButton id={id} scope={scope} label={label} active={active ?? open} onActivate={() => setOpen((value) => !value)}>
+        {icon}
+        {triggerExtra}
+      </GestureButton>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className={`${styles.menuPanel} ad-press-surface`}
+            data-align={align}
+            role="menu"
+            aria-label={label}
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.99 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            // A closing panel must not eat the click that opened another one.
+            style={{ pointerEvents: 'auto' }}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function MenuItem({
+  id,
+  label,
+  scope,
+  onActivate,
+  active,
+  icon,
+}: {
+  id: string;
+  label: string;
+  scope?: string;
+  onActivate: () => void;
+  active?: boolean;
+  icon?: React.ReactNode;
+}) {
+  // GestureButton already renders the label as its trailing span; passing the word
+  // again as a child would print it twice.
+  return (
+    <GestureButton id={id} scope={scope} label={label} active={active} onActivate={onActivate}>
+      {icon}
+    </GestureButton>
+  );
+}
+
+/**
+ * The workspace's single top bar, in three zones: what this piece is, which room the
+ * hand is in, and the globals. Project entries live in one menu, device entries in
+ * another, help in a third — the row never grows past 64px and never wraps a label
+ * into a second line that would sit on top of its neighbour.
+ */
+export function WorkspaceBar(props: WorkspaceBarProps) {
+  const text = useText();
+  const camera = useSyncExternalStore(cameraService.subscribe, cameraService.getSnapshot);
+  const voice = useSyncExternalStore(voiceAssistant.subscribe, voiceAssistant.getSnapshot);
+  const { projectName, saveState, handPresent } = props;
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 980px)');
+    const apply = () => setNarrow(query.matches);
+    apply();
+    query.addEventListener('change', apply);
+    return () => query.removeEventListener('change', apply);
+  }, []);
+
+  const readiness = props.gesturesPaused ? text('bar.devicePaused') : handPresent ? text('bar.deviceReady') : text('bar.deviceOff');
+
+  return (
+    <motion.header
+      className={styles.bar}
+      data-testid="workspace-bar"
+      initial={{ opacity: props.reduced ? 1 : 0, y: props.reduced ? 0 : -12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: props.reduced ? 0 : 0.24 }}
+    >
+      <div className={styles.zoneLeft}>
+        <GestureButton id="workspace-back" scope={props.scope} label={text('common.back')} onActivate={props.onBack} />
+        {/* A long name ellipsises here and the full text is one tap away, never wrapped into a second row. */}
+        <button
+          type="button"
+          className={`${styles.identity} ad-press`}
+          data-testid="workspace-name"
+          title={projectName}
+          aria-label={`${text('project.rename')}: ${projectName}`}
+          onClick={props.onRename}
+        >
+          <strong className={styles.title}>{projectName}</strong>
+          <em className={styles.state} data-state={saveState} data-testid="workspace-save-state">
+            {saveState === 'saving'
+              ? text('common.saving')
+              : saveState === 'error'
+                ? text('common.unavailable')
+                : saveState === 'dirty'
+                  ? text('project.unsaved')
+                  : text('common.saved')}
+          </em>
+        </button>
+        <BarMenu
+          id="workspace-projects"
+          scope={props.scope}
+          label={text('bar.project')}
+          align="left"
+          icon={
+            <svg className="ad-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6h7l2 2h7v10H4z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+            </svg>
+          }
+        >
+          <MenuItem id="project-panel" scope={props.scope} label={text('bar.projectPanel')} onActivate={props.onOpenProjects} />
+          <MenuItem id="dock-gallery" scope={props.scope} label={text('common.gallery')} onActivate={props.onOpenGallery} />
+        </BarMenu>
+      </div>
+
+      <div className={styles.zoneCentre} data-testid="workspace-mode">
+        {narrow ? (
+          <BarMenu id="mode-menu" scope={props.scope} label={text('common.tools')} icon={<svg className="ad-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>}>
+            {props.centre}
+          </BarMenu>
+        ) : (
+          props.centre
+        )}
+      </div>
+
+      <div className={styles.zoneRight} data-testid="workspace-devices">
+        <BarMenu
+          id="device-status"
+          scope={props.scope}
+          label={text('bar.device')}
+          triggerExtra={
+            <span className={styles.readiness} data-tone={props.gesturesPaused ? 'paused' : handPresent ? 'ready' : 'off'}>
+              <i aria-hidden="true" />
+              <span className={styles.readinessLabel}>{readiness}</span>
+            </span>
+          }
+        >
+          <p className={styles.menuCaption}>{text('bar.hand')}</p>
+          <div className={styles.menuRow} role="group" aria-label={text('bar.hand')}>
+            <MenuItem id="bar-hand-auto" scope={props.scope} label={text('bar.handAuto')} active={props.hand === 'auto'} onActivate={() => props.onSetHand('auto')} icon={<i className={styles.noIcon} aria-hidden="true" />} />
+            <MenuItem id="bar-hand-left" scope={props.scope} label={text('bar.handLeft')} active={props.hand === 'Left'} onActivate={() => props.onSetHand('Left')} icon={<i className={styles.noIcon} aria-hidden="true" />} />
+            <MenuItem id="bar-hand-right" scope={props.scope} label={text('bar.handRight')} active={props.hand === 'Right'} onActivate={() => props.onSetHand('Right')} icon={<i className={styles.noIcon} aria-hidden="true" />} />
+          </div>
+          <MenuItem
+            id="camera-dot"
+            scope={props.scope}
+            label={text('bar.cameraPreview')}
+            active={props.cameraPreviewOpen}
+            onActivate={props.onToggleCameraPreview}
+            icon={<span className={styles.dotInner} data-state={camera.cameraState} aria-hidden="true" />}
+          />
+          <MenuItem
+            id="gesture-pause"
+            scope={props.scope}
+            label={text(props.gesturesPaused ? 'canvas.resumeGestures' : 'canvas.pauseGestures')}
+            active={props.gesturesPaused}
+            onActivate={props.onToggleGestures}
+          />
+        </BarMenu>
+        <span className={styles.voiceWrap}>
+          <GestureButton
+            id="voice-toggle"
+            scope={props.scope}
+            label={voice.state === 'OFF' || voice.state === 'ERROR' ? text('voice.enable') : text('voice.idle')}
+            active={voice.state !== 'OFF'}
+            onActivate={() => (voice.state === 'OFF' || voice.state === 'ERROR' ? voiceAssistant.start() : voiceAssistant.stop())}
+          />
+          {props.voice}
+        </span>
+        <GestureButton id="theme-toggle" scope={props.scope} label={text('common.theme')} onActivate={props.onToggleTheme} />
+        <BarMenu
+          id="help-menu"
+          scope={props.scope}
+          label={text('bar.help')}
+          icon={
+            <svg className="ad-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5c-2-1.4-4.5-1.4-6.5 0v13c2-1.4 4.5-1.4 6.5 0 2-1.4 4.5-1.4 6.5 0V5c-2-1.4-4.5-1.4-6.5 0Zm0 0v13" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+            </svg>
+          }
+        >
+          <MenuItem id="dock-guide" scope={props.scope} label={text('common.help')} onActivate={props.onOpenGuide} />
+          <MenuItem id="bar-tutorial" scope={props.scope} label={text('bar.tutorial')} onActivate={props.onRestartTutorial} />
+        </BarMenu>
+        <GestureButton id="dock-toggle" scope={props.scope} label={text('common.tools')} active={props.toolbarOpen} onActivate={props.onToggleToolbar} />
+        <GestureButton id="dock-settings" scope={props.scope} label={text('common.settings')} onActivate={props.onOpenSettings} />
+      </div>
+    </motion.header>
+  );
+}

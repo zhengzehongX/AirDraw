@@ -1,0 +1,110 @@
+{
+ "at": "2026-10-11T08:08:22.628Z",
+ "rows": [
+  {
+   "item": "start",
+   "verdict": "PASS",
+   "detail": "{\"state\":\"WAKE_LISTENING\",\"text\":\"\",\"message\":\"\"}"
+  },
+  {
+   "item": "wake + 分两句下命令",
+   "verdict": "PASS",
+   "detail": "{\"state\":\"SUCCESS\",\"handled\":1,\"context\":\"settings\"}"
+  },
+  {
+   "item": "wake + 同一句下命令",
+   "verdict": "PASS",
+   "detail": "{\"handled\":1,\"message\":\"已撤销\"}"
+  },
+  {
+   "item": "重复的同一条 final 只执行一次",
+   "verdict": "PASS",
+   "detail": "{\"handled\":1}"
+  },
+  {
+   "item": "稍后再说一次仍然执行",
+   "verdict": "PASS",
+   "detail": "{\"handled\":1}"
+  },
+  {
+   "item": "清空先要确认",
+   "verdict": "PASS",
+   "detail": "{\"state\":\"CONFIRMING\",\"strokes\":0}"
+  },
+  {
+   "item": "取消不删任何东西",
+   "verdict": "PASS",
+   "detail": "SUCCESS"
+  },
+  {
+   "item": "命令 打开设置 真的改变界面",
+   "verdict": "PASS",
+   "detail": "{\"context\":\"settings\",\"popover\":\"none\",\"dockOpen\":false}"
+  },
+  {
+   "item": "命令 选择颜色 真的改变界面",
+   "verdict": "PASS",
+   "detail": "{\"context\":\"studio\",\"popover\":\"color\",\"dockOpen\":true}"
+  },
+  {
+   "item": "命令 打开玩具 真的改变界面",
+   "verdict": "PASS",
+   "detail": "{\"context\":\"playlab\",\"popover\":\"none\",\"dockOpen\":false}"
+  },
+  {
+   "item": "命令 返回 真的改变界面",
+   "verdict": "PASS",
+   "detail": "{\"context\":\"hub\",\"popover\":\"none\",\"dockOpen\":false}"
+  },
+  {
+   "item": "切换语言只换文案",
+   "verdict": "PASS",
+   "detail": "{\"before\":{\"pref\":\"zh\",\"lang\":\"zh-CN\"},\"after\":{\"pref\":\"en\",\"lang\":\"en\",\"context\":\"hub\",\"strokes\":0}}"
+  },
+  {
+   "item": "语音切页不丢作品",
+   "verdict": "PASS",
+   "detail": "{\"strokes\":0}"
+  },
+  {
+   "item": "非语言变更不重启识别",
+   "verdict": "PASS",
+   "detail": "{\"afterNonLanguage\":0,\"afterLanguage\":1,\"starts\":[\"zh-CN\",\"en-US\"],\"volume\":0.8,\"wake\":\"AirDraw，听我说\"}"
+  },
+  {
+   "item": "识别语言变化只重启一次",
+   "verdict": "PASS",
+   "detail": "{\"afterLanguage\":1,\"starts\":[\"zh-CN\",\"en-US\"]}"
+  },
+  {
+   "item": "音量进入 speechSynthesis",
+   "verdict": "PASS",
+   "detail": "{\"afterNonLanguage\":0,\"afterLanguage\":1,\"starts\":[\"zh-CN\",\"en-US\"],\"volume\":0.8,\"wake\":\"AirDraw，听我说\"}"
+  },
+  {
+   "item": "语音回应按设定音量播放",
+   "verdict": "PASS",
+   "detail": "[{\"text\":\"Menu opened\",\"volume\":0.5,\"lang\":\"en-US\"}]"
+  },
+  {
+   "item": "换短语后旧唤醒词失效",
+   "verdict": "PASS",
+   "detail": "{\"afterOld\":0,\"afterNew\":1,\"state\":\"SUCCESS\"}"
+  },
+  {
+   "item": "“你可以说什么”双语可见",
+   "verdict": "PASS",
+   "detail": "{\"zh\":[\"打开菜单\",\"返回首页\",\"打开平面画板\",\"进入三维绘画\",\"打开玩具\",\"撤销\",\"保存作品\",\"打开设置\",\"切换语言\"],\"en\":[\"open menu\",\"home\",\"canvas mode\",\"3d mode\",\"open playlab\",\"undo\",\"save\",\"open settings\",\"switch language\"],\"context\":\"settings\"}"
+  },
+  {
+   "item": "拒绝麦克风后给出原因与退路",
+   "verdict": "PASS",
+   "detail": "{\"state\":\"ERROR\",\"message\":\"麦克风授权被拒绝，手势仍可使用\"}"
+  },
+  {
+   "item": "运行时",
+   "verdict": "PASS",
+   "detail": "[]"
+  }
+ ]
+}

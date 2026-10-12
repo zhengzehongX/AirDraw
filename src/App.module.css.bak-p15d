@@ -1,0 +1,31 @@
+.workspace {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.inspectSurface {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+}
+
+.ready {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ad-z-overlay);
+  pointer-events: none;
+  animation: ad-ready-fade 1.6s var(--ad-ease) forwards;
+}
+
+@keyframes ad-ready-fade {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

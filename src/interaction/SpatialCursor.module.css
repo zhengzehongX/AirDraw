@@ -1,0 +1,74 @@
+.cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--ad-motion-med) var(--ad-ease);
+}
+
+.cursor[data-visible='true'] {
+  opacity: 1;
+}
+
+.cursor[data-state='lost'] {
+  opacity: 0;
+}
+
+.ring {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1.4px solid color-mix(in srgb, var(--ad-accent) 70%, transparent);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.12),
+    0 0 22px color-mix(in srgb, var(--ad-accent) 30%, transparent);
+  transition:
+    transform var(--ad-motion-fast) var(--ad-spring),
+    opacity var(--ad-motion-fast) linear;
+}
+
+.core {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--ad-text);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ad-accent) 55%, transparent);
+  transition: transform var(--ad-motion-fast) var(--ad-spring), opacity var(--ad-motion-med) linear;
+}
+
+/* One short expanding wave at the moment the contact confirms. Driven imperatively
+   from the cursor's own frame loop so it never needs a re-render. */
+.ripple {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  border: 1.4px solid var(--ad-accent);
+  opacity: 0;
+  transform: scale(0.72);
+}
+
+.cursor[data-state='press'] .core {
+  background: var(--ad-accent);
+}
+
+.cursor[data-state='drag'] .ring {
+  border-style: dashed;
+}
+
+/* A resting hand stays a small, dim orb; it only becomes a solid dot once the
+   pinch is real, which is what makes "about to touch" readable at a glance. */
+.cursor[data-contact='OPEN'] .core { opacity: 0.5; }
+.cursor[data-contact='NEAR'] .core { opacity: 0.72; }
+.cursor[data-contact='CONTACT'] .core { opacity: 0.92; background: color-mix(in srgb, var(--ad-accent) 55%, var(--ad-text)); }
+.cursor[data-contact='HOLD'] .core { opacity: 1; background: var(--ad-accent); }
+.cursor[data-contact='HOLD'] .ring { border-color: color-mix(in srgb, var(--ad-accent) 92%, transparent); }

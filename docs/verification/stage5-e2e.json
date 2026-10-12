@@ -1,0 +1,277 @@
+{
+  "at": "2026-10-11T04:56:07.808Z",
+  "results": [
+    {
+      "name": "30 near cycles produce no spatial stroke",
+      "pass": true
+    },
+    {
+      "name": "real contact draws spatial stroke",
+      "pass": true,
+      "detail": {
+        "penDown": false,
+        "suspended": false,
+        "recapture": 0,
+        "activeSegments": 0,
+        "activePoints": 0,
+        "pinchActive": false,
+        "pinchValue": 0.8630747123996124,
+        "gesture": "POINT",
+        "uiHovered": false,
+        "locked": false,
+        "drawingAllowed": true,
+        "inspectMode": false,
+        "eraseMode": false,
+        "canvasZoom": 1,
+        "canvasNav": {
+          "mode": "idle",
+          "reason": null,
+          "twoDistancePx": 0
+        },
+        "twoDistancePx": 0
+      }
+    },
+    {
+      "name": "gesture switches Canvas mode",
+      "pass": true
+    },
+    {
+      "name": "Canvas stroke is flat",
+      "pass": true,
+      "detail": {
+        "hint": "拇指和食指张开",
+        "contact": "OPEN",
+        "router": {
+          "mode": "CANVAS_DRAW",
+          "context": "WORKSPACE",
+          "waitingForRelease": false,
+          "mayDraw": true
+        },
+        "committed": [
+          "canvas"
+        ],
+        "canvasStrokes": 1,
+        "spatialStrokes": 1
+      }
+    },
+    {
+      "name": "PNG exported",
+      "pass": true
+    },
+    {
+      "name": "SVG exported",
+      "pass": true
+    },
+    {
+      "name": "project model contact grabs",
+      "pass": true,
+      "detail": {
+        "target": "2d4b3477-1509-4cdc-ab40-8e286073b9ac",
+        "controller": {
+          "down": true,
+          "id": "2d4b3477-1509-4cdc-ab40-8e286073b9ac",
+          "frozen": false,
+          "epoch": 35,
+          "inputEpoch": 72,
+          "currentEpoch": 35,
+          "currentInputEpoch": 72,
+          "mayTransform": true,
+          "contact": "HOLD"
+        },
+        "input": {
+          "at": "2026-10-11T04:53:59.885Z",
+          "mode": "MODEL_CONTROL",
+          "hint": "指针移出工具区，再松开捏合",
+          "contact": {
+            "state": "HOLD",
+            "pinchState": "HOLDING",
+            "d2Normalized": 0.12830994007558755,
+            "d3Normalized": 0.1446318337951186,
+            "zGap": 0,
+            "contactScore": 0.9999999999885809,
+            "score2D": 1,
+            "score3D": 1,
+            "weight2D": 0.65,
+            "weight3D": 0.35,
+            "depthTrust": 1,
+            "depthVeto": false,
+            "enterScore": 0.75,
+            "exitScore": 0.45,
+            "radius": 0.3,
+            "stableFrames": 2,
+            "approachSpeed": 0.00000193831586774459,
+            "releaseFrames": 0,
+            "tipDistance2D": 0.04873713822102518,
+            "worldDistance": 0.0028814059068447842,
+            "palmScale": 0.01992234925906079,
+            "enterThreshold": 0.3,
+            "releaseThreshold": 0.57,
+            "distalReliability": 1
+          },
+          "profile": {
+            "contact": 0.3,
+            "release": 0.37,
+            "projection": 0.3,
+            "z": 0.16,
+            "calibratedAt": "2026-10-05T00:00:00Z"
+          },
+          "router": {
+            "mode": "MODEL_CONTROL",
+            "context": "WORKSPACE",
+            "waitingForRelease": false,
+            "mayDraw": false
+          },
+          "hand": {
+            "handedness": "Right",
+            "score": 0.99,
+            "worldPoints": 21
+          },
+          "gates": {
+            "penDown": false,
+            "suspended": false,
+            "recapture": 0,
+            "activeSegments": 0,
+            "activePoints": 0,
+            "pinchActive": true,
+            "pinchValue": 0.1446318337951186,
+            "gesture": "PINCH",
+            "uiHovered": true,
+            "locked": false,
+            "drawingAllowed": false,
+            "inspectMode": false,
+            "eraseMode": false,
+            "canvasZoom": 1,
+            "canvasNav": {
+              "mode": "idle",
+              "reason": "mode change",
+              "twoDistancePx": 0
+            },
+            "twoDistancePx": 0
+          }
+        },
+        "models": [
+          {
+            "id": "d7ec8d7d-c42d-4063-be98-36f25d89415c",
+            "type": "stroke3d"
+          },
+          {
+            "id": "5ae906bd-39a6-4adc-9f7e-c645ebbf5d2b",
+            "type": "stroke2d"
+          },
+          {
+            "id": "2d4b3477-1509-4cdc-ab40-8e286073b9ac",
+            "type": "model"
+          }
+        ],
+        "hits": [
+          {
+            "name": "",
+            "visible": true,
+            "point": [
+              0,
+              0,
+              1.600000011920929
+            ],
+            "data": {}
+          },
+          {
+            "name": "",
+            "visible": true,
+            "point": [
+              0,
+              0,
+              1.600000011920929
+            ],
+            "data": {}
+          },
+          {
+            "name": "",
+            "visible": true,
+            "point": [
+              0,
+              1,
+              1
+            ],
+            "data": {}
+          },
+          {
+            "name": "",
+            "visible": true,
+            "point": [
+              -1,
+              0,
+              1
+            ],
+            "data": {}
+          },
+          {
+            "name": "",
+            "visible": true,
+            "point": [
+              0,
+              -1,
+              1
+            ],
+            "data": {}
+          },
+          {
+            "name": "",
+            "visible": true,
+            "point": [
+              1,
+              0,
+              1
+            ],
+            "data": {}
+          },
+          {
+            "name": "mesh_0",
+            "visible": true,
+            "point": [
+              0,
+              0,
+              0.8697489608514015
+            ],
+            "data": {}
+          },
+          {
+            "name": "mesh_0",
+            "visible": true,
+            "point": [
+              0,
+              0,
+              0.8371578949133266
+            ],
+            "data": {}
+          }
+        ]
+      }
+    },
+    {
+      "name": "project model release stops grab",
+      "pass": true
+    },
+    {
+      "name": "same Canvas and renderer after 20 switches",
+      "pass": true
+    },
+    {
+      "name": "Spatial history survives",
+      "pass": true
+    },
+    {
+      "name": "Canvas history survives",
+      "pass": true
+    },
+    {
+      "name": "rapid reversal settles one mode",
+      "pass": true
+    },
+    {
+      "name": "no runtime exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

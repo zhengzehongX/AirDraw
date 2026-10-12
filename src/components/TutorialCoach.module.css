@@ -1,0 +1,150 @@
+/*
+ * Top-left, under the workspace bar. It used to sit centred just above the Dock —
+ * which is exactly the band a Dock popover rises into: on the colour lesson the card
+ * covered the swatches, and a pinch aimed at a colour hit the card instead. The lesson
+ * points at the tools, so it must not stand on them.
+ */
+.position {
+  position: absolute;
+  left: var(--ad-space-6);
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  pointer-events: none;
+  z-index: var(--ad-z-sheet);
+}
+
+.card {
+  position: relative;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ad-space-4);
+  max-width: min(430px, calc(100vw - var(--ad-space-6) * 2));
+  padding: var(--ad-space-4) var(--ad-space-4) var(--ad-space-4) var(--ad-space-5);
+  border-radius: var(--ad-radius-xl);
+  z-index: var(--ad-z-sheet);
+}
+
+.glyph {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 96px;
+  color: var(--ad-text-dim);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ad-space-1);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ad-text-lg);
+  font-weight: var(--ad-weight-semi);
+  letter-spacing: -0.01em;
+  color: var(--ad-text);
+}
+
+.body {
+  margin: 0;
+  font-size: var(--ad-text-sm);
+  line-height: 1.6;
+  color: var(--ad-text-dim);
+}
+
+.skip {
+  position: absolute;
+  top: var(--ad-space-2);
+  right: var(--ad-space-3);
+  padding: var(--ad-space-1) var(--ad-space-2);
+  border-radius: var(--ad-radius-sm);
+  font-size: var(--ad-text-caption);
+  color: var(--ad-text-faint);
+  transition: color var(--ad-motion-fast) var(--ad-ease);
+}
+
+.skip:hover {
+  color: var(--ad-text);
+}
+
+.progress {
+  display: flex;
+  gap: var(--ad-space-2);
+  z-index: var(--ad-z-sheet);
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--ad-radius-full);
+  background: var(--ad-text-faint);
+  opacity: 0.35;
+  transition:
+    opacity var(--ad-motion-med) var(--ad-ease),
+    transform var(--ad-motion-med) var(--ad-spring),
+    background-color var(--ad-motion-med) var(--ad-ease);
+}
+
+.dot[data-done='true'] {
+  background: var(--ad-accent);
+  opacity: 0.75;
+}
+
+.dot[data-now='true'] {
+  background: var(--ad-accent);
+  opacity: 1;
+  transform: scale(1.8);
+}
+
+/* The soft ring that points at the real control a lesson means. */
+.ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: var(--ad-radius-lg);
+  border: 1.5px solid rgba(var(--ad-accent-rgb), 0.75);
+  box-shadow: 0 0 0 6px rgba(var(--ad-accent-rgb), 0.1), 0 0 26px rgba(var(--ad-accent-rgb), 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--ad-motion-med) var(--ad-ease);
+  animation: ad-ring-breathe 2.4s var(--ad-ease) infinite;
+  z-index: var(--ad-z-overlay);
+}
+
+.ring[data-visible='true'] {
+  opacity: 1;
+}
+
+@keyframes ad-ring-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 5px rgba(var(--ad-accent-rgb), 0.08), 0 0 22px rgba(var(--ad-accent-rgb), 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 11px rgba(var(--ad-accent-rgb), 0.05), 0 0 30px rgba(var(--ad-accent-rgb), 0.45);
+  }
+}
+
+.target {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 132px;
+  height: 132px;
+  margin: -66px 0 0 -66px;
+  border-radius: var(--ad-radius-full);
+  border: 1.5px solid rgba(var(--ad-accent-rgb), 0.55);
+  background: radial-gradient(circle at 50% 50%, rgba(var(--ad-accent-rgb), 0.1), transparent 68%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, var(--ad-glass-highlight));
+  --glow: 0;
+  outline: calc(6px * var(--glow)) solid rgba(var(--ad-accent-rgb), 0.16);
+  transition: outline-color var(--ad-motion-med) var(--ad-ease);
+  z-index: var(--ad-z-chrome);
+}

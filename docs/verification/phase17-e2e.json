@@ -1,0 +1,589 @@
+{
+  "input": "isolated synthetic hands / SwiftShader, no hardware camera",
+  "results": [
+    {
+      "name": "actual ink pixels DPR 1 1920x1080",
+      "pass": true,
+      "detail": {
+        "dpr": 1,
+        "transform": 1,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          1920,
+          1080
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1 1440x900",
+      "pass": true,
+      "detail": {
+        "dpr": 1,
+        "transform": 1,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          1440,
+          900
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1 1366x768",
+      "pass": true,
+      "detail": {
+        "dpr": 1,
+        "transform": 1,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          1366,
+          768
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1 768x768",
+      "pass": true,
+      "detail": {
+        "dpr": 1,
+        "transform": 1,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          768,
+          768
+        ]
+      }
+    },
+    {
+      "name": "mixed composition preserves WebGL and ink pixels and restores capture state",
+      "pass": true,
+      "detail": {
+        "webgl": [
+          0,
+          0,
+          255,
+          255
+        ],
+        "ink": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "paper": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "restored": true
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1.25 1920x1080",
+      "pass": true,
+      "detail": {
+        "dpr": 1.25,
+        "transform": 1.25,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          2400,
+          1350
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1.25 1440x900",
+      "pass": true,
+      "detail": {
+        "dpr": 1.25,
+        "transform": 1.25,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          1800,
+          1125
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1.25 1366x768",
+      "pass": true,
+      "detail": {
+        "dpr": 1.25,
+        "transform": 1.25,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          1708,
+          960
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1.25 768x768",
+      "pass": true,
+      "detail": {
+        "dpr": 1.25,
+        "transform": 1.25,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          960,
+          960
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1.5 1920x1080",
+      "pass": true,
+      "detail": {
+        "dpr": 1.5,
+        "transform": 1.5,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          2880,
+          1620
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1.5 1440x900",
+      "pass": true,
+      "detail": {
+        "dpr": 1.5,
+        "transform": 1.5,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          2160,
+          1350
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1.5 1366x768",
+      "pass": true,
+      "detail": {
+        "dpr": 1.5,
+        "transform": 1.5,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          2049,
+          1152
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 1.5 768x768",
+      "pass": true,
+      "detail": {
+        "dpr": 1.5,
+        "transform": 1.5,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          1152,
+          1152
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 2 1920x1080",
+      "pass": true,
+      "detail": {
+        "dpr": 2,
+        "transform": 2,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          3840,
+          2160
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 2 1440x900",
+      "pass": true,
+      "detail": {
+        "dpr": 2,
+        "transform": 2,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          2880,
+          1800
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 2 1366x768",
+      "pass": true,
+      "detail": {
+        "dpr": 2,
+        "transform": 2,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          2732,
+          1536
+        ]
+      }
+    },
+    {
+      "name": "actual ink pixels DPR 2 768x768",
+      "pass": true,
+      "detail": {
+        "dpr": 2,
+        "transform": 2,
+        "before": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "moved": [
+          255,
+          0,
+          0,
+          255
+        ],
+        "old": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "liveAlpha": 82,
+        "buffer": [
+          1536,
+          1536
+        ]
+      }
+    },
+    {
+      "name": "three deliberate pinch sessions commit 3D ink",
+      "pass": true,
+      "detail": [
+        {
+          "cycle": 0,
+          "before": 0,
+          "after": 1
+        },
+        {
+          "cycle": 1,
+          "before": 1,
+          "after": 2
+        },
+        {
+          "cycle": 2,
+          "before": 2,
+          "after": 3
+        }
+      ]
+    },
+    {
+      "name": "Canvas PNG contains vector-painted ink and transparent background",
+      "pass": true,
+      "detail": {
+        "strokes": 1,
+        "painted": 4321,
+        "alpha": 0,
+        "opaque": [
+          2732,
+          1536
+        ],
+        "png": 31546,
+        "webmBytes": 7513,
+        "webmPixels": 1218,
+        "webmWhite": 1047285,
+        "recorderStopped": true
+      }
+    },
+    {
+      "name": "WebM decodes into artwork pixels and stops cleanly",
+      "pass": true,
+      "detail": {
+        "strokes": 1,
+        "painted": 4321,
+        "alpha": 0,
+        "opaque": [
+          2732,
+          1536
+        ],
+        "png": 31546,
+        "webmBytes": 7513,
+        "webmPixels": 1218,
+        "webmWhite": 1047285,
+        "recorderStopped": true
+      }
+    },
+    {
+      "name": "no runtime page errors",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

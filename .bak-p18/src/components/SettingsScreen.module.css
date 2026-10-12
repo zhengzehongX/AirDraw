@@ -1,0 +1,365 @@
+/* The settings sheet borrows the guide's grammar — global .ad-scrim for the
+   dimming, .ad-glass for the sheet, hairlines from --ad-glass-border — and adds
+   nothing visual of its own: every value here is a token, because a hand reads
+   a quiet sheet faster than a decorated one. */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ad-z-overlay);
+  display: grid;
+    grid-template-rows: minmax(0, 1fr);
+  place-items: center;
+  padding: var(--ad-space-4);
+}
+
+.inner {
+  width: min(620px, 100%);
+  height: min(720px, 100%);
+  min-height: 0;
+}
+
+.sheet {
+  --hairline: color-mix(in srgb, var(--ad-text) 9%, transparent);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--ad-radius-xl);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ad-space-3);
+  padding: var(--ad-space-4) var(--ad-space-5);
+  border-bottom: 1px solid var(--ad-glass-border);
+}
+
+.close {
+  padding: var(--ad-space-2);
+  color: var(--ad-text-faint);
+}
+
+/* No native scrollbar: a gesture cannot grab one, so the body clips and the
+   content inside it is translated by the sheet's own drag region. */
+.body {
+  position: relative;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--ad-space-4) var(--ad-space-5) var(--ad-space-5);
+  will-change: transform;
+}
+
+/* On a wide window a single 620px column left the sheet scrolling through ~2400px of
+   rows with dead glass either side. Two balanced columns halve the travel and give the
+   sheet a grid; the section headings are kept with the rows they introduce. */
+/* On a wide window a 620px column left dead glass either side of the sheet. The sheet
+   widens instead of splitting into columns: with two columns a slider row lands under
+   the point where a hand grabs the list, and a vertical drag then adjusts the slider
+   instead of scrolling — the scroll is the older guarantee and keeps it. */
+@media (min-width: 1200px) {
+  .inner {
+    width: min(880px, 100%);
+  }
+}
+
+/* Rhythm only: global .ad-eyebrow carries the type. */
+.section {
+  margin: var(--ad-space-4) 0 var(--ad-space-1);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ad-space-4) var(--ad-space-5);
+  min-height: 56px;
+  padding: var(--ad-space-3) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.rowText {
+  display: grid;
+  gap: var(--ad-space-1);
+  min-width: 0;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--ad-space-3);
+  flex: none;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ad-space-2);
+  font-size: var(--ad-text-sm);
+  color: var(--ad-text-dim);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--ad-radius-full);
+  background: var(--ad-text-faint);
+  transition: background-color var(--ad-motion-med) var(--ad-ease);
+}
+
+.status[data-tone='ok'] .statusDot {
+  background: rgb(var(--ad-success));
+}
+
+.status[data-tone='warn'] .statusDot {
+  background: rgb(var(--ad-warn));
+}
+
+.status[data-tone='danger'] .statusDot {
+  background: rgb(var(--ad-danger));
+}
+
+.status[data-tone='sim'] .statusDot {
+  background: var(--ad-accent);
+}
+
+/* Metrics only: global .ad-caption carries the type. */
+.readout {
+  min-width: 4em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.segments {
+  display: flex;
+  gap: var(--ad-space-1);
+  padding: var(--ad-space-1);
+  border-radius: var(--ad-radius-md);
+  background: color-mix(in srgb, var(--ad-text) 6%, transparent);
+}
+
+/* Equal thirds: a segment control reads as one object, not three buttons. */
+.segments .button {
+  flex: 1;
+  /* "跟随系统" is four characters; wrapping it made one chip taller than its siblings. */
+  white-space: nowrap;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* A hand has to be able to hit these: 36px is the floor for a spatial target. */
+  min-height: 36px;
+  gap: var(--ad-space-2);
+  padding: var(--ad-space-2) var(--ad-space-3);
+  border-radius: var(--ad-radius-sm);
+  font: inherit;
+  font-size: var(--ad-text-sm);
+  font-weight: var(--ad-weight-medium);
+  color: var(--ad-text-dim);
+  --glow: 0;
+  box-shadow: 0 0 0 calc(3px * var(--glow)) rgba(var(--ad-accent-rgb), 0.14);
+  transition:
+    color var(--ad-motion-fast) var(--ad-ease),
+    background-color var(--ad-motion-fast) var(--ad-ease);
+  will-change: transform;
+}
+
+.button:hover {
+  color: var(--ad-text);
+  background-color: color-mix(in srgb, var(--ad-text) 8%, transparent);
+}
+
+.button[data-active='true'] {
+  color: var(--ad-accent);
+  background-color: rgba(var(--ad-accent-rgb), 0.16);
+}
+
+.slider {
+  position: relative;
+  width: 190px;
+  height: 36px;
+  border-radius: var(--ad-radius-sm);
+  --glow: 0;
+  box-shadow: 0 0 0 calc(3px * var(--glow)) rgba(var(--ad-accent-rgb), 0.12);
+}
+
+.sliderTrack {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: var(--ad-radius-full);
+  background: color-mix(in srgb, var(--ad-text) 14%, transparent);
+}
+
+.sliderFill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: var(--ad-radius-full);
+  background: var(--ad-accent);
+}
+
+/* The untouched middle of every range, so 默认 is a place and not a guess. */
+.sliderNeutral {
+  position: absolute;
+  top: 50%;
+  width: 2px;
+  height: 14px;
+  margin: -7px 0 0 -1px;
+  border-radius: var(--ad-radius-full);
+  background: color-mix(in srgb, var(--ad-text) 40%, transparent);
+}
+
+.sliderKnob {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: var(--ad-radius-full);
+  background: var(--ad-text);
+  box-shadow: var(--ad-shadow-sm);
+}
+
+/* The real control: invisible, on top, and the only thing that sees a mouse. */
+.sliderInput {
+  position: absolute;
+  inset: -6px 0;
+  width: 100%;
+  height: calc(100% + 12px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.sliderInput::-webkit-slider-thumb {
+  width: 26px;
+  height: 26px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+}
+.sliderInput::-webkit-slider-runnable-track {
+  background: transparent;
+}
+.sliderInput:focus-visible {
+  outline: none;
+}
+.slider:focus-within {
+  outline: 2px solid var(--ad-accent);
+  outline-offset: 3px;
+}
+/* Committing is acknowledged here, not by a toast on top of the panel. */
+.slider[data-committed='true'] .sliderKnob {
+  box-shadow: 0 0 0 6px rgba(var(--ad-accent-rgb), 0.18), var(--ad-shadow-sm);
+}
+.slider[data-committed='true'] .sliderTrack {
+  background: color-mix(in srgb, var(--ad-accent) 28%, color-mix(in srgb, var(--ad-text) 14%, transparent));
+}
+
+/* The commands themselves, not a paragraph about them. */
+.cheatsheet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: var(--ad-space-3) 0 0;
+  padding: 0;
+}
+.cheatsheet code {
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: var(--ad-radius-full);
+  background: color-mix(in srgb, var(--ad-text) 8%, transparent);
+  color: var(--ad-text-dim);
+}
+
+.about {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ad-space-1) var(--ad-space-3);
+  padding-top: var(--ad-space-4);
+  color: var(--ad-text-faint);
+}
+
+.aboutName {
+  font-size: var(--ad-text-sm);
+  font-weight: var(--ad-weight-medium);
+  color: var(--ad-text-dim);
+}
+
+.aboutVersion {
+  font-family: var(--ad-font-mono);
+  font-size: var(--ad-text-caption);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ad-space-3);
+  padding: var(--ad-space-3) var(--ad-space-5);
+  border-top: 1px solid var(--ad-glass-border);
+}
+
+.done {
+  padding: var(--ad-space-2) var(--ad-space-5);
+  color: var(--ad-accent);
+  background-color: rgba(var(--ad-accent-rgb), 0.16);
+}
+
+.done:hover {
+  color: var(--ad-accent);
+}
+
+@media (max-width: 620px) {
+  .stage {
+    padding: var(--ad-space-2);
+  }
+
+  .content {
+    padding: var(--ad-space-3) var(--ad-space-4) var(--ad-space-4);
+  }
+
+  /* Stack the row so the slider keeps a drag span wider than a thumb. */
+  .row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--ad-space-2);
+  }
+
+  .control {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .segments {
+    flex: 1;
+  }
+
+  .slider {
+    width: 100%;
+    flex: 1;
+  }
+}

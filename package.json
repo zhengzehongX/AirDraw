@@ -1,0 +1,53 @@
+{
+  "name": "airdraw",
+  "private": true,
+  "version": "0.8.0",
+  "type": "module",
+  "description": "Draw in the air with your index finger, tracked by your webcam.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "verify:core": "rolldown scripts/selfcheck.ts -f esm -p node -o node_modules/.tmp/selfcheck.mjs && node node_modules/.tmp/selfcheck.mjs",
+    "verify:contact": "rolldown scripts/contact-regression.ts -f esm -p node -o node_modules/.tmp/contact-regression.mjs && node node_modules/.tmp/contact-regression.mjs",
+    "verify:stage5": "rolldown scripts/stage5-core.ts -f esm -p node -o node_modules/.tmp/stage5-core.mjs && node node_modules/.tmp/stage5-core.mjs",
+    "verify:stage6": "rolldown scripts/stage6-core.ts -f esm -p node -o node_modules/.tmp/stage6-core.mjs && node node_modules/.tmp/stage6-core.mjs",
+    "verify:playlab": "rolldown scripts/playlab-core.ts -f esm -p node -o node_modules/.tmp/playlab-core.mjs && node node_modules/.tmp/playlab-core.mjs",
+    "verify:phase8": "rolldown scripts/phase8-core.ts -f esm -p node -o node_modules/.tmp/phase8-core.mjs && node node_modules/.tmp/phase8-core.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "e2e:stage5": "node scripts/stage5-e2e.mjs",
+    "e2e:worker": "node scripts/stage5-worker-e2e.mjs",
+    "e2e:tutorial": "node scripts/stage5-tutorial-e2e.mjs",
+    "e2e:stage6": "node scripts/stage6-e2e.mjs",
+    "e2e:creation": "node scripts/stage6-creation-e2e.mjs",
+    "e2e:playlab": "node scripts/playlab-e2e.mjs",
+    "e2e:toys": "node scripts/phase10-toys-e2e.mjs",
+    "e2e:settings": "node scripts/phase10-settings-e2e.mjs",
+    "e2e:voice": "node scripts/phase10-voice-e2e.mjs",
+    "e2e:layout": "node scripts/phase11-layout-e2e.mjs",
+    "e2e:coords": "node scripts/phase16-coordinates-e2e.mjs",
+    "e2e:soak": "node scripts/stage6-soak.mjs"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^1.0.1",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
+    "@react-three/postprocessing": "^3.1.3",
+    "framer-motion": "^14.0.0",
+    "motion": "^14.0.0",
+    "perfect-freehand": "^1.2.3",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "playwright-core": "^1.63.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
+  }
+}

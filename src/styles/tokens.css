@@ -1,0 +1,406 @@
+:root {
+  /* ---- static scales (visionOS-restrained) ---- */
+  --ad-radius-xl: 32px;
+  --ad-radius-lg: 28px;
+  --ad-radius-md: 16px;
+  --ad-radius-sm: 11px;
+  --ad-space-0: 2px;
+  --ad-space-1: 8px;
+  --ad-space-2: 8px;
+  --ad-space-3: 16px;
+  --ad-space-4: 24px;
+  --ad-space-5: 32px;
+  --ad-space-6: 48px;
+  --ad-space-7: 64px;
+  /* The 8px scale, with the two steps that were missing from it. `space-2` stays
+     at 8px because 36 rules already depend on that value; these are additive. */
+  --ad-space-hair: 4px;
+  --ad-space-8: 96px;
+  /* Hit targets: what a hand aims at, and what a mouse or finger may land on.
+     Gesture buttons are sized by `hit-gesture`; the interactive rect is larger. */
+  --ad-hit-comfort: 44px;
+  --ad-hit-gesture: 56px;
+  --ad-hit-extended: 72px;
+  /* One property panel width for the whole workspace: a side panel is either this
+     or it is not a side panel. */
+  --ad-panel-w: 288px;
+  --ad-radius-full: 999px;
+  --ad-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --ad-font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+  /* Type scale: one step per role, nothing in components invents its own size.
+     The ramp is deliberately uneven — display sizes jump, reading sizes step by
+     one pixel — because an even ladder reads as "everything is the same weight". */
+  --ad-text-eyebrow: 12px;
+  --ad-text-caption: 13px;
+  --ad-text-xs: 12px;
+  --ad-text-sm: 15px;
+  --ad-text-md: 16px;
+  --ad-text-lg: 17px;
+  --ad-text-body: 18px;
+  --ad-text-title-lg: 24px;
+  --ad-text-title: 20px;
+  --ad-text-display: 34px;
+  --ad-text-hero: 48px;
+  --ad-text-hero-lg: 68px;
+  --ad-text-brand: clamp(44px, 6vw, 104px);
+  --ad-surface-muted: color-mix(in srgb, var(--ad-text) 4%, transparent);
+  --ad-weight-regular: 400;
+  --ad-weight-medium: 500;
+  --ad-weight-semi: 600;
+  --ad-weight-bold: 700;
+  --ad-tracking-eyebrow: 0.16em;
+  /* Display type is set tight; reading type keeps its air. One rule, two ends. */
+  --ad-tracking-display: -0.032em;
+  --ad-tracking-title: -0.016em;
+  --ad-tracking-body: 0.004em;
+  /* Motion tiers: micro → panel → page → reveal. Exits run at ~0.7× the enter so a
+     dismissed surface never feels slower than the thing replacing it. */
+  --ad-motion-fast: 180ms;
+  --ad-motion-med: 340ms;
+  --ad-motion-slow: 640ms;
+  --ad-motion-xslow: 900ms;
+  --ad-stagger: 60ms;
+  --ad-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
+  --ad-ease: cubic-bezier(0.32, 0.72, 0.22, 1);
+  --ad-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ad-ease-page: var(--ad-ease-out);
+  --ad-ease-in: cubic-bezier(0.55, 0, 0.68, 0.19);
+  /* Iconography is one system: same box, same stroke, currentColor. */
+  --ad-icon-size: 19px;
+  --ad-icon-stroke: 1.6;
+  /* Stacking: canvas < chrome < dock < sheet < overlay < cursor < notice. */
+  --ad-z-canvas: 1;
+  --ad-z-chrome: 20;
+  --ad-z-dock: 40;
+  --ad-z-sheet: 60;
+  --ad-z-overlay: 70;
+  --ad-z-cursor: 90;
+  --ad-z-notice: 100;
+  --ad-shadow-sm: 0 6px 18px rgba(0, 0, 0, calc(var(--ad-shadow-alpha) * 0.5));
+  --ad-shadow-md: 0 18px 50px rgba(0, 0, 0, var(--ad-shadow-alpha));
+  --ad-shadow-glow: 0 0 0 1px rgba(var(--ad-accent-rgb), 0.35), 0 12px 34px rgba(var(--ad-accent-rgb), 0.18);
+  --ad-focus-ring: 0 0 0 2px var(--ad-bg), 0 0 0 4px rgba(var(--ad-accent-rgb), 0.85);
+  --ad-disabled-opacity: 0.34;
+  --ad-scrim-alpha: 0.62;
+
+  /* ---- theme-blended (written by ThemeController) ---- */
+  --ad-bg: rgb(13, 15, 22);
+  --ad-glow-a: 34, 211, 238;
+  --ad-glow-b: 167, 139, 250;
+  --ad-glow-alpha: 0.1;
+  --ad-text: rgb(238, 241, 248);
+  --ad-text-dim: rgb(152, 161, 184);
+  --ad-text-faint: rgb(107, 115, 133);
+  --ad-glass-bg: rgba(16, 18, 28, 0.78);
+  --ad-glass-border: rgba(255, 255, 255, 0.1);
+  --ad-glass-highlight: 0.06;
+  --ad-accent: rgb(34, 211, 238);
+  --ad-accent-rgb: 34, 211, 238;
+  --ad-success: 74, 222, 128;
+  --ad-warn: 251, 191, 36;
+  --ad-danger: 251, 113, 133;
+  --ad-danger-ink: 12, 10, 14;
+  --ad-blur: 22px;
+  --ad-shadow-alpha: 0.45;
+  color-scheme: dark;
+}
+
+:root[data-theme='day'] {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(1100px 760px at 12% -8%, rgba(var(--ad-glow-a), var(--ad-glow-alpha)), transparent 62%),
+    radial-gradient(950px 700px at 108% 18%, rgba(var(--ad-glow-b), var(--ad-glow-alpha)), transparent 58%),
+    var(--ad-bg);
+  color: var(--ad-text);
+  font-family: var(--ad-font);
+  font-weight: var(--ad-weight-regular);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.005em;
+  overflow: hidden;
+  overscroll-behavior: none;
+  transition: background-color var(--ad-motion-slow) var(--ad-ease);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ad-accent);
+  outline-offset: 2px;
+}
+
+/* The shared glass recipe: live blur, soft edge highlight, depth. */
+.ad-glass {
+  background: var(--ad-glass-bg);
+  border: 1px solid var(--ad-glass-border);
+  box-shadow:
+    var(--ad-shadow-md),
+    inset 0 1px 0 rgba(255, 255, 255, var(--ad-glass-highlight));
+  backdrop-filter: blur(var(--ad-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--ad-blur)) saturate(150%);
+}
+
+/* ---- shared product-surface recipes ---------------------------------------
+   Every screen (dock, sheets, guide, gallery, tutorial cards) composes these
+   instead of re-inventing a surface, so one token change retints the product. */
+
+/* The tracker's camera source: decoded, never painted. */
+.ad-camera-source {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.ad-surface {
+  border-radius: var(--ad-radius-xl);
+  background: var(--ad-glass-bg);
+  border: 1px solid var(--ad-glass-border);
+  box-shadow: var(--ad-shadow-md), inset 0 1px 0 rgba(255, 255, 255, var(--ad-glass-highlight));
+  backdrop-filter: blur(var(--ad-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--ad-blur)) saturate(150%);
+}
+
+.ad-scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 100% at 50% 0%, rgba(0, 0, 0, calc(var(--ad-scrim-alpha) * 0.55)), rgba(0, 0, 0, var(--ad-scrim-alpha)));
+  backdrop-filter: blur(calc(var(--ad-blur) * 0.6));
+  -webkit-backdrop-filter: blur(calc(var(--ad-blur) * 0.6));
+}
+
+/* A full-screen surface arriving or leaving. The wrapper owns the position and the
+   signature stroke; the screen inside owns its own layout and scrolling, so wrapping
+   an existing overlay changes nothing about how it measures itself. */
+.ad-screen {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ad-z-overlay);
+  overflow: hidden;
+}
+
+/* The brand mark of a handover: one accent line drawn across the top edge, like a
+   stroke being laid down. Compositor-only, once per arrival, gone before the content
+   is read. */
+.ad-screen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(var(--ad-accent-rgb), 0.75) 42%, rgba(var(--ad-accent-rgb), 0.1) 78%, transparent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  animation: ad-screen-stroke var(--ad-motion-slow) var(--ad-ease-page) both;
+  pointer-events: none;
+}
+
+@keyframes ad-screen-stroke {
+  0% { transform: scaleX(0); opacity: 0.9; }
+  62% { transform: scaleX(1); opacity: 0.9; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+:root[data-reduced-motion='on'] .ad-screen::after {
+  animation: none;
+  opacity: 0;
+}
+
+.ad-card {
+  border-radius: var(--ad-radius-lg);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--ad-glass-border);
+  box-shadow: var(--ad-shadow-sm), inset 0 1px 0 rgba(255, 255, 255, calc(var(--ad-glass-highlight) * 0.7));
+}
+
+.ad-pill {
+  border-radius: var(--ad-radius-full);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--ad-glass-border);
+}
+
+/* A control that answers the pointer: a small lift on hover, a give-way on press.
+   `translate` and `scale` are the individual transform properties, so this composes
+   with the `transform` Motion writes inline instead of overwriting it — a hover lift
+   survives a gesture-driven scale on the same element. Scoped to `button` so it beats
+   a component's own single-class transition rule whichever order the sheets load in. */
+button.ad-press {
+  transition:
+    translate var(--ad-motion-fast) var(--ad-ease),
+    scale var(--ad-motion-fast) var(--ad-ease),
+    background-color var(--ad-motion-fast) var(--ad-ease),
+    border-color var(--ad-motion-fast) var(--ad-ease),
+    color var(--ad-motion-fast) var(--ad-ease),
+    box-shadow var(--ad-motion-fast) var(--ad-ease),
+    outline-color var(--ad-motion-fast) var(--ad-ease),
+    opacity var(--ad-motion-fast) var(--ad-ease);
+}
+
+button.ad-press:hover:not(:disabled) {
+  translate: 0 -1px;
+}
+
+button.ad-press:active:not(:disabled) {
+  scale: 0.97;
+  translate: 0 0;
+  transition-duration: 90ms;
+}
+
+/* Reduced motion keeps the colour answer and drops the movement. */
+:root[data-reduced-motion='on'] button.ad-press:hover,
+:root[data-reduced-motion='on'] button.ad-press:active {
+  translate: none;
+  scale: none;
+}
+
+.ad-eyebrow {
+  font-size: var(--ad-text-eyebrow);
+  font-weight: var(--ad-weight-semi);
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--ad-text-faint);
+}
+
+.ad-title {
+  font-size: var(--ad-text-title-lg);
+  font-weight: var(--ad-weight-medium);
+  letter-spacing: var(--ad-tracking-title);
+  color: var(--ad-text);
+}
+
+.ad-display {
+  font-size: var(--ad-text-display);
+  font-weight: var(--ad-weight-bold);
+  letter-spacing: var(--ad-tracking-display);
+  line-height: 1.08;
+  color: var(--ad-text);
+}
+
+/* The one place type is allowed to be loud: a launch or hub headline. It scales
+   with the viewport but never below a readable floor, and it is the only role that
+   uses the hero step. */
+.ad-hero {
+  font-size: clamp(var(--ad-text-hero), 6.2vw, var(--ad-text-hero-lg));
+  font-weight: var(--ad-weight-bold);
+  letter-spacing: var(--ad-tracking-display);
+  line-height: 1.02;
+  color: var(--ad-text);
+  text-wrap: balance;
+}
+
+.ad-body {
+  font-size: var(--ad-text-md);
+  font-weight: var(--ad-weight-regular);
+  line-height: 1.6;
+  letter-spacing: var(--ad-tracking-body);
+  color: var(--ad-text-dim);
+}
+
+.ad-caption {
+  font-size: var(--ad-text-caption);
+  font-weight: var(--ad-weight-medium);
+  letter-spacing: 0.01em;
+  color: var(--ad-text-faint);
+}
+
+/* Numbers that change (fps, zoom, counters) must not make their row breathe. */
+.ad-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+.ad-icon {
+  width: var(--ad-icon-size);
+  height: var(--ad-icon-size);
+  flex: none;
+  stroke: currentColor;
+  stroke-width: var(--ad-icon-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* Scrollbars stay out of the way of a glass surface. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--ad-accent-rgb), 0.28) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: var(--ad-radius-full);
+  background: rgba(var(--ad-accent-rgb), 0.22);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Focus is visible for keyboard users without disturbing gesture users. */
+.ad-focusable:focus-visible {
+  outline: none;
+  box-shadow: var(--ad-focus-ring);
+}
+
+.ad-status--success { color: rgb(var(--ad-success)); }
+.ad-status--warn { color: rgb(var(--ad-warn)); }
+.ad-status--danger { color: rgb(var(--ad-danger)); }
+
+/* The procedural hand glyph, shared by the tutorial coach and the guide. */
+.ad-glyph-palm {
+  fill: rgba(var(--ad-accent-rgb), 0.07);
+}
+
+.ad-glyph-lit {
+  stroke: var(--ad-accent);
+  animation: ad-glyph-pulse 1.9s var(--ad-ease) infinite;
+}
+
+@keyframes ad-glyph-pulse {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

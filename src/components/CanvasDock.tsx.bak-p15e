@@ -1,0 +1,19 @@
+import { useState } from 'react';
+import type { DrawEngine } from '../engine/DrawEngine';
+import { GestureButton } from './GestureButton';
+import { exportPaper } from '../rendering/canvas2d/freehand';
+import {useInteractive} from '../interaction/useInteractive';
+import {workspace} from '../project/workspace';
+import {useText} from '../i18n';
+import type {TextKey} from '../i18n/zh';
+const TOOL_LABELS: TextKey[] = ['canvas.pen', 'canvas.marker', 'canvas.highlighter', 'canvas.eraser'];
+const PAPER_LABELS: TextKey[] = ['canvas.paperWhite', 'common.transparent', 'canvas.paperDark'];
+export function CanvasDock({engine,focus,onWorkspace}:{engine:DrawEngine;focus:boolean;onWorkspace?:(panel:'make3d'|'layers')=>void}){const [,refresh]=useState(0);const text=useText();const change=(fn:()=>void)=>{fn();refresh(n=>n+1);};const paper=engine.canvasBackground==='white'?'#ffffff':engine.canvasBackground==='dark'?'#242b36':'transparent';
+  const zone=useInteractive({id:'canvas-tools-zone',onDrag:(_p,d)=>{if(zone.ref.current)zone.ref.current.scrollTop-=d.y;}});
+  return <aside ref={zone.ref as React.RefObject<HTMLElement>} className="ad-context-dock ad-glass" data-focus={focus} aria-label={text('canvas.aria')}>
+    <div className="ad-tool-grid">{(['pen','marker','highlighter','eraser'] as const).map((tool,i)=><GestureButton key={tool} id={`canvas-${tool}`} label={text(TOOL_LABELS[i])} active={engine.canvasTool===tool} onActivate={()=>change(()=>{engine.canvasTool=tool;})}/>)}</div>
+    <div className="ad-tool-grid">{(['white','transparent','dark'] as const).map((bg,i)=><GestureButton key={bg} id={`paper-${bg}`} label={text(PAPER_LABELS[i])} active={engine.canvasBackground===bg} onActivate={()=>change(()=>{workspace.environment({paper:bg});})}/>)}</div>
+    <div className="ad-tool-grid"><GestureButton id="canvas-pressure" label={text('canvas.pressure')} active={engine.canvasPressure} onActivate={()=>change(()=>{engine.canvasPressure=!engine.canvasPressure;})}/><GestureButton id="canvas-png" label={text('canvas.exportPng')} onActivate={()=>exportPaper(engine.strokesFor('CANVAS_DRAW'),paper,'png')}/><GestureButton id="canvas-svg" label={text('canvas.exportSvg')} onActivate={()=>exportPaper(engine.strokesFor('CANVAS_DRAW'),paper,'svg')}/></div>
+    <div className="ad-tool-grid"><GestureButton id="canvas-make3d" label="Make 3D" onActivate={()=>onWorkspace?.('make3d')}/><GestureButton id="canvas-layers" label="Layers" onActivate={()=>onWorkspace?.('layers')}/></div>
+  </aside>;
+}

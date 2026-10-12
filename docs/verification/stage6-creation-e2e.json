@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-11T04:56:37.087Z",
+  "results": [
+    {
+      "name": "idle geometry suggestion appears",
+      "pass": true
+    },
+    {
+      "name": "suggestion confirmation marks object",
+      "pass": true,
+      "detail": "activated=recognition-confirm [{\"t\":\"stroke2d\",\"r\":\"geometry\",\"l\":false}]"
+    },
+    {
+      "name": "recognition undo restores raw object",
+      "pass": true
+    },
+    {
+      "name": "Make 3D panel stays within viewport",
+      "pass": true
+    },
+    {
+      "name": "preview contains finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Make 3D creates a solid and locks original",
+      "pass": true
+    },
+    {
+      "name": "Make 3D enters Model Control",
+      "pass": true
+    },
+    {
+      "name": "creation coach reads real converted object",
+      "pass": true
+    },
+    {
+      "name": "Make 3D undo removes solid and unlocks original",
+      "pass": true
+    },
+    {
+      "name": "recovery keeps previous valid snapshot",
+      "pass": true
+    },
+    {
+      "name": "project opening restores paper and camera",
+      "pass": true
+    },
+    {
+      "name": "system font produces legal text shapes and mesh",
+      "pass": true
+    },
+    {
+      "name": "clearing the canvas keeps the locked original",
+      "pass": true,
+      "detail": "ink 1"
+    },
+    {
+      "name": "orbiting the view stays out of the undo stack",
+      "pass": true
+    },
+    {
+      "name": "a layer row selects its object",
+      "pass": true
+    },
+    {
+      "name": "the same row lets go, and a third tap picks it back up",
+      "pass": true
+    },
+    {
+      "name": "a short mouse press does not delete",
+      "pass": true
+    },
+    {
+      "name": "a mouse hold completes the delete confirmation",
+      "pass": true
+    },
+    {
+      "name": "the deselect control goes idle once nothing is selected",
+      "pass": true
+    },
+    {
+      "name": "no runtime exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

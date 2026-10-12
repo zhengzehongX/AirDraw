@@ -1,0 +1,76 @@
+{
+  "phase": 15,
+  "date": "2026-10-10",
+  "scope": "workspace typography, top bar zones, popover anchoring, occlusion fixes",
+  "runs": {
+    "typecheck": "pass",
+    "build": "pass (chunk-size warning only, unchanged from earlier phases)",
+    "verify:core": "ALL — includes the phase-14 coordinate replay cases",
+    "verify:contact": "18/18",
+    "verify:stage5": "987/987",
+    "verify:stage6": "143/143",
+    "verify:playlab": "55/55",
+    "verify:phase8": "785/785 after three stale assertions were retargeted to the current contract (see docs/phase15-log.md 第六轮) — none were deleted or loosened",
+    "e2e:playlab": {
+      "suite": "scripts/playlab-e2e.mjs",
+      "log": "node_modules/airdraw-probe/p15e-e2e-playlab.log",
+      "result": "only KNOWN GAP failing: 'a right swipe goes back one card' (documented since phase 7; assertion kept)"
+    },
+    "e2e:toys": {
+      "suite": "scripts/phase10-toys-e2e.mjs",
+      "passed": 12,
+      "total": 13,
+      "failing": "leaving by hand returns to the rail — clickResult no-press after the full five-toy + failed-mount sequence",
+      "note": "the same button presses fine on a clean entry (p15lab.mjs: click ok, lastActivatedId lab-back, phase EXITING); two candidate causes left open — occlusion by the toy's own lesson text, or press starvation (#72 family). Not guessed at; needs the sequence replicated in the probe."
+    },
+    "e2e:others": {
+      "stage5": "pass",
+      "stage5-tutorial": "pass after the coach-placement assertion was retargeted",
+      "stage6": "pass after the Layers path was pointed at the bar's project menu",
+      "stage6-creation": "pass",
+      "stage5-worker": "pass after English label selectors were replaced with gesture ids",
+      "phase10-settings": "38/38",
+      "phase10-voice": "21/21"
+    },
+    "inputReachabilityFixes": [
+      "Scene3D canvas is pointer-events:none — it covered every DOM surface for the mouse as well (R3F registers no DOM handlers; 3D input is engine raycasting against the hand cursor)",
+      "PlayLab hub header buttons regained pointer-events (the rail wrapper turns them off so the board stays visible through it; only the cards had them back)",
+      "occlusion rule no longer concludes 'covered' for a region whose own element is pointer-events:none, which would silently disable it"
+    ],
+    "e2e:layout": {
+      "suite": "scripts/phase11-layout-e2e.mjs",
+      "passed": 36,
+      "total": 36,
+      "note": "the 'state line hosted in the bar' assertion is meaningful again: [data-testid=top-status] renders inside the bar in studio"
+    },
+    "e2e": {
+      "suite": "scripts/e2e.mjs",
+      "log": "node_modules/airdraw-probe/e2e-p15m.log",
+      "passed": 56,
+      "failed": 0,
+      "machine": "idle, cooled solo run",
+      "result": "E2E: ALL CHECKS PASSED — first fully green run of the phase (the FIST/theme latch family did not fire, and the first-run tutorial completed all lessons)",
+      "repeatAfterPointerFixes": "54 PASS / 2 FAIL (e2e-p15n): 'FIST pauses' (known intermittent) and 'a file that is not a piece is refused in words' (notice read empty — auto-dismiss timing). Neither is asserted as fixed; both belong to the documented rotating-red family."
+    },
+    "probes": {
+      "p15repro": "hand-loss hint present with data-state=lost; gallery first card opens (switched=true, objects=1); settings drag 1342 -> 161",
+      "p15help": "help-menu item is topmost after the bar layering fix; guide mounts with context=help and pen lifted; first-run tutorial reaches stage 6",
+      "p15theme": "3/3 rounds drew after a theme pinch",
+      "p15tut": "colour lesson: swatch topmost, activation changes colour, stage 6 -> 7",
+      "p15pop": "colour/material/size/more panels centred on their own trigger (centreDelta 0) at 1440/1366/1024/900, all on screen"
+    }
+  },
+  "rootCausesFixed": [
+    "studio lost its only status line when the hosted TopStatus was removed — the bar's readiness word is now that line and carries the hand-loss hint",
+    "camera preview's 52px close button overlapped the gallery first card and the settings drag lane, and region picking preferred the smallest rect regardless of occlusion — preview hidden over full-screen surfaces, hitTest made occlusion-aware",
+    "bar menus stayed open after choosing an entry",
+    "backdrop-filter gave the bar a stacking context at z:auto, so the debug panel painted over open menus and stole their pinches",
+    "tutorial signal cadence gate could swallow discrete facts (dock summoned, colour picked) — only cursor churn may wait a tick",
+    "tutorial coach card covered the dock colour popover — moved to top-left"
+  ],
+  "notVerified": [
+    "real camera and human gesture accuracy",
+    "right property rail as a layout column (canvas size, camera aspect and gesture mapping still do not yield to it)",
+    "per-mode dock regrouping and the remaining panel content packages"
+  ]
+}

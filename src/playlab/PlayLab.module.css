@@ -1,0 +1,202 @@
+/* PlayLab: one rail of cards in space, and the thin chrome a toy leaves on screen. */
+
+.railPosition {
+  position: absolute;
+  inset: 0;
+  z-index: 24;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  place-items: center;
+  min-height: 0;
+  padding: 96px 24px 132px;
+  pointer-events: none;
+}
+
+.lede {
+  text-align: center;
+}
+/* The rail wrapper is deliberately transparent to pointers so the scene behind it can
+   be seen through it, but that left the hub's own 离开 control unreachable by mouse —
+   only the cards re-enabled pointers. The button gets them back; the text stays out of
+   the way. */
+.lede :global(.ad-tool-button) {pointer-events:auto;}
+.lede h2 {
+  margin: 0;
+  font-size: var(--ad-text-title-lg);
+  font-weight: var(--ad-weight-semi);
+  letter-spacing: var(--ad-tracking-title);
+}
+.lede p {
+  margin: var(--ad-space-1) 0 0;
+  font-size: var(--ad-text-caption);
+  letter-spacing: var(--ad-tracking-body);
+  color: var(--ad-text-dim);
+}
+
+.rail {
+  position: relative;
+  width: 100%;
+  height: min(340px, 46vh);
+  perspective: 1200px;
+}
+
+.card {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 220px;
+  margin-left: -110px;
+  padding: var(--ad-space-3);
+  border-radius: var(--ad-radius-lg);
+  text-align: center;
+  pointer-events: auto;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  /* The carousel position lives in the inline `transform`; the pointer's answer uses
+     the individual `translate`/`scale` properties so the two compose instead of
+     overwriting each other. */
+  transition:
+    translate var(--ad-motion-fast) var(--ad-ease),
+    scale var(--ad-motion-fast) var(--ad-ease),
+    border-color var(--ad-motion-fast) var(--ad-ease),
+    box-shadow var(--ad-motion-med) var(--ad-ease);
+}
+
+.card:hover {
+  translate: 0 -3px;
+  border-color: rgba(var(--ad-accent-rgb), 0.34);
+}
+
+.card:active {
+  scale: 0.985;
+  translate: 0 0;
+  transition-duration: 90ms;
+}
+
+:root[data-reduced-motion='on'] .card:hover {
+  translate: none;
+}
+
+:root[data-reduced-motion='on'] .card:active {
+  scale: none;
+}
+
+.card h3 {
+  margin: var(--ad-space-2) 0 var(--ad-space-hair);
+  font-size: var(--ad-text-lg);
+  font-weight: var(--ad-weight-semi);
+  letter-spacing: var(--ad-tracking-title);
+}
+.card p {
+  margin: 0;
+  min-height: 40px;
+  font-size: var(--ad-text-caption);
+  line-height: 1.5;
+  color: var(--ad-text-dim);
+}
+.card[data-selected='true'] {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ad-accent) 45%, transparent), 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+.card:focus-visible { outline: 2px solid var(--ad-accent); outline-offset: 4px; }
+@media(max-width:700px), (max-height:650px) {
+  .railPosition, .chrome { padding: 80px 16px 96px; }
+  .rail { height: min(300px, 48vh); }
+  .lede h2 { font-size: 24px; }
+  .lede p { max-width: 300px; }
+  .chromeFoot { gap: 8px; }
+}
+
+.preview {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  background: rgba(127, 127, 127, 0.06);
+}
+
+.hint {
+  display: block;
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: var(--ad-accent);
+}
+
+.dots {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--ad-text-dim);
+  transition: opacity 0.3s ease;
+}
+
+.chrome {
+  position: absolute;
+  inset: 0;
+  z-index: 24;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  padding: 96px 24px 132px;
+  text-align: center;
+  pointer-events: none;
+}
+.chromeHead {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+.chromeHead h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+.chromeHead small {
+  font-size: 12px;
+  color: var(--ad-text-dim);
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--ad-text-dim);
+}
+.status em {
+  font-style: normal;
+  opacity: 0.75;
+}
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ad-text-dim);
+}
+.status[data-tone='ok'] .statusDot {
+  background: #34d399;
+}
+.status[data-tone='warn'] {
+  color: var(--ad-text);
+}
+.status[data-tone='warn'] .statusDot {
+  background: #fbbf24;
+}
+.lesson {
+  margin: 10px 0 0;
+  max-width: 380px;
+  font-size: 15px;
+  color: var(--ad-text-dim);
+}
+.chromeFoot {
+  align-self: end;
+  pointer-events: auto;
+  display: flex;
+  gap: 12px;
+}

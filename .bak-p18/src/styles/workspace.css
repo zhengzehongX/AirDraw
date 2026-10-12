@@ -1,0 +1,68 @@
+.ad-mode-switcher {position:absolute;z-index:45;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:8px;border-radius:32px;}
+.ad-tool-button {position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:64px;min-height:64px;padding:8px 16px;border:0;border-radius:24px;background:transparent;color:var(--ad-text-dim);font:500 13px var(--ad-font);overflow:hidden;}
+.ad-voice-control>.ad-tool-button>span{display:none;}
+.ad-voice-wave{display:flex;gap:4px;height:16px;align-items:center;margin-bottom:8px;color:var(--ad-accent);}
+.ad-voice-wave i{display:block;width:3px;height:12px;background:currentColor;border-radius:4px;}
+@media(prefers-reduced-motion:reduce){.ad-voice-wave i{transform:none!important;}}
+.ad-tool-button[data-active='true'] {color:var(--ad-text);background:color-mix(in srgb,var(--ad-text) 7%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.2);}
+.ad-mode-switcher .ad-tool-button[data-active='true']::before {content:'';position:absolute;width:4px;height:4px;border-radius:50%;bottom:3px;background:var(--ad-accent);}
+[data-gesture-state='HOVER'],[data-gesture-state='ARMED'] {background:color-mix(in srgb,var(--ad-text) 8%,transparent);}
+[data-gesture-state='ARMED']::after {content:'';position:absolute;inset:5px;border:1px solid color-mix(in srgb,var(--ad-accent) 50%,transparent);border-radius:inherit;pointer-events:none;}
+[data-gesture-state='PRESSED'] {background:color-mix(in srgb,var(--ad-text) 13%,transparent);}
+[data-gesture-state='SUCCESS'] {box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ad-success) 45%,transparent);}
+[data-gesture-state='HAND_LOST'] {opacity:.55;}
+button[data-gesture-state] {min-width:52px;min-height:52px;}
+.ad-context-dock {position:absolute;right:24px;top:80px;transform:none;z-index:45;width:var(--ad-panel-w);padding:var(--ad-space-3);border-radius:var(--ad-radius-xl);max-height:calc(100dvh - 200px);overflow:auto;transition:opacity var(--ad-motion-med);}
+.ad-context-dock p {font-size:13px;color:var(--ad-text-dim);line-height:1.6;margin:16px 8px 0;}
+.ad-surface-dock {position:absolute;right:24px;top:50%;transform:translateY(-50%);padding:var(--ad-space-3);z-index:45;border-radius:var(--ad-radius-xl);width:var(--ad-panel-w);}
+.ad-surface-dock[data-focus='true'] {opacity:0;pointer-events:none;}
+.ad-tracking-tuning {width:100%;}.ad-tracking-tuning h3 {font-size:20px;font-weight:500;}.ad-tracking-tuning p {font-size:13px;}
+.ad-tool-grid {display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.ad-context-dock[data-focus='true'] {opacity:0;pointer-events:none;}
+.ad-space-slider {position:relative;margin:16px 0;padding:24px 8px;min-height:72px;border-radius:24px;background:color-mix(in srgb,var(--ad-text) 5%,transparent);font-size:13px;overflow:hidden;}
+.ad-space-slider span {display:block;height:3px;margin-top:12px;background:var(--ad-accent);border-radius:3px;}
+.ad-calibration-position {position:absolute;inset:0;z-index:80;display:grid;place-items:center;pointer-events:none;padding:16px;}
+.ad-calibration {position:relative;pointer-events:auto;width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:32px;text-align:center;border-radius:36px;}
+.ad-calibration-offer {width:min(460px,calc(100vw - 32px));border-radius:28px;}
+.ad-calibration-actions {display:flex;gap:12px;justify-content:center;margin-top:20px;}
+.ad-calibration h2 {font-size:24px;font-weight:500;margin:0 0 16px;}.ad-calibration p {font-size:16px;line-height:1.6;color:var(--ad-text-dim);}.ad-calibration-ring {display:grid;place-items:center;width:96px;height:96px;border:1px solid var(--ad-glass-border);border-radius:50%;margin:24px auto;font-size:24px;}
+/* Rail groups: a titled block whose body is the only thing that scrolls. The title is
+   a sentence-case label at reading size, not an uppercase eyebrow — these are short
+   nouns a person scans while their hand is busy. */
+.ad-railGroup {display:flex;flex-direction:column;gap:var(--ad-space-1);padding:var(--ad-space-2) 0;border-bottom:1px solid color-mix(in srgb,var(--ad-text) 8%,transparent);}
+.ad-railGroup:last-of-type {border-bottom:none;}
+.ad-railGroupTitle {margin:0 0 2px;font-size:var(--ad-text-md);font-weight:var(--ad-weight-semi);letter-spacing:var(--ad-tracking-tight);color:var(--ad-text);}
+.ad-railGroup > .ad-tool-grid {width:100%;}
+.ad-railGroup .ad-tool-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+/* Rail buttons are the row-height of a panel, not the 64px target of the bottom dock:
+   the hit area stays above 52px, but a column of 64px cells pushes half the group out
+   of sight and the panel then looks like a list of empty tiles. */
+.ad-railGroup .ad-tool-button {min-height:56px;padding:6px 10px;gap:4px;border-radius:14px;font-size:var(--ad-text-caption);}
+.ad-railGroup .ad-tool-button svg {width:20px;height:20px;}
+/* The transform slider is a rail row, not a calibration stage: 72px of min-height plus
+   24px of padding made one control taller than the three tools above it. */
+.ad-railGroup .ad-space-slider {min-height:56px;margin:4px 0;padding:10px 12px;border-radius:14px;}
+.ad-railGroup .ad-space-slider span {margin-top:8px;}
+.ad-railGroup .ad-tool-grid:has(> :only-child) {grid-template-columns:minmax(0,1fr);}
+.ad-railGroup .ad-tool-grid[data-tone='danger'] > .ad-tool-button {color:var(--ad-danger);}
+.ad-railGroup .ad-tool-grid[data-tone='danger'] > .ad-tool-button[data-active='true'] {background:color-mix(in srgb,var(--ad-danger) 14%,transparent);}
+.ad-space-slider {font-variant-numeric:tabular-nums;}
+@media(max-width:800px){.ad-railGroup .ad-tool-grid {grid-template-columns:1fr;}}
+@media(max-width:800px){.ad-context-dock {right:8px;width:200px;padding:var(--ad-space-2);}.ad-surface-dock {right:8px;width:200px;padding:var(--ad-space-2);}.ad-mode-switcher {bottom:16px;}.ad-mode-switcher .ad-tool-button {padding:8px;min-width:88px;font-size:12px;}.ad-tool-grid {grid-template-columns:1fr;}}
+@media(prefers-reduced-motion:reduce){.ad-context-dock {transition:none;}}
+.ad-project-status {position:absolute;left:24px;top:24px;z-index:46;padding:16px 24px;border-radius:28px;font-size:15px;max-width:calc(100vw - 180px);}.ad-project-status .ad-tool-grid{display:flex;gap:8px;margin-top:8px;}.ad-project-status small {display:block;font-size:12px;color:var(--ad-text-dim);margin-top:8px;}.ad-project-panel-position {position:absolute;inset:0;z-index:75;display:grid;place-items:center;pointer-events:none;padding:24px;}.ad-project-panel {pointer-events:auto;max-height:calc(100dvh - 48px);overflow:auto;width:min(760px,100%);padding:24px;border-radius:32px;}.ad-project-panel header {display:flex;align-items:center;justify-content:space-between;}.ad-project-panel h2 {font-size:24px;font-weight:500;}.ad-layer-row,.ad-project-row {display:flex;align-items:center;gap:8px;margin:8px 0;}.ad-layer-row>.ad-tool-button:first-of-type {flex:1;align-items:flex-start;min-width:0;}.ad-layer-row span {white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}.ad-layer-row small {font-size:12px;color:var(--ad-text-dim);}.ad-layer-grip {min-width:52px;min-height:64px;display:grid;place-items:center;}.ad-project-row>span {flex:1;}.ad-project-row small {display:block;font-size:12px;color:var(--ad-text-dim);}.ad-name-keyboard {display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:16px;}.ad-project-panel input {font:inherit;padding:16px;background:transparent;border:1px solid var(--ad-glass-border);border-radius:16px;color:var(--ad-text);width:100%;}.ad-recognition {position:absolute;left:50%;bottom:136px;transform:translateX(-50%);z-index:46;padding:8px;border-radius:28px;}
+.ad-creation-coach-position{position:absolute;left:50%;top:96px;transform:translateX(-50%);z-index:20}.ad-creation-coach{padding:16px 24px;border-radius:28px;max-width:360px;text-align:center;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}.ad-creation-coach p{font-size:15px;font-weight:400;width:100%;margin:0}
+
+.ad-project-panel-position[data-panel-mode="make3d"]{inset:auto;top:50%;left:auto;right:24px;transform:translateY(-50%);width:min(380px,calc(100vw - 48px))}.ad-project-panel-position[data-panel-mode="make3d"] .ad-project-panel{width:100%}
+
+@media(max-height:700px){.ad-context-dock{top:96px;max-height:calc(100dvh - 350px)}}
+
+.ad-hold-ring{position:absolute;inset:0;width:100%;height:100%;opacity:var(--hold);pointer-events:none;transform:rotate(-90deg)}
+/* Pointer/keyboard holds fill the same ring; the animation wins over the inline
+   `stroke-dashoffset` that the gesture path drives. */
+.ad-tool-button[data-pointer-hold] .ad-hold-ring{opacity:1}
+.ad-tool-button[data-pointer-hold] .ad-hold-ring circle{animation:ad-pointer-hold var(--hold-ms,1200ms) linear forwards}
+@keyframes ad-pointer-hold{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.ad-project-status{left:232px;max-width:calc(100vw - 600px)}
+@media(max-width:1100px){.ad-project-status{left:232px;top:80px;max-width:calc(100vw - 480px)}.ad-project-status .ad-tool-grid{flex-wrap:wrap}}
+@media(max-width:800px){.ad-project-status{left:104px;top:80px;max-width:calc(100vw - 280px);padding:8px 16px}.ad-project-status .ad-tool-grid{gap:0}.ad-project-status .ad-tool-button{padding:8px;min-width:64px}}

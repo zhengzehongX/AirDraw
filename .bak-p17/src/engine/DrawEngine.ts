@@ -1,0 +1,1369 @@
+import {
+  CURSOR_HIDE_AFTER_MS,
+  ERASE_RADIUS_PLANE,
+  MAX_POINT_SPEED,
+  METRICS_INTERVAL_MS,
+  PLAYLAB,
+  POINTER_FILTER,
+  RECAPTURE_BUFFER_FRAMES,
+  TRACKING_LOST_GRACE_MS,
+  TRACKING_RESET_MS,
+  Z_FEEDBACK_MAX,
+} from '../config';
+import type { StrokeRenderer } from '../rendering/StrokeRenderer';
+import type {
+  Brush,
+  CanvasTool,
+  CursorState,
+  EngineMetrics,
+  GestureState,
+  Point,
+  PointerState,
+  QualityTier,
+  Stroke,
+  ViewMode,
+} from '../types/drawing';
+import { EMPTY_METRICS } from '../types/drawing';
+import { LANDMARK, type HandTrackingResult } from '../types/hand';
+import { clampToViewport, createCoverMapper, toPlane, type CoordinateMapper } from '../utils/coordinates';
+import { ViewportController } from '../rendering/canvas2d/viewport';
+import { GestureEngine } from '../utils/gesture/GestureEngine';
+import {
+  indexDepthFeedback,
+  palmCenter,
+  palmLength,
+  pinchRatio,
+  toPixelPoints,
+} from '../utils/gesture/landmarks';
+import { PinchContactDetector } from '../utils/gesture/PinchContactDetector';
+import type { ContactProfile } from '../utils/gesture/PinchContactDetector';
+import { HandMotion, opennessOf, palmCentreOf, palmOrientation, wristRollOf, type HandFrame, type TwoHandFrame } from '../hands/handFrame';
+import { inputRouter } from '../interaction/InputRouter';
+import { CanvasNavigation, CANVAS_NAV, type Vec2 } from '../interaction/canvasNavigation';
+
+/** What the engine tells the scene about a palm navigation session on the 3D ink. */
+export type SpatialNavIntent =
+  | { kind: 'begin'; mode: 'pan' | 'zoom'; palmScreen: Vec2; midScreen: Vec2 | null; distancePx: number }
+  | { kind: 'update'; palmScreen: Vec2 | null; midScreen: Vec2 | null; distancePx: number }
+  | { kind: 'end'; reason: string };
+import type { WorkspaceMode } from '../app/AppMode';
+import type { TrackedHand } from '../types/hand';
+import { OneEuroFilter2D } from '../utils/smoothing/oneEuro';
+import { EmaFilter } from '../utils/smoothing/ema';
+import { medianPoint, PalmScaleSmoother, VelocityLimiter } from '../utils/stability';
+import { PrimaryHandSelector } from '../utils/primaryHand';
+import { StrokeStore } from './StrokeStore';
+
+export type DrawEngineOptions = {
+  /** Read on every pen-down so toolbar changes apply to the next stroke. */
+  getBrush: () => Brush;
+  mirror?: boolean;
+  lostGraceMs?: number;
+  resetAfterMs?: number;
+  metricsIntervalMs?: number;
+};
+
+export type CursorListener = (cursor: Readonly<CursorState>) => void;
+export type MetricsListener = (metrics: EngineMetrics) => void;
+
+export type RenderStats = { drawCalls: number; geometries: number; sceneFps: number };
+
+/**
+ * Ties hand tracking to ink.
+ *
+ * Per detection result: pick the primary hand (sticky across two-hand frames) →
+ * pixel-space landmarks → rate-clamped palm scale → scale-invariant pinch ratio
+ * → mirrored plane-space mapping → outlier/velocity guard → recapture buffer →
+ * One Euro smoothing → pinch hysteresis + gesture engine + hold actions →
+ * stroke store → renderer. React never sees this loop; components subscribe to
+ * cursor/metrics callbacks, so 30–60 Hz updates do not re-render the tree.
+ */
+export class DrawEngine {
+  private readonly spatialStore = new StrokeStore();
+  private readonly canvasStore = new StrokeStore();
+  private store = this.spatialStore;
+  private readonly pinchDetector: PinchContactDetector;
+  private readonly secondaryDetector = new PinchContactDetector();
+  readonly tracking = { primary: null as TrackedHand | null, secondary: null as TrackedHand | null, secondaryContact: false, epoch: 0 };
+  /**
+   * PlayLab's view of the same detection tick. Built once here so no toy ever
+   * opens its own camera or Hand Landmarker; consumers read it inside rAF and
+   * interpolate, because it only advances at the detection rate.
+   */
+  readonly frame = { primary: null as HandFrame | null, secondary: null as HandFrame | null, two: null as TwoHandFrame | null, at: 0, epoch: 0 };
+  private readonly motions: Record<'primary' | 'secondary', HandMotion> = { primary: new HandMotion(), secondary: new HandMotion() };
+  private twoStableSince = 0;
+  private twoLostSince = 0;
+  private lastTwoDistance = 0;
+  private twoReference: { distance: number; angle: number } | null = null;
+  private handsVisibleSince = 0;
+  workspaceMode: WorkspaceMode = 'SPATIAL_DRAW';
+  /**
+   * The dot canvas's camera. Strokes stay in document coordinates; only this moves.
+   * Spatial drawing ignores it entirely — its "viewport" is the 3D camera.
+   */
+  readonly canvasNav = new ViewportController();
+  /** Owns pan/zoom sessions on the dot canvas; one owner per frame, explicit moves. */
+  readonly canvasNavigation = new CanvasNavigation();
+  navPanSpeed = 1;
+  navZoomSensitivity = 1;
+  /** Monotonic count of processed detection results; duplicates never increment it. */
+  private resultSeq = 0;
+  /** Provider timestamp of the last processed result; stale repeats are dropped. */
+  private lastProcessedStamp = -1;
+  /** Dev-only ring buffer: one row per processed result, for replaying drift reports. */
+  readonly navTrace: { seq: number; t: number; mode: string; palm: Point; view: { zoom: number; offsetX: number; offsetY: number }; wrote: boolean }[] = [];
+  canvasTool: CanvasTool = 'pen';
+  canvasPressure = false;
+  canvasBackground: 'white' | 'transparent' | 'dark' = 'white';
+  surface: Stroke['surface'];
+  private readonly historyListeners = new Set<() => void>();
+  projectHistory:{undo:()=>boolean;redo:()=>boolean;canUndo:()=>boolean;canRedo:()=>boolean}|null=null;
+  projectRender:((strokes:readonly Stroke[])=>readonly Stroke[])|null=null;
+  projectEditable:((stroke:Stroke)=>boolean)|null=null;
+  /** Temporary legacy-gallery capture must not create project edits. */
+  projectCapturePaused=false;
+  private readonly indexFilter: OneEuroFilter2D;
+  private readonly thumbFilter: OneEuroFilter2D;
+  private readonly zFilter: EmaFilter;
+  private readonly gestureEngine = new GestureEngine();
+  private readonly handSelector = new PrimaryHandSelector();
+  private readonly velocityLimiter = new VelocityLimiter(MAX_POINT_SPEED);
+  private readonly palmSmoother = new PalmScaleSmoother();
+
+  private readonly getBrush: () => Brush;
+  private readonly resetAfterMs: number;
+  private readonly metricsIntervalMs: number;
+
+  private renderer: StrokeRenderer | null = null;
+  private mapper: CoordinateMapper | null = null;
+  private mirror: boolean;
+  private viewport = { width: 0, height: 0, dpr: 1 };
+  private videoSize = { width: 0, height: 0 };
+  /** What the current `mapper` and canvas-camera base were built from (see syncScreenMapping). */
+  private screenSignature = '';
+  /**
+   * The scene's camera ray, published by `CameraRig`: screen pixel → the point on the
+   * drawing plane that pixel looks at. Null until the scene has a camera to ask, which
+   * leaves the pen on the plain plane mapping.
+   */
+  private worldRay: ((screen: { x: number; y: number }) => Point | null) | null = null;
+
+  private rafId = 0;
+  private running = false;
+  private lastFpsAt = 0;
+  private lastMetricsAt = 0;
+  private renderTicks = 0;
+  private detectTicks = 0;
+  private renderFps = 0;
+  private detectFps = 0;
+
+  private hasSeenHand = false;
+  private lostSince: number | null = null;
+  private penDown = false;
+  private suspended = false;
+  private forceFilterReset = true;
+  private recapture: Point[] | null = null;
+  private lastResultAt = 0;
+  /** Smoothed interval between detection results, used to judge a real dropout. */
+  private resultInterval = 0;
+  private lastRenderTick=0;
+  private deferredStall=false;
+  private lastWrist:{x:number;y:number}|null=null;
+
+  private delegate = '-';
+  private qualityTier: QualityTier = 'high';
+  private viewMode: ViewMode = '3d';
+  private inspectMode = false;
+  private inputLocked = false;
+  private inputsPaused = false;
+  private uiHovered = false;
+  private uiCaptured = false;
+  private eraseMode = false;
+  private drawingAllowed = true;
+  private inputSamples:Record<string,unknown>[]=[];
+  private gestureLatencyMs = 0;
+  private handsDistancePx = 0;
+  private renderStats: RenderStats = { drawCalls: 0, geometries: 0, sceneFps: 0 };
+  private gesture: GestureState = { gesture: 'NONE', confidence: 0, durationMs: 0, handedness: null };
+  private handCount = 0;
+  private confidence = 0;
+
+  private readonly cursor: CursorState = {
+    x: 0,
+    y: 0,
+    visible: false,
+    pinch: 0,
+    pinched: false,
+    drawing: false,
+    pointerState: 'searching',
+  };
+
+  private readonly cursorListeners = new Set<CursorListener>();
+  private readonly metricsListeners = new Set<MetricsListener>();
+  private metricsSnapshot: EngineMetrics = { ...EMPTY_METRICS };
+
+  private debugSnapshot: EngineMetrics = { ...EMPTY_METRICS };
+
+  constructor(options: DrawEngineOptions) {
+    this.getBrush = options.getBrush;
+    this.mirror = options.mirror ?? true;
+    this.resetAfterMs = options.resetAfterMs ?? TRACKING_RESET_MS;
+    this.metricsIntervalMs = options.metricsIntervalMs ?? METRICS_INTERVAL_MS;
+    this.pinchDetector = new PinchContactDetector();
+    this.spatialStore.subscribe(() => this.historyListeners.forEach(cb => cb()));
+    this.canvasStore.subscribe(() => this.historyListeners.forEach(cb => cb()));
+    this.indexFilter = new OneEuroFilter2D(POINTER_FILTER);
+    this.thumbFilter = new OneEuroFilter2D(POINTER_FILTER);
+    this.zFilter = new EmaFilter(0.25);
+  }
+
+  // ---------------------------------------------------------------- lifecycle
+
+  start(): void {
+    if (this.running) return;
+    this.running = true;
+    this.lastFpsAt = performance.now();
+    this.lastMetricsAt = 0;
+    this.rafId = requestAnimationFrame(this.tick);
+  }
+
+  stop(): void {
+    this.running = false;
+    cancelAnimationFrame(this.rafId);
+    this.rafId = 0;
+  }
+
+  dispose(): void {
+    this.stop();
+    if (this.penDown) this.finishStroke();
+    this.cursorListeners.clear();
+    this.metricsListeners.clear();
+    this.renderer = null;
+  }
+
+  /** True while a DOM canvas layer owns the 2D ink (the infinite board). */
+  get hasDomRenderer(): boolean {
+    return this.renderer !== null;
+  }
+
+  attachRenderer(renderer: StrokeRenderer): void {    this.renderer = renderer;
+    renderer.resize(this.viewport.width, this.viewport.height, this.viewport.dpr);
+    renderer.rebuild(this.store.committed);
+  }
+
+  detachRenderer(): void {
+    this.renderer = null;
+  }
+
+  setViewport(widthCss: number, heightCss: number, dpr: number): void {
+    if (
+      widthCss === this.viewport.width &&
+      heightCss === this.viewport.height &&
+      dpr === this.viewport.dpr
+    ) {
+      return;
+    }
+    // Screen-space coordinates change with the viewport: finish in-progress ink
+    // instead of letting it smear across the resized canvas.
+    if (this.penDown) this.finishStroke();
+    this.viewport = { width: widthCss, height: heightCss, dpr };
+    this.syncScreenMapping();
+    this.forceFilterReset = true;
+    this.renderer?.resize(widthCss, heightCss, dpr);
+  }
+
+  /**
+   * The window the pointer maps onto, as one readable value: whoever paints inside it
+   * (the dot canvas, the minimap) sizes from here instead of re-deriving it from
+   * `window`, so a mapping and a pixel buffer can never disagree about the frame.
+   */
+  get screenFrame(): { width: number; height: number; dpr: number } {
+    return this.viewport;
+  }
+
+  /**
+   * The dot canvas reports where its own element starts. Only the origin matters: the
+   * pointer, the hit rects and the navigation gestures all live in window space, while
+   * ink is painted into a buffer that may begin somewhere inside it. Reporting it here
+   * means the buffer never has to pretend it is the window.
+   */
+  setDrawingArea(rect: { left: number; top: number; width: number; height: number }): void {
+    this.canvasNav.setInkOrigin({ x: rect.left, y: rect.top });
+  }
+
+  /** Where a document point lands inside the painting buffer (the dot canvas only). */
+  docToInk(point: Point): Point {
+    const ink = this.workspaceMode === 'CANVAS_DRAW' ? this.canvasNav.docToInk(point) : this.toScreenPoint(point);
+    return { x: ink.x, y: ink.y, z: 0 };
+  }
+
+  /**
+   * `HandFrame` keeps the standard, un-mirrored video convention (see
+   * docs/camera-architecture.md) while the screen mapping works in mirrored plane space.
+   * Every frame point that enters the mapper goes through here, so the two-hand zoom
+   * anchor is never handed over un-mirrored while the palm driving it beside it is
+   * mirrored — which put the zoom centre on the opposite side of the window.
+   */
+  private framePlane(point: Point): Point {
+    return this.mirror ? { x: 1 - point.x, y: point.y, z: point.z } : point;
+  }
+
+  /**
+   * Registered by the scene once, and read every frame: it asks the live camera which
+   * point of the drawing plane a screen pixel looks at. The scene owns the camera, so
+   * only the scene can answer — and only the answer makes the ink land under the cursor
+   * at any field of view, distance or orbit.
+   */
+  setWorldRaycaster(cast: ((screen: { x: number; y: number }) => Point | null) | null): void {
+    this.worldRay = cast;
+  }
+
+  /**
+   * One owner of the plane→screen mapping and of the canvas camera that sits on top of
+   * it. The base used to be refreshed from inside the hand loop, so a resize with no
+   * hand in frame left `planeToDoc` on the new geometry while `docToScreen` still used
+   * the old one — ink landed where the *previous* window said. The signature makes the
+   * call cheap enough to run every frame, so correctness no longer depends on which
+   * caller remembered.
+   */
+  private syncScreenMapping(): void {
+    const { width: vw, height: vh } = this.videoSize;
+    const { width, height } = this.viewport;
+    const signature = `${vw}x${vh}@${width}x${height}`;
+    if (signature === this.screenSignature) return;
+    this.screenSignature = signature;
+    // Without a frame size there is no aspect to preserve. Map the plane straight onto
+    // the window so an overlay still lands sensibly, and leave the canvas camera's base
+    // alone: `isReady` keeps framing decisions from writing offsets against it.
+    this.mapper = vw > 0 && vh > 0 ? createCoverMapper(vw, vh, width, height) : null;
+    if (!this.mapper) return;
+    this.canvasNav.setSurface({ x: width, y: height });
+    this.canvasNav.setBase({
+      p00: this.mapper.toScreen(0, 0),
+      p10: this.mapper.toScreen(1, 0),
+      p01: this.mapper.toScreen(0, 1),
+    });
+  }
+
+  setMirror(mirror: boolean): void {
+    if (mirror === this.mirror) return;
+    this.mirror = mirror;
+    this.forceFilterReset = true;
+  }
+
+  setDelegate(delegate: string): void {
+    this.delegate = delegate;
+  }
+
+  setQualityTier(tier: QualityTier): void {
+    this.qualityTier = tier;
+  }
+
+  setViewMode(mode: ViewMode): void {
+    this.viewMode = mode;
+  }
+
+  setWorkspaceMode(mode: WorkspaceMode): void {
+    if (mode === this.workspaceMode) return;
+    this.cancelInput(); this.workspaceMode=mode;
+    this.canvasNavigation.reset('mode change');
+    this.endSpatialNav('mode change');
+    this.store=mode==='CANVAS_DRAW'?this.canvasStore:this.spatialStore;
+    this.historyListeners.forEach(cb=>cb());
+  }
+  cancelInput(): void { if(this.penDown)this.finishStroke();this.pinchDetector.reset();this.secondaryDetector.reset();inputRouter.suspend();this.tracking.epoch++;this.cursor.pinched=false; }
+  get contact() { return this.pinchDetector.metrics; }
+  setContactProfile(profile:ContactProfile) {this.cancelInput();this.pinchDetector.profile=profile;this.secondaryDetector.profile=profile;}
+  rawStrokesFor(mode:WorkspaceMode) {return mode==='CANVAS_DRAW'?this.canvasStore.committed:this.spatialStore.committed;}
+  strokesFor(mode:WorkspaceMode) {const strokes=this.rawStrokesFor(mode);return this.projectRender?.(strokes)??strokes;}
+  replaceProjectStrokes(canvas:readonly Stroke[],spatial:readonly Stroke[]){this.canvasStore.replaceAll(canvas,false);this.spatialStore.replaceAll(spatial,false);this.historyListeners.forEach(cb=>cb());}
+
+  /** View/inspect mode: the pen is lifted and drawing is suspended. */
+  setInspectMode(on: boolean): void {
+    if (this.inspectMode === on) return;
+    this.inspectMode = on;
+    if (on && this.penDown) this.finishStroke();
+  }
+
+  /** FIST pause: freeze pen + UI interaction semantics (cursor keeps moving). */
+  setInputLocked(locked: boolean): void {
+    this.inputLocked = locked;
+    if (locked && this.penDown) this.finishStroke();
+  }
+
+  /**
+   * 暂停手势: stop reading hands entirely — the camera stays on, mouse, touch,
+   * keyboard and voice keep working. Used when the tracking is misreading a room,
+   * or when someone just wants to move without the board following.
+   */
+  setInputsPaused(paused: boolean): void {
+    if (this.inputsPaused === paused) return;
+    this.inputsPaused = paused;
+    if (paused) {
+      if (this.penDown) this.finishStroke();
+      this.cancelInput();
+      this.cursor.visible = false;
+      this.canvasNavigation.reset('gestures paused');
+    }
+  }
+
+  setEraseMode(on: boolean): void {
+    this.eraseMode = on;
+  }
+
+  setDominantHand(mode: 'auto' | 'Left' | 'Right'): void {
+    this.handSelector.setMode(mode);
+    this.forceFilterReset = true;
+  }
+
+  setMinPointDistance(value: number): void {
+    this.store.setMinPointDistance(value);
+  }
+
+  /** True while the spatial cursor hovers an interactive UI region: a pinch
+   *  over UI is a click, never a stroke (disambiguation rule of the system). */
+  setUiHovered(hovered: boolean): void {
+    this.uiHovered = hovered;
+    if (hovered && this.penDown) this.finishStroke();
+  }
+
+  /**
+   * A control is actually under the cursor or holding a press. Navigation yields to
+   * this, but not to the post-click cooldown: hovering nothing while the double-tap
+   * guard runs must not freeze the sheet.
+   */
+  setUiCaptured(captured: boolean): void {
+    this.uiCaptured = captured;
+  }
+
+  /**
+   * The application-context gate: only the studio (and the tutorial's drawing
+   * lessons) may put ink on the canvas. Help, Gallery, Settings, the dock and
+   * the clear confirmation all lift this, so a pinch meant for a button can
+   * never also draw — and an in-flight stroke is finished, not left hanging.
+   */
+  setDrawingAllowed(allowed: boolean): void {
+    if (this.drawingAllowed === allowed) return;
+    this.drawingAllowed = allowed;
+    if (!allowed && this.penDown) this.finishStroke();
+  }
+
+  /** Pointer Sensitivity setting: 1 is the tuned default. */
+  setPointerSensitivity(gain: number): void {
+    this.indexFilter.setResponsiveness(gain);
+    this.thumbFilter.setResponsiveness(gain);
+  }
+
+  /**
+   * Pointer Smoothing setting, 0 = crisp … 1 = glassy. It moves the filter's floor
+   * rather than its gain, so a steady hand stops buzzing without making a fast one
+   * arrive late. The midpoint is exactly the shipped floor — a default must never
+   * quietly retune the pen.
+   */
+  setPointerSmoothing(amount: number): void {
+    const a = Math.min(Math.max(amount, 0), 1);
+    const hz = POINTER_FILTER.minCutoff * Math.pow(2, 0.5 - a);
+    this.indexFilter.setMinCutoff(hz);
+    this.thumbFilter.setMinCutoff(hz);
+  }
+
+  /** Pinch Threshold Assist setting (0 = off, 1 = easiest). */
+  setPinchAssist(amount: number): void {
+    this.pinchDetector.setAssist(amount);
+    this.secondaryDetector.setAssist(amount);
+  }
+
+  setRenderStats(stats: RenderStats): void {
+    this.renderStats = stats;
+  }
+
+  onCursor(listener: CursorListener): () => void {
+    this.cursorListeners.add(listener);
+    return () => this.cursorListeners.delete(listener);
+  }
+
+  onMetrics(listener: MetricsListener): () => void {
+    this.metricsListeners.add(listener);
+    listener(this.metricsSnapshot);
+    return () => this.metricsListeners.delete(listener);
+  }
+
+  /**
+   * The published metrics as one stable object. React reads this through
+   * `useSyncExternalStore` instead of being handed a fresh object from inside the
+   * render loop: a `setState` called between two of React's own units of work is
+   * counted as a nested update, and past fifty of those React abandons the update
+   * entirely — which on screen looks like a pen that refuses to draw while every
+   * gate still says drawing is allowed.
+   */
+  getMetrics(): EngineMetrics {
+    return this.metricsSnapshot;
+  }
+
+  /** Fires when committed history changes (undo / clear / stroke committed). */
+  onHistoryChange(listener: () => void): () => void {
+    this.historyListeners.add(listener);return()=>{this.historyListeners.delete(listener);};
+  }
+
+  // ------------------------------------------------------------------ actions
+
+  get strokeCount(): number {
+    return this.store.strokeCount;
+  }
+
+  get canUndo(): boolean {
+    return this.projectHistory?.canUndo()??this.store.canUndo;
+  }
+
+  get canRedo(): boolean {
+    return this.projectHistory?.canRedo()??this.store.canRedo;
+  }
+
+  get pointerState(): PointerState {
+    return this.cursor.pointerState;
+  }
+
+  /** The stroke in progress, for the 3D live preview. */
+  get activeStroke() {
+    return this.store.activeStroke;
+  }
+
+  getCommitted(): readonly Stroke[] {
+    return this.store.committed;
+  }
+
+  /** Dev-only introspection for deterministic browser tests. */
+  get inputHint():string {
+    if(!this.tracking.primary)return '请让主手进入画面';
+    if(this.inspectMode)return '当前为查看模式';
+    if(this.inputLocked)return '张开手，解除暂停';
+    if(this.uiHovered)return '指针移出工具区，再松开捏合';
+    if(!this.drawingAllowed)return this.workspaceMode==='MODEL_CONTROL'?'当前为模型操控模式':'当前页面暂停绘画';
+    if(inputRouter.context!=='WORKSPACE')return '当前输入焦点在界面';
+    if(inputRouter.waitingForRelease)return '先完全松开，再捏合落笔';
+    if(this.recapture)return '正在重新定位手部';
+    if(this.penDown)return '正在绘画';
+    return this.pinchDetector.reason;
+  }
+  get inputDiagnostic(){return {at:new Date().toISOString(),mode:this.workspaceMode,hint:this.inputHint,contact:{...this.contact},profile:{...this.pinchDetector.profile},router:{mode:inputRouter.mode,context:inputRouter.context,waitingForRelease:inputRouter.waitingForRelease,mayDraw:inputRouter.mayDraw},hand:this.tracking.primary?{handedness:this.tracking.primary.handedness,score:this.tracking.primary.score,worldPoints:this.tracking.primary.worldLandmarks?.length??0}:null,gates:this.debugInternals,recentFrames:this.inputSamples};}
+  get debugInternals() {
+    return {
+      penDown: this.penDown,
+      suspended: this.suspended,
+      recapture: this.recapture?.length ?? 0,
+      activeSegments: this.store.activeStroke?.segments.length ?? 0,
+      activePoints: this.store.activePointCount,
+      pinchActive: this.pinchDetector.isActive,
+      pinchValue: this.pinchDetector.value,
+      gesture: this.gesture.gesture,
+      uiHovered: this.uiHovered,
+      locked: this.inputLocked,
+      drawingAllowed: this.drawingAllowed,
+      inspectMode: this.inspectMode,
+      eraseMode: this.eraseMode,
+      canvasZoom: this.canvasNav.state().zoom,
+      canvasNav: this.canvasNavigation.snapshot(),
+      twoDistancePx: Math.round(this.handsDistancePx),
+    };
+  }
+
+  /** Plane space → screen pixels, for the 2D renderer and DOM overlays. */
+  toScreenPoint(point: Point): Point {
+    if (this.mapper) return this.mapper.toScreen(point.x, point.y);
+    // No frame size has arrived yet, so there is no aspect to preserve: the plane simply
+    // stretches onto the window. An overlay then lands somewhere sensible instead of
+    // every point collapsing onto the centre, and the canvas camera is never rebased on
+    // this guess (`ViewportController.isReady` gates the framing decisions).
+    return { x: point.x * this.viewport.width, y: point.y * this.viewport.height, z: 0 };
+  }
+
+  /**
+   * Where a document point lands on screen in the mode that is running: the dot
+   * canvas applies its own camera, spatial drawing uses the plane mapping as-is.
+   */
+  docToScreen(point: Point): Point {
+    const screen = this.workspaceMode === 'CANVAS_DRAW' ? this.canvasNav.docToScreen(point) : this.toScreenPoint(point);
+    return { x: screen.x, y: screen.y, z: 0 };
+  }
+
+  /**
+   * Hand input, in video plane space, into document space. On the dot canvas the
+   * hand first becomes container CSS pixels and only then a document point, so the
+   * fingertip, the ink and the selection agree at every zoom.
+   */
+  planeToDoc(point: Point): Point {
+    if (this.workspaceMode !== 'CANVAS_DRAW' || !this.mapper) return point;
+    const screen = this.mapper.toScreen(point.x, point.y);
+    const doc = this.canvasNav.screenToDoc(screen);
+    return { x: doc.x, y: doc.y, z: point.z };
+  }
+
+  /**
+   * Feed this frame to the canvas navigation machine and apply whatever it decided.
+   *
+   * The palm arrives as a **raw plane point**: container CSS pixels from the camera
+   * mapping, before any navigation. Converting it through the live viewport first
+   * (as an earlier version did) made the pan delta a function of the offset it was
+   * about to change — a feedback loop that drifted a perfectly still hand. The
+   * session inside `CanvasNavigation` owns its baseline and returns a complete
+   * viewport, which is assigned here through the one writer.
+   */
+  private updateCanvasNav(now: number, palmPlane: Point, openness: number, pinched: boolean): void {
+    if (this.workspaceMode !== 'CANVAS_DRAW' || !this.mapper) {
+      if (this.canvasNavigation.mode !== 'idle') this.canvasNavigation.reset('left the canvas');
+      return;
+    }
+    const two = this.frame.two;
+    const mapper = this.mapper;
+    // The pair's anchor is a `HandFrame` point, so it is mirrored here and not upstream.
+    const twoMid = two ? this.framePlane(two.midpoint) : null;
+    const twoScreen = twoMid ? mapper.toScreen(twoMid.x, twoMid.y) : null;
+    const view = this.canvasNav.state();
+    const effect = this.canvasNavigation.update({
+      now,
+      handPresent: true,
+      palmScreen: mapper.toScreen(palmPlane.x, palmPlane.y),
+      openness,
+      pinched,
+      drawing: this.penDown,
+      uiBusy: this.uiCaptured || this.inputLocked || !this.drawingAllowed,
+      two: two && twoScreen
+        ? {
+            active: two.active && openness >= 0.5,
+            midpointScreen: twoScreen,
+            distancePx: this.handsDistancePx,
+          }
+        : null,
+      twoPresent: !!this.frame.secondary,
+      panSpeed: this.navPanSpeed,
+      zoomSensitivity: this.navZoomSensitivity,
+      view,
+      toDoc: (screen) => this.canvasNav.screenToDoc(screen),
+      toBase: (doc) => this.canvasNav.baseOf(doc),
+    });
+    if (effect.started) {
+      // Remember the pre-navigation view once per session, so 回到上次视图 returns to
+      // where the user was before the hand took the sheet, and cancel any stroke a
+      // pan/zoom upgrade interrupts.
+      this.canvasNav.remember();
+      this.cancelInput();
+    }
+    let changed = effect.started || effect.ended;
+    if (effect.view) {
+      this.canvasNav.setView(effect.view);
+      changed = true;
+    }
+    if (effect.ended) {
+      // Stale pinches, swipe velocity and capture buffers must not survive a
+      // navigation: the next stroke starts with a fresh pinch, not a long line
+      // from wherever the hand was before the sheet moved.
+      this.cancelInput();
+      if (this.canvasNavigation.reason !== 'pinch took over' && this.canvasNavigation.reason !== 'pen down' && this.canvasNavigation.reason !== 'ui captured') {
+        inputRouter.clearCapture();
+      }
+    }
+    if (import.meta.env.DEV) {
+      this.navTrace.push({
+        seq: this.resultSeq,
+        t: Math.round(now),
+        mode: this.canvasNavigation.mode,
+        palm: this.mapper.toScreen(palmPlane.x, palmPlane.y),
+        view: this.canvasNav.state(),
+        wrote: !!effect.view,
+      });
+      if (this.navTrace.length > 240) this.navTrace.splice(0, this.navTrace.length - 240);
+    }
+    if (changed) this.notifyCanvasNav();
+  }
+
+  // ---- 3D ink navigation: same rules as the sheet, camera-space baseline --------
+  spatialNavMode: 'idle' | 'pan' | 'zoom' | 'frozen' = 'idle';
+  /** The scene owns the camera; the engine only says when a hand owns navigation. */
+  private spatialNavListeners = new Set<(intent: SpatialNavIntent) => void>();
+  onSpatialNav(listener: (intent: SpatialNavIntent) => void): () => void {
+    this.spatialNavListeners.add(listener);
+    return () => { this.spatialNavListeners.delete(listener); };
+  }
+  private emitSpatialNav(intent: SpatialNavIntent): void {
+    for (const listener of this.spatialNavListeners) listener(intent);
+  }
+
+  /**
+   * The 3D gate mirrors the sheet's: an open palm held past the engage hold pans the
+   * view, two open hands zoom it, and a pinch, the pen, a captured control or a lost
+   * hand ends the session. Baselines live in the scene (it owns the camera); the
+   * engine only announces begin/update/end with hand positions in window pixels, which is
+   * the frame the pointer lives in.
+   */
+  private updateSpatialNav(palmPlane: Point, openness: number, pinched: boolean): void {
+    if (this.workspaceMode !== 'SPATIAL_DRAW' || !this.mapper) {
+      if (this.spatialNavMode !== 'idle') this.endSpatialNav('left spatial mode');
+      return;
+    }
+    const two = this.frame.two;
+    const palmScreen = this.mapper.toScreen(palmPlane.x, palmPlane.y);
+    const twoMid = two ? this.framePlane(two.midpoint) : null;
+    const midScreen = twoMid ? this.mapper.toScreen(twoMid.x, twoMid.y) : null;
+    const distancePx = this.handsDistancePx;
+    const busy = pinched || this.penDown || this.uiCaptured || this.inputLocked || this.inspectMode;
+    if (busy) {
+      // Only a session that actually ends cancels anything: cancelling on every
+      // pinched frame would finish the stroke the user is drawing.
+      if (this.spatialNavMode !== 'idle') {
+        this.endSpatialNav(pinched ? 'pinch took over' : 'pen or ui took over');
+        this.cancelInput();
+      }
+      return;
+    }
+    const twoReady = !!two?.active && !!midScreen && distancePx >= CANVAS_NAV.minTwoDistancePx && openness >= CANVAS_NAV.openness;
+    if (twoReady && this.spatialNavMode !== 'zoom') {
+      this.spatialNavMode = 'zoom';
+      this.cancelInput();
+      this.emitSpatialNav({ kind: 'begin', mode: 'zoom', palmScreen, midScreen, distancePx });
+      return;
+    }
+    if (this.spatialNavMode === 'zoom') {
+      if (!two?.active || !midScreen || distancePx < CANVAS_NAV.minTwoDistancePx * 0.7) {
+        this.endSpatialNav('hands separated');
+        return;
+      }
+      this.emitSpatialNav({ kind: 'update', palmScreen: null, midScreen, distancePx });
+      return;
+    }
+    const palmOpen = openness >= CANVAS_NAV.openness;
+    if (!palmOpen || !!two) {
+      if (this.spatialNavMode === 'pan') this.endSpatialNav('hand closed');
+      return;
+    }
+    // A single open palm in spatial mode still belongs to the dock summon it has
+    // always driven; panning the 3D view with one hand needs a gesture vocabulary
+    // that does not fight that hold, so it waits for a later phase. Two open hands
+    // are unambiguous and own the zoom.
+  }
+
+  private endSpatialNav(reason: string): void {
+    if (this.spatialNavMode === 'idle') return;
+    this.spatialNavMode = 'idle';
+    // The latch a transition left behind must not swallow the next deliberate pinch.
+    inputRouter.clearCapture();
+    this.emitSpatialNav({ kind: 'end', reason });
+  }
+
+  private canvasNavListeners = new Set<() => void>();
+  onCanvasNav(listener: () => void): () => void {
+    this.canvasNavListeners.add(listener);
+    return () => { this.canvasNavListeners.delete(listener); };
+  }
+  private notifyCanvasNav(): void {
+    for (const listener of this.canvasNavListeners) listener();
+  }
+
+  /** Bounding box of the committed ink, or null on an empty board. */
+  canvasContentBounds(): { minX: number; minY: number; maxX: number; maxY: number } | null {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const stroke of this.canvasStore.committed) {
+      for (const segment of stroke.segments) {
+        for (const p of segment) {
+          if (p.x < minX) minX = p.x;
+          if (p.y < minY) minY = p.y;
+          if (p.x > maxX) maxX = p.x;
+          if (p.y > maxY) maxY = p.y;
+        }
+      }
+    }
+    return minX === Infinity ? null : { minX, minY, maxX, maxY };
+  }
+
+  canvasFitAll(): void {
+    this.canvasNav.remember();
+    this.canvasNav.fitRect(this.canvasContentBounds());
+    this.notifyCanvasNav();
+  }
+
+  canvasZoomReset(): void {
+    this.canvasNav.remember();
+    this.canvasNav.reset();
+    this.notifyCanvasNav();
+  }
+
+  canvasZoomBy(factor: number): void {
+    this.canvasNav.remember();
+    this.canvasNav.zoomAt(this.canvasNav.visibleCentre(), factor);
+    this.notifyCanvasNav();
+  }
+
+  /**
+   * How much chrome overlaps the board (bar row, property column). Framing decisions
+   * aim at the visible middle instead of the window middle; the pointer mapping does
+   * not change, because the hand still has to be able to reach that chrome.
+   */
+  setBoardInsets(insets: { left?: number; top?: number; right?: number; bottom?: number }): void {
+    this.canvasNav.setInsets(insets);
+  }
+
+  canvasViewLast(): void {
+    if (this.canvasNav.restore()) this.notifyCanvasNav();
+  }
+
+  /** Centre the sheet on a document point (minimap jumps). The view to return to is
+   *  remembered once per drag by the caller, not once per pixel of it. */
+  canvasCentreOn(doc: Point): void {
+    const screen = this.canvasNav.docToScreen(doc);
+    const centre = this.canvasNav.visibleCentre();
+    this.canvasNav.pan(centre.x - screen.x, centre.y - screen.y);
+    this.notifyCanvasNav();
+  }
+
+  /** Snapshot the current view for 回到上次视图 (call once per user gesture). */
+  rememberView(): void {
+    this.canvasNav.remember();
+  }
+
+  /** Toolbar/voice pan: same single writer as the gesture path, and it notifies. */
+  panBoard(dx: number, dy: number): void {
+    this.canvasNav.remember();
+    this.canvasNav.pan(dx, dy);
+    this.notifyCanvasNav();
+  }
+
+  /** Latest smoothed plane-space index position (3D tip sphere, previews). */
+  cursorPlanePoint(): Point | null {
+    return this.debugSnapshot.index;
+  }
+
+  currentBrushWidth(): number {
+    return this.getBrush().width;
+  }
+
+  undo(): boolean {
+    if (this.penDown) this.finishStroke();
+    if(this.projectHistory)return this.projectHistory.undo();
+    if (!this.store.undo()) return false;
+    this.renderer?.rebuild(this.store.committed);
+    return true;
+  }
+
+  redo(): boolean {
+    if (this.penDown) this.finishStroke();
+    if(this.projectHistory)return this.projectHistory.redo();
+    if (!this.store.redo()) return false;
+    this.renderer?.rebuild(this.store.committed);
+    return true;
+  }
+
+  /**
+   * Put a saved artwork on the canvas. Opening a piece from the gallery is the
+   * only way ink appears without the user drawing it: nothing is auto-restored on
+   * launch, so a fresh session always starts with a clean sheet.
+   */
+  loadArtwork(strokes: readonly Stroke[]): void {
+    if (this.penDown) this.finishStroke();
+    this.store.replaceAll(strokes.map((stroke) => ({ ...stroke })));
+    this.renderer?.rebuild(this.store.committed);
+  }
+
+  clear(): boolean {
+    this.penDown = false;
+    this.suspended = false;
+    this.store.abort();
+    this.renderer?.discardStroke();
+    const changed = this.store.clear();
+    this.renderer?.clear();
+    return changed;
+  }
+
+  // ------------------------------------------------------------------ frames
+
+  /**
+   * One hand, measured in plane space. Deliberately derived from the landmarks
+   * this tick already decoded for the pen — measuring a hand must never cost a
+   * second inference.
+   */
+  private frameFor(
+    hand: TrackedHand,
+    role: 'primary' | 'secondary',
+    detector: PinchContactDetector,
+    videoWidth: number,
+    videoHeight: number,
+    at: number,
+  ): HandFrame {
+    const pixels = toPixelPoints(hand.landmarks, videoWidth, videoHeight);
+    const palmPx = palmCentreOf(pixels);
+    const centre = toPlane(palmPx.x / videoWidth, palmPx.y / videoHeight, false);
+    const thumb = hand.landmarks[LANDMARK.THUMB_TIP];
+    const tip = hand.landmarks[LANDMARK.INDEX_TIP];
+    const pinch = toPlane((thumb.x + tip.x) / 2, (thumb.y + tip.y) / 2, false);
+    const width = Math.max(palmLength(pixels) / Math.max(videoWidth, 1), 1e-3);
+    const { normal, facing } = palmOrientation(hand.worldLandmarks);
+    const openness = opennessOf(pixels);
+    const motion = this.motions[role].track({ x: centre.x, y: centre.y, z: 0 }, at);
+    return {
+      role,
+      handedness: hand.handedness,
+      confidence: hand.score,
+      landmarks: hand.landmarks,
+      worldLandmarks: hand.worldLandmarks,
+      palmCenter: { x: centre.x, y: centre.y, z: 0 },
+      palmNormal: normal,
+      facing,
+      palmWidth: width,
+      palmVelocity: motion.velocity,
+      palmAcceleration: motion.acceleration,
+      openness,
+      grabStrength: 1 - openness,
+      wristRotation: wristRollOf(pixels),
+      pinchState: detector.metrics.state,
+      pinchPoint: { x: pinch.x, y: pinch.y, z: 0 },
+      pinchStrength: detector.pinchStrength,
+      // A hand that is being re-anchored, poorly detected, or absurdly close to
+      // the lens cannot carry an interaction.
+      isStable: hand.score >= 0.5 && this.recapture === null && width < 0.6 && Number.isFinite(centre.x),
+      visibleForMs: at - this.handsVisibleSince,
+    };
+  }
+
+  /**
+   * The pair view. Engagement needs both hands stable for a beat and release
+   * needs them missing for a longer beat, so one hand flickering at the edge of
+   * frame cannot strobe a two-hand effect.
+   */
+  private twoFrame(primary: HandFrame, secondary: HandFrame, at: number, dtMs: number): TwoHandFrame {
+    const delta = { x: secondary.palmCenter.x - primary.palmCenter.x, y: secondary.palmCenter.y - primary.palmCenter.y };
+    const distance = Math.hypot(delta.x, delta.y);
+    const both = primary.isStable && secondary.isStable;
+    if (both) {
+      if (!this.twoStableSince) this.twoStableSince = at;
+      this.twoLostSince = 0;
+    } else {
+      this.twoStableSince = 0;
+      this.twoLostSince ||= at;
+    }
+    const wasActive = this.frame.two?.active ?? false;
+    const active = wasActive
+      ? !(this.twoLostSince && at - this.twoLostSince > PLAYLAB.twoHandReleaseMs)
+      : !!this.twoStableSince && at - this.twoStableSince >= PLAYLAB.twoHandEngageMs;
+
+    const velocity = (distance - this.lastTwoDistance) / Math.max(dtMs / 1000, 0.001);
+    this.lastTwoDistance = distance;
+    if (active && !this.twoReference) this.twoReference = { distance: Math.max(distance, 1e-3), angle: Math.atan2(delta.y, delta.x) };
+    if (!active) this.twoReference = null;
+    const angle = Math.atan2(delta.y, delta.x);
+    const twist = this.twoReference ? Math.atan2(Math.sin(angle - this.twoReference.angle), Math.cos(angle - this.twoReference.angle)) : 0;
+    return {
+      active,
+      distance,
+      midpoint: { x: (primary.palmCenter.x + secondary.palmCenter.x) / 2, y: (primary.palmCenter.y + secondary.palmCenter.y) / 2, z: 0 },
+      direction: distance > 1e-6 ? { x: delta.x / distance, y: delta.y / distance, z: 0 } : { x: 1, y: 0, z: 0 },
+      scale: this.twoReference ? distance / this.twoReference.distance : 1,
+      twist,
+      approachVelocity: -velocity,
+      separationVelocity: velocity,
+    };
+  }
+
+  private updateFrames(result: HandTrackingResult, at: number, dtMs: number): void {
+    const secondary = this.tracking.secondary;
+    this.frame.primary = this.frameFor(this.tracking.primary!, 'primary', this.pinchDetector, result.videoWidth, result.videoHeight, at);
+    this.frame.secondary = secondary
+      ? this.frameFor(secondary, 'secondary', this.secondaryDetector, result.videoWidth, result.videoHeight, at)
+      : null;
+    this.frame.two = this.frame.primary && this.frame.secondary ? this.twoFrame(this.frame.primary, this.frame.secondary, at, dtMs) : null;
+    this.frame.at = at;
+    this.frame.epoch = this.tracking.epoch;
+  }
+
+  // -------------------------------------------------------------------- input
+
+  /** Called by the tracking provider for every detection result. */
+  handleResult(result: HandTrackingResult | null): void {
+    const now = performance.now();
+    // Paused means paused: the frames are dropped before anything reads them, so no
+    // half-processed hand can leave a stroke, a hover or a navigation session open.
+    if (this.inputsPaused) return;
+    if(result){this.detectTicks++;this.debugSnapshot.inferenceMs=result.inferenceMs;}
+    // One recognition result is processed once. A provider that re-emits a frame (or
+    // a test that double-drives the engine) must not accumulate a second pan from it.
+    if (result && typeof result.timestamp === 'number') {
+      if (result.timestamp <= this.lastProcessedStamp) return;
+      this.lastProcessedStamp = result.timestamp;
+    }
+    this.resultSeq += 1;
+    if (!result || result.hands.length === 0) {
+      this.handleLost(now);
+      return;
+    }
+    this.handleHands(result, now);
+  }
+
+  private handleLost(now: number): void {
+    this.lostSince ??= now;
+    // Keep an ink session across a short dropout; models lose their grab frame immediately.
+    if (this.penDown && now - this.lostSince < TRACKING_LOST_GRACE_MS) {
+      this.frame.primary=null;this.frame.secondary=null;this.frame.two=null;
+      this.pinchDetector.update(null,now);
+      return;
+    }
+    if(this.tracking.primary)inputRouter.suspend();
+    this.pinchDetector.update(null);
+    if (this.spatialNavMode === 'pan' || this.spatialNavMode === 'zoom') this.endSpatialNav('hand lost');
+    const lostNav = this.canvasNavigation.update({
+      now,
+      handPresent: false,
+      palmScreen: null,
+      openness: 0,
+      pinched: false,
+      drawing: false,
+      uiBusy: false,
+      two: null,
+      twoPresent: false,
+      panSpeed: this.navPanSpeed,
+      zoomSensitivity: this.navZoomSensitivity,
+      view: this.canvasNav.state(),
+      toDoc: (screen) => this.canvasNav.screenToDoc(screen),
+      toBase: (doc) => this.canvasNav.baseOf(doc),
+    });
+    // A session the loss just ended still owns its final commit: remember where the
+    // user was before it, and tell the layers the view settled.
+    if (lostNav.ended) {
+      this.canvasNav.remember();
+      this.notifyCanvasNav();
+    }
+    this.secondaryDetector.update(null);
+    this.tracking.primary=null;this.tracking.secondary=null;this.tracking.secondaryContact=false;
+    this.frame.primary=null;this.frame.secondary=null;this.frame.two=null;this.frame.at=now;
+    this.motions.primary.reset();this.motions.secondary.reset();
+    this.twoStableSince=0;this.twoLostSince=0;this.twoReference=null;this.lastTwoDistance=0;this.handsVisibleSince=0;
+    this.lastWrist=null;
+    if(this.penDown)this.finishStroke();
+    this.cursor.pinched=false;
+    this.gestureEngine.update(null, false, 0, 16 / 9);
+    this.handCount = 0;
+    this.confidence = 0;
+
+    const lostFor = now - this.lostSince;
+    if (this.penDown && !this.suspended) {
+      // Pause, do not finish: the stroke resumes as a new segment when the hand
+      // comes back, and undo still removes the whole gesture.
+      this.suspended = true;
+      this.store.lift();
+    }
+
+    const searching = !this.hasSeenHand || lostFor > CURSOR_HIDE_AFTER_MS;
+    this.cursor.pointerState = searching ? 'searching' : 'lost';
+    this.cursor.visible = !searching;
+    this.cursor.drawing = false;
+    this.debugSnapshot = {
+      ...this.debugSnapshot,
+      pointerState: this.cursor.pointerState,
+      drawing: false,
+      gesture: 'NONE',
+      gestureConfidence: 0,
+      handCount: 0,
+    };
+    this.publishCursor();
+  }
+
+  private handleHands(result: HandTrackingResult, now: number): void {
+    this.deferredStall=false;
+    const lostFor = this.lostSince === null ? 0 : now - this.lostSince;
+    const cameBack = this.lostSince !== null;
+    this.lostSince = null;
+    this.hasSeenHand = true;
+    this.handCount = result.hands.length;
+
+    const dtMs = this.lastResultAt === 0 ? 33 : Math.min(Math.max(now - this.lastResultAt, 1), 250);
+    if (this.lastResultAt > 0) {
+      const gap = now - this.lastResultAt;
+      if (gap > 0 && gap < 2000) this.resultInterval = this.resultInterval ? this.resultInterval * 0.8 + gap * 0.2 : gap;
+    }
+    this.lastResultAt = now;
+    const dtSeconds = dtMs / 1000;
+    this.gestureLatencyMs = now - result.timestamp;
+
+    if (result.hands.length === 2) {
+      const a = toPixelPoints(result.hands[0].landmarks, result.videoWidth, result.videoHeight);
+      const b = toPixelPoints(result.hands[1].landmarks, result.videoWidth, result.videoHeight);
+      const ca = palmCenter(a);
+      const cb = palmCenter(b);
+      this.handsDistancePx = Math.hypot(ca.x - cb.x, ca.y - cb.y);
+    } else {
+      this.handsDistancePx = 0;
+    }
+
+    if (result.videoWidth !== this.videoSize.width || result.videoHeight !== this.videoSize.height) {
+      this.videoSize = { width: result.videoWidth, height: result.videoHeight };
+    }
+    this.syncScreenMapping();
+
+    const selection = this.handSelector.update(result.hands);
+    const hand = selection.primary;
+    if (!hand) {
+      this.handleLost(now);
+      return;
+    }
+    this.confidence = hand.score;
+    const wrist=hand.landmarks[0];
+    const previousTip=this.tracking.primary?.landmarks[LANDMARK.INDEX_TIP];
+    const currentTip=hand.landmarks[LANDMARK.INDEX_TIP];
+    const tipJump=previousTip?Math.hypot(currentTip.x-previousTip.x,currentTip.y-previousTip.y):0;
+    const jumped=this.lastWrist!==null && Math.hypot(wrist.x-this.lastWrist.x,wrist.y-this.lastWrist.y)>.24 || cameBack&&tipJump>.14 || this.penDown&&tipJump>.28;
+    this.lastWrist={x:wrist.x,y:wrist.y};
+    if(selection.switched||jumped||cameBack&&lostFor>180){this.cancelInput();this.forceFilterReset=true;}
+
+    const { videoWidth, videoHeight } = result;
+    const pixels = toPixelPoints(hand.landmarks, videoWidth, videoHeight);
+    this.palmSmoother.update(palmLength(pixels));
+    const palmScalePx = this.palmSmoother.current;
+    const { distancePx } = pinchRatio(pixels);
+    const palmPx = palmCenter(pixels);
+
+    const indexLm = hand.landmarks[LANDMARK.INDEX_TIP];
+    const thumbLm = hand.landmarks[LANDMARK.THUMB_TIP];
+    const depth = Math.min(Math.max(indexDepthFeedback(hand), -1), 1) * Z_FEEDBACK_MAX;
+    const rawPlane: Point = { ...toPlane(indexLm.x, indexLm.y, this.mirror), z: depth };
+    const rawThumbPlane = toPlane(thumbLm.x, thumbLm.y, this.mirror);
+    const rawPalmPlane = toPlane(palmPx.x / videoWidth, palmPx.y / videoHeight, this.mirror);
+    // On the dot canvas the hand aims into document space through the canvas camera;
+    // everywhere else plane space already is document space.
+    const aimPlane = this.planeToDoc(rawPlane);
+    const aimThumbPlane = this.planeToDoc(rawThumbPlane);
+
+    // Identity change (hand swap) or a long dropout: re-anchor instead of sweeping.
+    const needsRecapture =
+      // While a buffer is already filling, only a genuine identity change re-arms it.
+      // A stalled main thread makes every frame look like "the hand just came back",
+      // and re-arming each frame means the buffer never reaches its length — the pen
+      // then stays dead with every gate reporting that drawing is allowed.
+      (!!this.recapture && selection.switched) ||
+      (!this.recapture && (this.forceFilterReset || selection.switched || (cameBack && lostFor > this.resetAfterMs)));
+    if (needsRecapture) {
+      this.forceFilterReset = false;
+      this.recapture = [this.velocityLimiter.limit(aimPlane, dtSeconds)];
+      this.cancelInput();
+    } else if (this.recapture) {
+      this.recapture.push(this.velocityLimiter.limit(aimPlane, dtSeconds));
+    }
+
+    let limitedPlane = aimPlane;
+    if (this.recapture) {
+      if (this.recapture.length < RECAPTURE_BUFFER_FRAMES) {
+        // Still buffering: keep the pen where it was, do not move the ink.
+        limitedPlane = this.recapture[this.recapture.length - 1];
+      } else {
+        const anchor = medianPoint(this.recapture);
+        this.indexFilter.reset(anchor.x, anchor.y);
+        this.thumbFilter.reset(aimThumbPlane.x, aimThumbPlane.y);
+        this.zFilter.reset(anchor.z);
+        this.velocityLimiter.reset(anchor);
+        this.recapture = null;
+        limitedPlane = anchor;
+      }
+    } else {
+      limitedPlane = this.velocityLimiter.limit(aimPlane, dtSeconds);
+    }
+
+    const seconds = now / 1000;
+    const smoothedIndex = this.indexFilter.filter(seconds, limitedPlane.x, limitedPlane.y);
+    const smoothedThumb = this.thumbFilter.filter(seconds, aimThumbPlane.x, aimThumbPlane.y);
+    const zSmoothed = this.zFilter.filter(limitedPlane.z);
+    // The dot canvas is infinite: clamping to the original sheet would pin the pen to
+    // its edge the moment the user pans away. Spatial ink keeps the 0..1 plane.
+    const onCanvas = this.workspaceMode === 'CANVAS_DRAW';
+    const point: Point = {
+      x: onCanvas ? smoothedIndex.x : clamp01(smoothedIndex.x),
+      y: onCanvas ? smoothedIndex.y : clamp01(smoothedIndex.y),
+      z: onCanvas ? 0 : zSmoothed,
+    };
+
+    this.tracking.primary=hand;
+    this.tracking.secondary=result.hands.find(h=>h!==hand)??null;
+    this.tracking.secondaryContact=this.secondaryDetector.update(this.tracking.secondary,now,videoWidth/videoHeight);
+    const pinchedRaw = this.pinchDetector.update(hand,now,videoWidth/videoHeight);
+    inputRouter.contact(pinchedRaw,this.pinchDetector.metrics.state);
+    this.gesture = this.gestureEngine.update(hand, pinchedRaw, dtMs, videoWidth / videoHeight);
+    if (cameBack || !this.handsVisibleSince) this.handsVisibleSince = now;
+    this.updateFrames(result, now, dtMs);
+    this.updateCanvasNav(now, rawPalmPlane, this.frame.primary?.openness ?? 0, pinchedRaw);
+    this.updateSpatialNav(rawPalmPlane, this.frame.primary?.openness ?? 0, pinchedRaw);
+    const screen = clampToViewport(this.docToScreen(point),this.viewport.width,this.viewport.height);
+    /**
+     * Spatial ink is placed by the camera, so the point the pen writes is the one that
+     * *renders* under this screen pixel — not the plane coordinate that happens to be
+     * near it. Without the ray the tube started up to ~57 px away from the orb at the
+     * edge of a 16:9 window, and the error grew radially. Depth stays the hand's own
+     * value: the ray answers "where on the plane", nothing more.
+     */
+    const onPlane = this.workspaceMode === 'SPATIAL_DRAW' ? this.worldRay?.({ x: screen.x, y: screen.y }) : null;
+    const aim: Point = onPlane ? { x: onPlane.x, y: onPlane.y, z: point.z } : point;
+    this.cursor.x=screen.x;this.cursor.y=screen.y;this.cursor.visible=true;
+    this.cursor.pinch=this.pinchDetector.pinchStrength;this.cursor.pinched=pinchedRaw;this.cursor.pointerState='tracking';
+    this.debugSnapshot.index=aim;
+    // UI preflight happens before ink. InputRouter chooses exactly one context.
+    this.publishCursor();
+    // One gate for every pen action: erasing must obey the same locks as drawing,
+    // otherwise a pinch that activates a dock button also deletes ink.
+    const penPinched =
+      pinchedRaw && this.drawingAllowed && !this.inputLocked && !this.inspectMode && !this.uiHovered && inputRouter.mayDraw;
+    if ((this.eraseMode || this.workspaceMode==='CANVAS_DRAW' && this.canvasTool==='eraser') && penPinched) {
+      // The eraser is a cursor-sized tool: its reach is constant on screen, so in
+      // document units it shrinks as the sheet is magnified.
+      const eraseRadius = onCanvas ? ERASE_RADIUS_PLANE / this.canvasNav.state().zoom : ERASE_RADIUS_PLANE;
+      if (this.store.removeNear(aim, eraseRadius,this.projectEditable??undefined,s=>this.projectRender?.([s])[0]??s)) this.renderer?.rebuild(this.store.committed);
+    } else {
+      this.updateStroke(penPinched && this.recapture === null, aim);
+    }
+
+    this.cursor.x = screen.x;
+    this.cursor.y = screen.y;
+    this.cursor.visible = true;
+    this.cursor.pinch = this.pinchDetector.pinchStrength;
+    this.cursor.pinched = pinchedRaw;
+    this.cursor.drawing = this.penDown && !this.suspended;
+    this.cursor.pointerState = this.penDown ? 'drawing' : 'tracking';
+
+    this.debugSnapshot = {
+      ...this.debugSnapshot,
+      inferenceMs: result.inferenceMs,
+      index: aim,
+      thumb: { x: smoothedThumb.x, y: smoothedThumb.y, z: 0 },
+      palm: rawPalmPlane,
+      indexRaw: rawPlane,
+      pinchRatio: this.pinchDetector.value,
+      pinched: this.pinchDetector.isActive,
+      pinchDistancePx: distancePx,
+      palmScalePx,
+      confidence: this.confidence,
+      drawing: this.penDown && !this.suspended,
+      pointerState: this.cursor.pointerState,
+      gesture: this.gesture.gesture,
+      gestureConfidence: this.gesture.confidence,
+      gestureDurationMs: this.gesture.durationMs,
+      handCount: this.handCount,
+      primaryHandedness: hand.handedness,
+      videoWidth,
+      videoHeight,
+      mapperScale: this.mapper?.scale ?? 1,
+      mirrored: this.mirror,
+    };
+    this.inputSamples.push({at:now,hand:hand.handedness,score:hand.score,contact:{...this.contact},hint:this.inputHint,context:inputRouter.context,waitingForRelease:inputRouter.waitingForRelease,...this.debugInternals});
+    if(this.inputSamples.length>300)this.inputSamples.shift();
+  }
+
+  private updateStroke(pinched: boolean, point: Point): void {
+    if (!pinched) {
+      if (this.penDown) this.finishStroke();
+      return;
+    }
+
+    if (!this.penDown) {
+      this.penDown = true;
+      this.suspended = false;
+      const { color, width, material } = this.getBrush();
+      // NB: begin the stroke before touching the renderer — with `renderer?.x(begin(...))`
+      // the store call would be skipped entirely whenever no 2D renderer is attached.
+      const stroke = this.store.begin(color, width, material, point);
+      if(this.workspaceMode==='SPATIAL_DRAW')stroke.surface=this.surface;
+      if(this.workspaceMode==='CANVAS_DRAW'){stroke.mode='canvas';stroke.tool=this.canvasTool;stroke.virtualPressure=this.canvasPressure;}
+      this.renderer?.beginStroke(stroke, point);
+      return;
+    }
+
+    if (this.suspended) {
+      this.suspended = false;
+      this.store.resume(point);
+      const stroke = this.store.activeStroke;
+      if (stroke) this.renderer?.beginStroke(stroke, point);
+      return;
+    }
+
+    if (this.store.append(point)) this.renderer?.extendStroke(point);
+  }
+
+  private finishStroke(): void {
+    this.penDown = false;
+    this.suspended = false;
+    const stroke = this.store.commit();
+    if (stroke) this.renderer?.commitStroke(stroke);
+    else this.renderer?.discardStroke();
+  }
+
+  // --------------------------------------------------------------------- loop
+
+  private tick = (now: number): void => {
+    if (!this.running) return;
+    this.rafId = requestAnimationFrame(this.tick);
+    this.renderTicks += 1;
+    // A long render task delays both rAF and result delivery. Give pending input one
+    // event-loop turn; a render stall alone is not evidence that a hand disappeared.
+    const renderStalled=this.lastRenderTick>0&&now-this.lastRenderTick>150;
+    this.lastRenderTick=now;
+    const allowPending=renderStalled&&!this.deferredStall;
+    if(allowPending)this.deferredStall=true;
+    // A stalled render loop delays the *consumer*, not the source: comparing wall
+    // clock against the last frame we looked at reads as "the hand left" on any slow
+    // device, and then the pen dies while every gate still says drawing is allowed.
+    // The threshold therefore follows the cadence the provider actually delivers at.
+    const lossGrace = Math.max(TRACKING_LOST_GRACE_MS, this.resultInterval * 3);
+    if(!allowPending&&this.lastResultAt>0 && now-this.lastResultAt>lossGrace && this.lostSince===null){this.lostSince=this.lastResultAt;this.handleLost(now);}
+    if(!allowPending&&this.penDown&&this.lostSince!==null&&now-this.lostSince>=TRACKING_LOST_GRACE_MS)this.handleLost(now);
+
+    const elapsed = now - this.lastFpsAt;
+    if (elapsed >= 1000) {
+      this.renderFps = (this.renderTicks * 1000) / elapsed;
+      this.detectFps = (this.detectTicks * 1000) / elapsed;
+      this.renderTicks = 0;
+      this.detectTicks = 0;
+      this.lastFpsAt = now;
+    }
+
+    if (now - this.lastMetricsAt >= this.metricsIntervalMs) {
+      this.lastMetricsAt = now;
+      this.publishMetrics(now);
+    }
+  };
+
+  private publishMetrics(now: number): void {
+    if (this.metricsListeners.size === 0) return;
+    const metrics: EngineMetrics = {
+      ...this.debugSnapshot,
+      renderFps: this.renderFps,
+      sceneFps: this.renderStats.sceneFps,
+      detectFps: this.detectFps,
+      strokeCount: this.store.strokeCount,
+      activePointCount: this.store.activePointCount,
+      trajectoryPoints: this.store.activePointCount,
+      lostForMs: this.lostSince === null ? 0 : now - this.lostSince,
+      smoothingLatencyMs: this.detectFps > 0 ? 1000 / this.detectFps : 0,
+      gestureLatencyMs: this.gestureLatencyMs,
+      handsDistancePx: this.handsDistancePx,
+      outliersRejected: this.velocityLimiter.rejected,
+      canvasWidth: this.viewport.width,
+      canvasHeight: this.viewport.height,
+      delegate: this.delegate,
+      qualityTier: this.qualityTier,
+      drawCalls: this.renderStats.drawCalls,
+      geometries: this.renderStats.geometries,
+      viewMode: this.viewMode,
+    };
+    this.debugSnapshot = metrics;
+    this.metricsSnapshot = metrics;
+    // Every publish notifies. It is tempting to skip "unchanged" ones by comparing
+    // what the UI shows, but the application's gesture effects hang off this update:
+    // a held OPEN_PALM has to be re-examined while its duration grows, so a filtered
+    // snapshot silently stops the dock from ever opening.
+    for (const listener of this.metricsListeners) listener(metrics);
+  }
+
+  private publishCursor(): void {
+    if (this.cursorListeners.size === 0) return;
+    for (const listener of this.cursorListeners) listener(this.cursor);
+  }
+}
+
+function clamp01(v: number): number {
+  return v < 0 ? 0 : v > 1 ? 1 : v;
+}

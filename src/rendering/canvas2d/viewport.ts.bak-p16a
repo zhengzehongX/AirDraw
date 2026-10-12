@@ -1,0 +1,273 @@
+/**
+ * The 2D sheet's camera — the single place that knows how the document sits on the
+ * screen.
+ *
+ * Two coordinate systems, never mixed:
+ *  - **document space**: what strokes, shapes and notes are stored in (the plane
+ *    units the engine has always used, unbounded — the sheet is infinite);
+ *  - **screen space**: CSS pixels of the drawing container.
+ *
+ * The contract is one affine, `screen = base(doc) × zoom + offset`, where `base` is
+ * the mapping the container already had before any navigation (sampled from three
+ * points so camera mirroring, video aspect, container offset and device pixel ratio
+ * all stay outside this file). Panning and zooming only touch `zoom`/`offset`; a
+ * stroke's stored points never move, which is what makes the board infinite without
+ * a giant canvas or a page-level scale.
+ *
+ * Pure numbers, no DOM: the renderer, the dot grid, the hit tests and the gesture
+ * sessions all ask this controller, so the fingertip, the ink and the selection
+ * agree on one space at every zoom.
+ */
+export type ViewportState = { zoom: number; offsetX: number; offsetY: number };
+
+export type ScreenPoint = { x: number; y: number };
+
+export const ZOOM_LIMITS = { min: 0.2, max: 8 };
+
+const finite = (n: number) => Number.isFinite(n);
+
+/** The container's pre-navigation mapping, sampled from three document points. */
+export type BaseMapping = { p00: ScreenPoint; p10: ScreenPoint; p01: ScreenPoint };
+
+export class ViewportController {
+  private zoom = 1;
+  private offsetX = 0;
+  private offsetY = 0;
+  private base: BaseMapping = { p00: { x: 0, y: 0 }, p10: { x: 1, y: 0 }, p01: { x: 0, y: 1 } };
+  private surface: ScreenPoint = { x: 1, y: 1 };
+  /**
+   * Chrome that overlaps the board: the bar's row and the property column. The
+   * mapping itself stays window-wide on purpose — the pointer has to be able to reach
+   * those controls, and ink must land under the fingertip — but every framing decision
+   * (fit all, centre on a point, zoom from the toolbar) aims at the middle of what the
+   * user can actually see, so the artwork stops hiding behind the panel.
+   */
+  private insets = { left: 0, top: 0, right: 0, bottom: 0 };
+  private readonly past: ViewportState[] = [];
+
+  setInsets(insets: { left?: number; top?: number; right?: number; bottom?: number }): void {
+    const next = {
+      left: Math.max(0, insets.left ?? 0),
+      top: Math.max(0, insets.top ?? 0),
+      right: Math.max(0, insets.right ?? 0),
+      bottom: Math.max(0, insets.bottom ?? 0),
+    };
+    if (![next.left, next.top, next.right, next.bottom].every(finite)) return;
+    this.insets = next;
+  }
+
+  /** The middle of the visible board, in screen pixels. */
+  visibleCentre(): ScreenPoint {
+    return {
+      x: (this.insets.left + (this.surface.x - this.insets.right)) / 2,
+      y: (this.insets.top + (this.surface.y - this.insets.bottom)) / 2,
+    };
+  }
+
+  /** The size the content has to fit inside — the window minus the chrome over it. */
+  private visibleSurface(): ScreenPoint {
+    return {
+      x: Math.max(1, this.surface.x - this.insets.left - this.insets.right),
+      y: Math.max(1, this.surface.y - this.insets.top - this.insets.bottom),
+    };
+  }
+
+  setBase(base: BaseMapping): void {
+    if (![base.p00.x, base.p00.y, base.p10.x, base.p10.y, base.p01.x, base.p01.y].every(finite)) return;
+    this.base = base;
+  }
+
+  setSurface(surface: ScreenPoint): void {
+    if (surface.x > 0 && surface.y > 0 && finite(surface.x) && finite(surface.y)) this.surface = surface;
+  }
+
+  state(): ViewportState {
+    return { zoom: this.zoom, offsetX: this.offsetX, offsetY: this.offsetY };
+  }
+
+  /** base scale per axis: how many screen pixels one document unit covers at zoom 1. */
+  private scale(): { sx: number; sy: number; tx: number; ty: number } {
+    return {
+      sx: this.base.p10.x - this.base.p00.x,
+      sy: this.base.p01.y - this.base.p00.y,
+      tx: this.base.p00.x,
+      ty: this.base.p00.y,
+    };
+  }
+
+  docToScreen(point: ScreenPoint): ScreenPoint {
+    const { sx, sy, tx, ty } = this.scale();
+    return {
+      x: (point.x * sx + tx) * this.zoom + this.offsetX,
+      y: (point.y * sy + ty) * this.zoom + this.offsetY,
+    };
+  }
+
+  screenToDoc(point: ScreenPoint): ScreenPoint {
+    const { sx, sy, tx, ty } = this.scale();
+    if (sx === 0 || sy === 0) return { x: 0, y: 0 };
+    return {
+      x: ((point.x - this.offsetX) / this.zoom - tx) / sx,
+      y: ((point.y - this.offsetY) / this.zoom - ty) / sy,
+    };
+  }
+
+  /** Screen-pixel pan: the content follows the hand one-to-one. */
+  pan(dxScreen: number, dyScreen: number): void {
+    if (!finite(dxScreen) || !finite(dyScreen)) return;
+    this.offsetX += dxScreen;
+    this.offsetY += dyScreen;
+  }
+
+  /**
+   * Where a document point sits at zoom 1 and offset 0 — the part of the mapping that
+   * navigation must never feed back into itself. Gesture sessions anchor on this, so
+   * a palm or a two-hand midpoint stays viewport-independent while it drives the view.
+   */
+  baseOf(point: ScreenPoint): ScreenPoint {
+    const { sx, sy, tx, ty } = this.scale();
+    return { x: point.x * sx + tx, y: point.y * sy + ty };
+  }
+
+  /**
+   * The one absolute write a gesture session uses: the session computed this state
+   * from its own immutable baseline, so it is assigned, never accumulated.
+   */
+  setView(next: ViewportState): void {
+    if (!finite(next.zoom) || !finite(next.offsetX) || !finite(next.offsetY)) return;
+    this.zoom = clamp(next.zoom, ZOOM_LIMITS.min, ZOOM_LIMITS.max);
+    this.offsetX = next.offsetX;
+    this.offsetY = next.offsetY;
+  }
+
+  /**
+   * Zoom about a screen anchor. The document point under the anchor stays under it:
+   * `anchor = (start − offset₀)/zoom₀` in base space, then `offset₁ = start − base(anchor)×zoom₁`.
+   */
+  zoomAt(anchor: ScreenPoint, factor: number): boolean {
+    if (!finite(factor) || factor <= 0) return false;
+    const zoom = clamp(this.zoom * factor, ZOOM_LIMITS.min, ZOOM_LIMITS.max);
+    if (zoom === this.zoom) return false;
+    const doc = this.screenToDoc(anchor);
+    const { sx, sy, tx, ty } = this.scale();
+    this.offsetX = anchor.x - (doc.x * sx + tx) * zoom;
+    this.offsetY = anchor.y - (doc.y * sy + ty) * zoom;
+    this.zoom = zoom;
+    return true;
+  }
+
+  setZoom(zoom: number, anchor?: ScreenPoint): void {
+    this.zoomAt(anchor ?? { x: this.surface.x / 2, y: this.surface.y / 2 }, clamp(zoom, ZOOM_LIMITS.min, ZOOM_LIMITS.max) / this.zoom);
+  }
+
+  /** Remember where the user was, so 回到上次视图 is a real place and not a guess. */
+  remember(): void {
+    this.past.push(this.state());
+    if (this.past.length > 24) this.past.shift();
+  }
+
+  restore(): boolean {
+    const previous = this.past.pop();
+    if (!previous) return false;
+    this.zoom = previous.zoom;
+    this.offsetX = previous.offsetX;
+    this.offsetY = previous.offsetY;
+    return true;
+  }
+
+  reset(): void {
+    this.zoom = 1;
+    this.offsetX = 0;
+    this.offsetY = 0;
+  }
+
+  /**
+   * Frame a document rect with a margin. An empty or degenerate rect falls back to
+   * the original sheet, so 显示全部内容 on a blank board is a sane view, never a
+   * divide-by-zero or a jump to nowhere.
+   */
+  fitRect(rect: { minX: number; minY: number; maxX: number; maxY: number } | null, margin = 0.9): void {
+    const box =
+      rect && finite(rect.minX) && finite(rect.maxX) && rect.maxX - rect.minX > 1e-6 && rect.maxY - rect.minY > 1e-6
+        ? rect
+        : { minX: 0, minY: 0, maxX: 1, maxY: 1 };
+    const { sx, sy, tx, ty } = this.scale();
+    if (sx === 0 || sy === 0) return;
+    const widthDoc = box.maxX - box.minX;
+    const heightDoc = box.maxY - box.minY;
+    const visible = this.visibleSurface();
+    const centre = this.visibleCentre();
+    const zoom = clamp(
+      Math.min(visible.x / (widthDoc * sx), visible.y / (heightDoc * sy)) * clamp(margin, 0.1, 1),
+      ZOOM_LIMITS.min,
+      ZOOM_LIMITS.max,
+    );
+    const centreDoc = { x: (box.minX + box.maxX) / 2, y: (box.minY + box.maxY) / 2 };
+    this.zoom = zoom;
+    this.offsetX = centre.x - (centreDoc.x * sx + tx) * zoom;
+    this.offsetY = centre.y - (centreDoc.y * sy + ty) * zoom;
+  }
+}
+
+const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
+
+/**
+ * Dot grid, in document space, so the dots belong to the sheet: they pan and zoom
+ * with the ink and stay continuous across sessions.
+ *
+ * Density steps instead of shrinking to mush — past a few times zoomed in a fine
+ * grid becomes stripes, past a quarter zoom it becomes grey noise.
+ */
+export const DOT_SPACING_DOC = 0.022;
+
+export type DotLayout = { spacing: number; radius: number; alpha: number };
+
+/**
+ * `spacing` is in document units (it pans and zooms with the sheet); `radius` is in
+ * screen pixels, because a dot is a dot at any zoom — only its lattice changes.
+ */
+export function dotLayout(zoom: number, density: number, opacity: number): DotLayout {
+  const steps = zoom > 2.4 ? -1 : zoom < 0.55 ? 1 : 0;
+  const spacing = DOT_SPACING_DOC * Math.pow(2, steps) * (1.35 - density * 0.7);
+  // A dot is a hint of the lattice, not content: small, faint, and calmer in day mode
+  // than night, so the sheet reads as paper instead of graph paper.
+  const radius = steps === -1 ? 1 : steps === 1 ? 1.4 : 1.1;
+  return { spacing, radius, alpha: clamp(0.07 + opacity * 0.3, 0, 0.55) };
+}
+
+/**
+ * Paint the grid under the ink, clipped to what is visible. A board that would need
+ * more dots than this is being read as texture, not as a ruler, so it draws nothing.
+ */
+export function drawDots(
+  context: CanvasRenderingContext2D,
+  controller: ViewportController,
+  surface: ScreenPoint,
+  layout: DotLayout,
+  colour: string,
+): void {
+  if (layout.alpha <= 0.01 || layout.spacing <= 0) return;
+  const topLeft = controller.screenToDoc({ x: 0, y: 0 });
+  const bottomRight = controller.screenToDoc({ x: surface.x, y: surface.y });
+  const minX = Math.min(topLeft.x, bottomRight.x);
+  const maxX = Math.max(topLeft.x, bottomRight.x);
+  const minY = Math.min(topLeft.y, bottomRight.y);
+  const maxY = Math.max(topLeft.y, bottomRight.y);
+  const columns = (maxX - minX) / layout.spacing;
+  const rows = (maxY - minY) / layout.spacing;
+  if (columns * rows > 20000) return;
+  const firstX = Math.floor(minX / layout.spacing) * layout.spacing;
+  const firstY = Math.floor(minY / layout.spacing) * layout.spacing;
+  context.save();
+  context.globalAlpha = layout.alpha;
+  context.fillStyle = colour;
+  for (let i = 0; i <= columns; i += 1) {
+    for (let j = 0; j <= rows; j += 1) {
+      const screen = controller.docToScreen({ x: firstX + i * layout.spacing, y: firstY + j * layout.spacing });
+      context.beginPath();
+      context.arc(screen.x, screen.y, layout.radius, 0, Math.PI * 2);
+      context.fill();
+    }
+  }
+  context.restore();
+}

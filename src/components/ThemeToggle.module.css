@@ -1,0 +1,52 @@
+.toggle {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(var(--ad-glow-a), 0.35), transparent 70%);
+}
+
+.disc {
+  position: relative;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ad-accent) 55%, var(--ad-text));
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(var(--ad-glow-a), 0.45);
+}
+
+.mask {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ad-glass-bg);
+  backdrop-filter: blur(2px);
+}
+
+.rays {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.ray {
+  position: absolute;
+  width: 1.6px;
+  height: 3.4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ad-accent) 70%, var(--ad-text));
+  transform-origin: center 8.5px;
+}

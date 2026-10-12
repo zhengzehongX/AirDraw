@@ -1,0 +1,367 @@
+/* The gallery borrows the guide's sheet grammar: global .ad-scrim for the
+   dimming, .ad-glass for the sheet, .ad-card for each piece — so a token change
+   retints this screen with the rest of the product. */
+
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ad-z-overlay);
+  display: grid;
+    grid-template-rows: minmax(0, 1fr);
+  place-items: center;
+  padding: var(--ad-space-5);
+}
+
+.inner {
+  width: min(1080px, 100%);
+  height: min(720px, 100%);
+  min-height: 0;
+}
+
+.sheet {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--ad-radius-xl);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ad-space-3);
+  padding: var(--ad-space-4) var(--ad-space-5);
+  border-bottom: 1px solid var(--ad-glass-border);
+}
+
+.close {
+  padding: var(--ad-space-2);
+  color: var(--ad-text-faint);
+  background: transparent;
+}
+
+.headActions {
+  display: flex;
+  align-items: center;
+  gap: var(--ad-space-2);
+}
+
+.headButton {
+  padding: var(--ad-space-2) var(--ad-space-4);
+}
+
+/* The native picker stays invisible: a gesture presses the button above, the
+   operating system owns the file list. */
+.file {
+  display: none;
+}
+
+.body {
+  padding: var(--ad-space-5) var(--ad-space-6);
+  overflow-y: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--ad-space-4);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  --glow: 0;
+  --p: 0;
+  will-change: transform;
+}
+
+.surface {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ad-space-2);
+  padding: var(--ad-space-3);
+  transition:
+    transform var(--ad-motion-med) var(--ad-ease),
+    border-color var(--ad-motion-med) var(--ad-ease),
+    box-shadow var(--ad-motion-med) var(--ad-ease);
+}
+
+.surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(var(--ad-accent-rgb), calc(0.55 * var(--glow, 0)));
+  pointer-events: none;
+}
+
+.card[data-focused='true'] .surface {
+  transform: scale(1.012);
+  border-color: rgba(var(--ad-accent-rgb), 0.5);
+  box-shadow: var(--ad-shadow-glow);
+}
+
+.media {
+  display: grid;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--ad-radius-md);
+  border: 1px solid var(--ad-glass-border);
+  background: color-mix(in srgb, var(--ad-text) 5%, transparent);
+}
+
+.thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--ad-space-0);
+  height: 100%;
+}
+
+.placeholderCount {
+  font-size: var(--ad-text-display);
+  font-weight: var(--ad-weight-regular);
+  letter-spacing: -0.02em;
+  color: var(--ad-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.placeholderLabel {
+  font-size: var(--ad-text-caption);
+  letter-spacing: var(--ad-tracking-eyebrow);
+  color: var(--ad-text-faint);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ad-text-md);
+  font-weight: var(--ad-weight-medium);
+  color: var(--ad-text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ad-space-1);
+  margin-top: auto;
+  padding-top: var(--ad-space-2);
+  border-top: 1px solid var(--ad-glass-border);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* A hand has to be able to hit these: 36px is the floor for a spatial target. */
+  min-height: 36px;
+  gap: var(--ad-space-1);
+  padding: var(--ad-space-2) var(--ad-space-4);
+  border-radius: var(--ad-radius-sm);
+  font: inherit;
+  font-size: var(--ad-text-sm);
+  color: var(--ad-text-dim);
+  background: color-mix(in srgb, var(--ad-text) 7%, transparent);
+  --glow: 0;
+  box-shadow: 0 0 0 calc(3px * var(--glow)) rgba(var(--ad-accent-rgb), 0.14);
+  transition:
+    color var(--ad-motion-fast) var(--ad-ease),
+    background-color var(--ad-motion-fast) var(--ad-ease);
+  will-change: transform;
+}
+
+.button:hover {
+  color: var(--ad-text);
+}
+
+.button[data-disabled='true'] {
+  opacity: var(--ad-disabled-opacity);
+  pointer-events: none;
+}
+
+.primary {
+  color: var(--ad-accent);
+  background: color-mix(in srgb, var(--ad-accent) 14%, transparent);
+}
+
+.danger {
+  color: rgb(var(--ad-danger));
+}
+
+.empty {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--ad-space-2);
+  min-height: 100%;
+  padding: var(--ad-space-7) var(--ad-space-5);
+  text-align: center;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: var(--ad-text-title);
+  font-weight: var(--ad-weight-medium);
+  color: var(--ad-text);
+}
+
+.foot {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--ad-space-3);
+  padding: var(--ad-space-3) var(--ad-space-5);
+  border-top: 1px solid var(--ad-glass-border);
+}
+
+.count {
+  justify-self: start;
+  font-size: var(--ad-text-caption);
+  color: var(--ad-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  justify-self: end;
+  font-size: var(--ad-text-caption);
+  color: var(--ad-text-faint);
+}
+
+.chips {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: var(--ad-space-1);
+  padding: var(--ad-space-1);
+  border-radius: var(--ad-radius-full);
+  background: color-mix(in srgb, var(--ad-text) 6%, transparent);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: var(--ad-space-1) var(--ad-space-4);
+  border-radius: var(--ad-radius-full);
+  font: inherit;
+  font-size: var(--ad-text-sm);
+  color: var(--ad-text-faint);
+  background: transparent;
+  --glow: 0;
+  transition:
+    color var(--ad-motion-fast) var(--ad-ease),
+    background-color var(--ad-motion-fast) var(--ad-ease);
+  will-change: transform;
+}
+
+.chip[data-active='true'] {
+  color: var(--ad-accent);
+  background: color-mix(in srgb, var(--ad-accent) 16%, transparent);
+  box-shadow: 0 0 0 calc(2px + 2px * var(--glow)) rgba(var(--ad-accent-rgb), 0.2);
+}
+
+.confirm {
+  position: absolute;
+  left: var(--ad-space-3);
+  right: var(--ad-space-3);
+  bottom: var(--ad-space-3);
+  z-index: var(--ad-z-sheet);
+  display: grid;
+  gap: var(--ad-space-2);
+  padding: var(--ad-space-3) var(--ad-space-4);
+  border-radius: var(--ad-radius-md);
+}
+
+.confirmTitle {
+  margin: 0;
+  font-size: var(--ad-text-sm);
+  font-weight: var(--ad-weight-medium);
+  color: var(--ad-text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.confirmActions {
+  display: flex;
+  align-items: center;
+  gap: var(--ad-space-2);
+}
+
+.confirmCancel {
+  padding: var(--ad-space-1) var(--ad-space-3);
+  border-radius: var(--ad-radius-full);
+  font-size: var(--ad-text-sm);
+  color: var(--ad-text-dim);
+  background: color-mix(in srgb, var(--ad-text) 8%, transparent);
+  will-change: transform;
+}
+
+.confirmHold {
+  position: relative;
+  flex: 1;
+  padding: var(--ad-space-1) var(--ad-space-3);
+  border-radius: var(--ad-radius-full);
+  font-size: var(--ad-text-sm);
+  font-weight: var(--ad-weight-semi);
+  color: rgb(var(--ad-danger-ink));
+  background: rgb(var(--ad-danger));
+  overflow: hidden;
+  will-change: transform;
+}
+
+.confirmRing {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform: scaleX(var(--p, 0));
+  background: rgba(var(--ad-danger-ink), 0.4);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+@media (max-width: 700px) {
+  .stage {
+    padding: var(--ad-space-3);
+  }
+
+  .head,
+  .foot {
+    padding: var(--ad-space-3) var(--ad-space-4);
+  }
+
+  .body {
+    padding: var(--ad-space-4);
+  }
+
+  .grid {
+    gap: var(--ad-space-3);
+  }
+
+  .confirm {
+    left: var(--ad-space-2);
+    right: var(--ad-space-2);
+    bottom: var(--ad-space-2);
+  }
+}

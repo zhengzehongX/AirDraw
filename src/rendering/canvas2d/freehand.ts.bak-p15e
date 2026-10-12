@@ -1,0 +1,33 @@
+import { getStroke } from 'perfect-freehand';
+import type { Stroke } from '../../types/drawing';
+export const PAPER_WIDTH=1600,PAPER_HEIGHT=900;
+export function outline(segment:Stroke['segments'][number],stroke:Stroke){return getStroke(segment.map(p=>stroke.virtualPressure?[p.x*PAPER_WIDTH,p.y*PAPER_HEIGHT]:[p.x*PAPER_WIDTH,p.y*PAPER_HEIGHT,.5]),{size:stroke.width*(stroke.tool==='marker'?2:stroke.tool==='highlighter'?3:1),thinning:stroke.virtualPressure?.15:0,simulatePressure:stroke.virtualPressure??false,smoothing:.65,streamline:.4,last:true});}
+export function strokePath(points:number[][]){if(!points.length)return '';return `M ${points[0][0]},${points[0][1]} ${points.map((p,i)=>{const next=points[(i+1)%points.length];return `Q ${p[0]},${p[1]} ${(p[0]+next[0])/2},${(p[1]+next[1])/2}`;}).join(' ')} Z`;}
+/** Marker bleeds and highlighter is a wash; the pen and the eraser lay down solid. */
+export function paintAlpha(tool:Stroke['tool']){return tool==='highlighter'?.32:tool==='marker'?.72:1;}
+/**
+ * The board is infinite, so exported ink can sit anywhere around the sheet. When it
+ * all still fits inside the paper the export is exactly what it always was; when it
+ * escapes, the frame moves to the work instead of cropping the drawing at the old
+ * border. Shrinking only (never magnifying) keeps the sheet's own resolution honest.
+ */
+function paperFrame(outlines:number[][][][]): {scale:number; dx:number; dy:number} {
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for(const stroke of outlines)for(const segment of stroke)for(const point of segment){
+    const [x=0,y=0]=point;
+    if(x<minX)minX=x;if(y<minY)minY=y;if(x>maxX)maxX=x;if(y>maxY)maxY=y;
+  }
+  if(!Number.isFinite(minX))return {scale:1,dx:0,dy:0};
+  const escapes=minX<0||minY<0||maxX>PAPER_WIDTH||maxY>PAPER_HEIGHT;
+  if(!escapes)return {scale:1,dx:0,dy:0};
+  const width=Math.max(maxX-minX,1),height=Math.max(maxY-minY,1);
+  const scale=Math.min(1,(PAPER_WIDTH*0.94)/width,(PAPER_HEIGHT*0.94)/height);
+  return {scale,dx:PAPER_WIDTH/2-((minX+maxX)/2)*scale,dy:PAPER_HEIGHT/2-((minY+maxY)/2)*scale};
+}
+export function paintPaper(canvas:HTMLCanvasElement,strokes:readonly Stroke[],background:string){const c=canvas.getContext('2d')!;c.clearRect(0,0,canvas.width,canvas.height);if(background!=='transparent'){c.fillStyle=background;c.fillRect(0,0,canvas.width,canvas.height);}const frame=paperFrame(strokes.map(s=>s.segments.map(segment=>outline(segment,s))));c.save();c.scale(canvas.width/PAPER_WIDTH,canvas.height/PAPER_HEIGHT);c.translate(frame.dx,frame.dy);c.scale(frame.scale,frame.scale);for(const s of strokes){c.globalAlpha=paintAlpha(s.tool);c.fillStyle=s.color;for(const segment of s.segments)c.fill(new Path2D(strokePath(outline(segment,s))));}c.restore();}
+export function exportPaper(strokes:readonly Stroke[],background:string,format:'png'|'svg'){
+  let url:string;
+  if(format==='png'){const canvas=document.createElement('canvas');canvas.width=PAPER_WIDTH;canvas.height=PAPER_HEIGHT;paintPaper(canvas,strokes,background);url=canvas.toDataURL('image/png');}
+  else {const escape=(s:string)=>s.replace(/[&<>"']/g,'');const outlines=strokes.map(s=>s.segments.map(segment=>outline(segment,s)));const frame=paperFrame(outlines);const paths=strokes.flatMap(s=>s.segments.map(segment=>`<path fill="${escape(s.color)}" opacity="${paintAlpha(s.tool)}" d="${strokePath(outline(segment,s))}"/>`)).join('');url=URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">${background==='transparent'?'':`<rect width="1600" height="900" fill="${background}"/>`}<g transform="translate(${frame.dx} ${frame.dy}) scale(${frame.scale})">${paths}</g></svg>`],{type:'image/svg+xml'}));}
+  const a=document.createElement('a');a.href=url;a.download=`AirDraw-canvas.${format}`;a.click();if(format==='svg')setTimeout(()=>URL.revokeObjectURL(url),1000);
+}

@@ -1,0 +1,356 @@
+/*
+ * One row, three zones, one height. The bar is `position: static` inside the
+ * workspace grid so the canvas gets whatever is left instead of fighting a fixed
+ * web-page container — that is the whole point of replacing the floating pills.
+ *
+ * Zones, left to right: what this piece is (project), which room the hand is in
+ * (modes), and the globals (device, voice, theme, help, settings). Everything
+ * beyond those three jobs lives one level down in a menu, so the row never grows
+ * past 64px and no label ever wraps into a second line on top of its neighbour.
+ */
+.bar {
+  grid-area: bar;
+  z-index: 46;
+  /* Three columns, not three flex items: each side track gets what the centre
+     leaves, so the mode buttons stay exactly where they were when the status line
+     changes length. A control that slides sideways because a word got longer is a
+     hit area that no longer matches what is on screen. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--ad-space-2);
+  height: 64px;
+  padding: 0 var(--ad-space-4);
+  border-bottom: 1px solid color-mix(in srgb, var(--ad-glass-border, #ffffff) 12%, transparent);
+  background: color-mix(in srgb, var(--ad-bg) 82%, transparent);
+  backdrop-filter: blur(var(--ad-blur));
+}
+
+.zoneLeft,
+.zoneRight {
+  display: flex;
+  align-items: center;
+  gap: var(--ad-space-1);
+  /* A zone may give width, but only through the things that can truncate: the name
+     and the readiness word. The buttons inside never shrink — a squeezed button
+     wraps its label, and the bar stops being one line. */
+  min-width: 0;
+}
+
+.zoneRight {
+  justify-content: flex-end;
+}
+
+.zoneCentre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* The mode segment never shrinks: a squeezed mode button wraps its label, the row
+     grows past its height, and the bar stops being one line. */
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+/* The bar's own buttons are icon-plus-short-label, sized to the row rather than to
+   the bottom tool dock's 64px target: 56px keeps the gesture hit area honest and
+   the bar inside the 60–68px it is meant to occupy. */
+.bar :global(.ad-tool-button) {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 56px;
+  min-width: 56px;
+  padding: 6px 10px;
+  gap: 4px;
+  border-radius: 12px;
+}
+
+/* The name is the only flexible thing in the row: it truncates, the controls never do. */
+.identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  max-width: min(30vw, 320px);
+  padding: 6px var(--ad-space-2);
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.identity:hover {
+  background: color-mix(in srgb, var(--ad-text) 7%, transparent);
+}
+
+.identity:focus-visible {
+  outline: 2px solid var(--ad-accent);
+  outline-offset: 2px;
+}
+
+.title {
+  font-size: var(--ad-text-md);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.state {
+  font-style: normal;
+  font-size: var(--ad-text-eyebrow);
+  color: var(--ad-text-dim);
+}
+
+.state[data-state='saving'] {
+  color: var(--ad-warn);
+}
+
+.state[data-state='error'] {
+  color: var(--ad-danger);
+}
+
+/* ---- menus: one trigger, one anchored panel ------------------------------- */
+.menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.menuPanel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  /* Above every workspace coach/card: a menu the user just opened is the foreground. */
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 232px;
+  padding: var(--ad-space-1);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--ad-bg) 97%, transparent);
+  border: 1px solid var(--ad-glass-border);
+  box-shadow: var(--ad-shadow-sm);
+  transform-origin: top right;
+}
+
+.menuPanel[data-align='left'] {
+  right: auto;
+  left: 0;
+  transform-origin: top left;
+}
+
+/* Menu entries read as rows, not as dock tiles: icon, word, state — one line. */
+.menuPanel :global(.ad-tool-button) {
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: var(--ad-space-2);
+  width: 100%;
+  min-height: 44px;
+  min-width: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: var(--ad-text-sm);
+}
+
+.menuPanel :global(.ad-tool-button):hover {
+  background: color-mix(in srgb, var(--ad-text) 7%, transparent);
+}
+
+.menuLabel {
+  flex: 1 1 auto;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* GestureButton prints the label as its trailing span; in a menu that span is the
+   row's text, so it takes the remaining width and left-aligns. */
+.menuPanel :global(.ad-tool-button) > span:last-of-type {
+  flex: 1 1 auto;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.menuRow {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ad-text) 5%, transparent);
+}
+
+.menuRow :global(.ad-tool-button) {
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 0;
+  min-height: 36px;
+  padding: 6px 4px;
+}
+
+.menuRow :global(.ad-tool-button) > span:last-of-type {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.menuCaption {
+  margin: var(--ad-space-1) 12px 2px;
+  font-size: var(--ad-text-eyebrow);
+  letter-spacing: var(--ad-tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--ad-text-faint);
+}
+
+.menuState {
+  padding: var(--ad-space-1) 12px var(--ad-space-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--ad-text) 10%, transparent);
+  font-size: var(--ad-text-caption);
+  color: var(--ad-text-dim);
+}
+
+/* The mode segment inside the narrow-window menu stacks instead of scrolling. */
+.menuPanel :global(.ad-mode-switcher) {
+  position: static;
+  flex-direction: column;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+/* ---- the one readiness word in the trigger -------------------------------- */
+.readiness {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--ad-text-eyebrow);
+  color: var(--ad-text-dim);
+  white-space: nowrap;
+}
+
+.readiness i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ad-text-faint);
+}
+
+.readiness[data-tone='ready'] i {
+  background: var(--ad-success);
+}
+
+.readiness[data-tone='paused'] i {
+  background: var(--ad-warn);
+}
+
+.readinessLabel {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dotInner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ad-text-faint);
+}
+
+.dotInner[data-state='READY'] {
+  border-color: var(--ad-success);
+  background: color-mix(in srgb, var(--ad-success) 35%, transparent);
+}
+
+.dotInner[data-state='DEGRADED'],
+.dotInner[data-state='RECOVERING'],
+.dotInner[data-state='WARMING_UP'],
+.dotInner[data-state='STARTING'] {
+  border-color: var(--ad-warn);
+}
+
+.dotInner[data-state='ERROR'] {
+  border-color: var(--ad-danger);
+}
+
+.voiceWrap {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+/*
+ * Hosted components keep their own markup but give up their floating coordinates
+ * and their own chrome: the bar is the only thing that decides where a control
+ * sits. The selectors are deliberately louder than the globals — `.ad-mode-switcher`
+ * and friends are plain global classes with the same specificity, and stylesheet
+ * order is not something this file should depend on.
+ */
+.zoneCentre > *,
+.zoneCentre :global(.ad-mode-switcher),
+.menuState :global(.ad-top-status) {
+  position: static;
+  transform: none;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  z-index: auto;
+}
+
+.menuState :global(.ad-top-status) {
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+/* Narrow windows: the row cannot wrap (a wrapped bar is a bar with two layers), so
+   the least informative things give way first. The controls themselves never shrink
+   below their hit size, and below 980px the mode segment becomes a menu. */
+@media (max-width: 1500px) {
+  .bar {
+    padding: 0 var(--ad-space-3);
+  }
+
+  .zoneLeft,
+  .zoneRight {
+    gap: var(--ad-space-hair);
+  }
+
+  .identity {
+    max-width: min(24vw, 240px);
+  }
+}
+
+@media (max-width: 1180px) {
+  .zoneCentre :global(.ad-tool-button) span {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .identity {
+    max-width: min(28vw, 200px);
+  }
+
+  .readinessLabel {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
+}
+
+/* A menu entry with no glyph of its own: keep the row's text alignment, show nothing. */
+.noIcon {
+  display: none;
+}

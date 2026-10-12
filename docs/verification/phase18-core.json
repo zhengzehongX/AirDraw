@@ -1,0 +1,121 @@
+{
+  "scope": "Pure logic and fake Worker lifecycle; not physical camera acceptance",
+  "results": [
+    {
+      "name": "CSS sampling rejects noise at zoom 0.2",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling accepts movement at zoom 0.2",
+      "pass": true
+    },
+    {
+      "name": "zoom anchor stays fixed at zoom 0.2",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling rejects noise at zoom 0.5",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling accepts movement at zoom 0.5",
+      "pass": true
+    },
+    {
+      "name": "zoom anchor stays fixed at zoom 0.5",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling rejects noise at zoom 1",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling accepts movement at zoom 1",
+      "pass": true
+    },
+    {
+      "name": "zoom anchor stays fixed at zoom 1",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling rejects noise at zoom 2",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling accepts movement at zoom 2",
+      "pass": true
+    },
+    {
+      "name": "zoom anchor stays fixed at zoom 2",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling rejects noise at zoom 8",
+      "pass": true
+    },
+    {
+      "name": "CSS sampling accepts movement at zoom 8",
+      "pass": true
+    },
+    {
+      "name": "zoom anchor stays fixed at zoom 8",
+      "pass": true
+    },
+    {
+      "name": "legacy night metadata remains readable",
+      "pass": true
+    },
+    {
+      "name": "legacy canvas view gets identity default",
+      "pass": true
+    },
+    {
+      "name": "canvas view survives migration",
+      "pass": true
+    },
+    {
+      "name": "invalid canvas view is rejected",
+      "pass": true
+    },
+    {
+      "name": "active toy accepts input",
+      "pass": true
+    },
+    {
+      "name": "exiting toy cannot accept input",
+      "pass": true
+    },
+    {
+      "name": "interrupted switch keeps only final target",
+      "pass": true
+    },
+    {
+      "name": "stationary open palm never pages -1",
+      "pass": true
+    },
+    {
+      "name": "swipe after long hold commits once -1",
+      "pass": true
+    },
+    {
+      "name": "stationary open palm never pages 1",
+      "pass": true
+    },
+    {
+      "name": "swipe after long hold commits once 1",
+      "pass": true
+    },
+    {
+      "name": "concurrent start shares one promise and Worker",
+      "pass": true
+    },
+    {
+      "name": "dispose cancels pending initialization immediately",
+      "pass": true
+    },
+    {
+      "name": "disposed worker is terminated and handlers removed",
+      "pass": true
+    }
+  ]
+}

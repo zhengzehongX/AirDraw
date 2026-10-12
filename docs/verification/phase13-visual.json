@@ -1,0 +1,47 @@
+{
+  "suite": "phase13 visual / motion sweep",
+  "capturedAt": "2026-10-09",
+  "environment": "headless Chrome + SwiftShader, ?simulate=1, night theme, 1440x900 unless noted",
+  "probe": "node_modules/airdraw-probe/visual.mjs + entrance.mjs + transition.mjs",
+  "screenshots": "docs/screenshots/phase13/",
+  "entranceHubMs": {
+    "title": 560,
+    "sub": 560,
+    "cardFirst": 402,
+    "cardLast": 560,
+    "footerRow": 831,
+    "note": "staged sequence completes inside the 400-900ms window the brief asks for; measured under software raster"
+  },
+  "idleFpsUnderSwiftShader": 61,
+  "screenTransition": {
+    "wrapperZ": 70,
+    "sweepAnimation": "ad-screen-stroke 0.64s",
+    "exitPointerEvents": "none at exit start",
+    "hubClickableMsIntoExit": 90,
+    "wrapperUnmounts": true,
+    "consoleErrors": 0
+  },
+  "pressFeedback": {
+    "hubCardActiveScale": 0.985,
+    "adPressButtonActiveScale": 0.97,
+    "gestureButtonActiveScale": 0.97,
+    "hoverTranslatePx": -2,
+    "note": "lift and give-way use the individual translate/scale properties so they compose with the transform Motion writes for the hand magnet"
+  },
+  "responsive": {
+    "1440x900": { "horizontalScroll": false, "hubOverflowers": 0 },
+    "1366x768": { "horizontalScroll": false, "hubOverflowers": 0 },
+    "1024x768": { "horizontalScroll": false, "hubOverflowers": 0 },
+    "768x1024": { "horizontalScroll": false, "hubOverflowers": 0, "note": "footer row was at y=1015 (below the fold) with the old single-column tablet grid; two columns keep it on screen" },
+    "390x844": { "horizontalScroll": false, "hubOverflowers": 0 }
+  },
+  "contrastMeasured": {
+    "day": { "textOnBg": 13.0, "textDimOnBg": 5.94, "textFaintOnBg": 4.93, "accentOnBg": 4.62 },
+    "night": { "textOnBg": 13.9, "textDimOnBg": 9.17, "textFaintOnBg": 5.4, "accentOnBg": 8.72 },
+    "note": "WCAG ratios computed from src/theme/themes.ts endpoints; all roles clear the 4.5:1 small-text floor"
+  },
+  "openDefects": [
+    "e2e 'theme switches by pinch while drawing continues': the SET_THEME result lands 1-3s after the pinch under SwiftShader, and a sweep started inside that window can lose its pinch. Reproduced 3/3 probe rounds as late-apply; the suite sees it as the draw conjunct failing. Not loosened; tracked under P12-3.",
+    "playlab right-swipe paging remains the labelled KNOWN GAP from docs/phase7-log.md."
+  ]
+}

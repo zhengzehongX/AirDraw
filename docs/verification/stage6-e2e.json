@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-11T05:08:57.037Z",
+  "results": [
+    {
+      "name": "preview skeleton visible and text layer unmirrored",
+      "pass": true
+    },
+    {
+      "name": "stroke is a SceneObject",
+      "pass": true
+    },
+    {
+      "name": "locked object cannot be deleted",
+      "pass": true
+    },
+    {
+      "name": "duplicate command is undoable",
+      "pass": true
+    },
+    {
+      "name": "duplicate command is redoable",
+      "pass": true
+    },
+    {
+      "name": "IndexedDB round trip keeps objects",
+      "pass": true
+    },
+    {
+      "name": "2D and 3D coexist in one project",
+      "pass": true
+    },
+    {
+      "name": "legacy stroke artwork migrates",
+      "pass": true
+    },
+    {
+      "name": "GLB has valid magic/version",
+      "pass": true
+    },
+    {
+      "name": "JSON project package exported",
+      "pass": true
+    },
+    {
+      "name": "WebM exported without raw camera",
+      "pass": true
+    },
+    {
+      "name": "Layers opens through real gesture UI",
+      "pass": true
+    },
+    {
+      "name": "object panel excludes drawing input",
+      "pass": true
+    },
+    {
+      "name": "no runtime exceptions",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "errors": []
+}

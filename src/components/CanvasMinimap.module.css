@@ -1,0 +1,51 @@
+/* The navigator lives in the one corner of the board that no tool occupies. */
+.wrap {
+  position: absolute;
+  right: calc(var(--rail-w, 0px) + var(--ad-space-3));
+  bottom: calc(var(--ad-space-3) + 96px);
+  z-index: 44;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--ad-space-1);
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ad-space-1);
+  min-height: 36px;
+  padding: 0 var(--ad-space-2);
+  border-radius: var(--ad-radius-full);
+  background: var(--ad-glass-bg);
+  border: 1px solid var(--ad-glass-border);
+  backdrop-filter: blur(var(--ad-blur));
+  color: var(--ad-text-dim);
+  font-size: var(--ad-text-eyebrow);
+}
+
+.card {
+  width: 208px;
+  height: 124px;
+  padding: 4px;
+  border-radius: var(--ad-radius-md);
+  background: var(--ad-glass-bg);
+  border: 1px solid var(--ad-glass-border);
+  backdrop-filter: blur(var(--ad-blur));
+  box-shadow: var(--ad-shadow-md);
+  cursor: pointer;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--ad-radius-sm);
+}
+
+@media (max-width: 900px) {
+  .card {
+    width: 152px;
+    height: 96px;
+  }
+}

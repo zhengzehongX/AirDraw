@@ -1,0 +1,2546 @@
+{
+  "passed": 49,
+  "total": 49,
+  "tolerancePx": 4,
+  "results": [
+    {
+      "name": "1920x1080 16:9: the bar and the board agree on one window",
+      "pass": true,
+      "detail": {
+        "window": {
+          "w": 1920,
+          "h": 1080
+        },
+        "mode": "SPATIAL_DRAW",
+        "surface": null,
+        "bar": {
+          "left": 0,
+          "top": 0,
+          "width": 1920,
+          "height": 64
+        },
+        "rail": {
+          "left": 1632,
+          "top": 64,
+          "width": 288,
+          "height": 1016
+        },
+        "dockTop": 960,
+        "railOpen": true
+      }
+    },
+    {
+      "name": "1920x1080 16:9 spatial: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 4,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 816,
+              "y": 512
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 816,
+              "y": 512
+            },
+            "ink": {
+              "x": 816,
+              "y": 512
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 217,
+              "y": 193
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 217,
+              "y": 193
+            },
+            "ink": {
+              "x": 217,
+              "y": 193
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 1415,
+              "y": 193
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -4,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1415,
+              "y": 193
+            },
+            "ink": {
+              "x": 1415,
+              "y": 193
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 217,
+              "y": 831
+            },
+            "pointerError": {
+              "x": 3,
+              "y": -2
+            },
+            "converged": true,
+            "overTarget": true
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 1415,
+              "y": 831
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -4,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1414,
+              "y": 831
+            },
+            "ink": {
+              "x": 1414,
+              "y": 831
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1920x1080 16:9 spatial: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 4,
+        "of": 5,
+        "onChrome": [
+          "lower-left"
+        ]
+      }
+    },
+    {
+      "name": "1920x1080 16:9 spatial: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1920x1080 16:9 canvas: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 816,
+              "y": 454
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 2,
+              "y": 1
+            },
+            "converged": true,
+            "press": {
+              "x": 816,
+              "y": 454
+            },
+            "ink": {
+              "x": 816,
+              "y": 454
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 217,
+              "y": 179
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 217,
+              "y": 179
+            },
+            "ink": {
+              "x": 217,
+              "y": 179
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 1415,
+              "y": 179
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1415,
+              "y": 179
+            },
+            "ink": {
+              "x": 1415,
+              "y": 179
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 217,
+              "y": 729
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 217,
+              "y": 729
+            },
+            "ink": {
+              "x": 217,
+              "y": 729
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 1415,
+              "y": 729
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1415,
+              "y": 729
+            },
+            "ink": {
+              "x": 1415,
+              "y": 729
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1920x1080 16:9 canvas: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 5,
+        "of": 5,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "1920x1080 16:9 canvas: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1366x768: the bar and the board agree on one window",
+      "pass": true,
+      "detail": {
+        "window": {
+          "w": 1366,
+          "h": 768
+        },
+        "mode": "SPATIAL_DRAW",
+        "surface": null,
+        "bar": {
+          "left": 0,
+          "top": 0,
+          "width": 1366,
+          "height": 64
+        },
+        "rail": {
+          "left": 1078,
+          "top": 64,
+          "width": 288,
+          "height": 704
+        },
+        "dockTop": 648,
+        "railOpen": true
+      }
+    },
+    {
+      "name": "1366x768 spatial: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 539,
+              "y": 356
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 539,
+              "y": 356
+            },
+            "ink": {
+              "x": 539,
+              "y": 356
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 151,
+              "y": 155
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 151,
+              "y": 155
+            },
+            "ink": {
+              "x": 151,
+              "y": 155
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 927,
+              "y": 155
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 927,
+              "y": 155
+            },
+            "ink": {
+              "x": 927,
+              "y": 155
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 151,
+              "y": 557
+            },
+            "pointerError": {
+              "x": 3,
+              "y": -1
+            },
+            "converged": true,
+            "overTarget": true
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 927,
+              "y": 557
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 927,
+              "y": 557
+            },
+            "ink": {
+              "x": 927,
+              "y": 557
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1366x768 spatial: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 4,
+        "of": 5,
+        "onChrome": [
+          "lower-left"
+        ]
+      }
+    },
+    {
+      "name": "1366x768 spatial: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1366x768 canvas: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 539,
+              "y": 298
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 2,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 539,
+              "y": 298
+            },
+            "ink": {
+              "x": 539,
+              "y": 298
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 151,
+              "y": 141
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 2,
+              "y": 1
+            },
+            "converged": true,
+            "press": {
+              "x": 151,
+              "y": 141
+            },
+            "ink": {
+              "x": 151,
+              "y": 141
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 927,
+              "y": 141
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 927,
+              "y": 141
+            },
+            "ink": {
+              "x": 927,
+              "y": 141
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 151,
+              "y": 455
+            },
+            "pointerError": {
+              "x": 3,
+              "y": -1
+            },
+            "converged": true,
+            "overTarget": true
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 927,
+              "y": 455
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 927,
+              "y": 455
+            },
+            "ink": {
+              "x": 927,
+              "y": 455
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1366x768 canvas: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 4,
+        "of": 5,
+        "onChrome": [
+          "lower-left"
+        ]
+      }
+    },
+    {
+      "name": "1366x768 canvas: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1024x768 4:3: the bar and the board agree on one window",
+      "pass": true,
+      "detail": {
+        "window": {
+          "w": 1024,
+          "h": 768
+        },
+        "mode": "SPATIAL_DRAW",
+        "surface": null,
+        "bar": {
+          "left": 0,
+          "top": 0,
+          "width": 1024,
+          "height": 64
+        },
+        "rail": {
+          "left": 760,
+          "top": 64,
+          "width": 264,
+          "height": 704
+        },
+        "dockTop": 648,
+        "railOpen": true
+      }
+    },
+    {
+      "name": "1024x768 4:3 spatial: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 380,
+              "y": 356
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -2,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 380,
+              "y": 356
+            },
+            "ink": {
+              "x": 380,
+              "y": 356
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 112,
+              "y": 155
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 112,
+              "y": 155
+            },
+            "ink": {
+              "x": 112,
+              "y": 155
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 648,
+              "y": 155
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 648,
+              "y": 155
+            },
+            "ink": {
+              "x": 648,
+              "y": 155
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 112,
+              "y": 557
+            },
+            "pointerError": {
+              "x": 3,
+              "y": -2
+            },
+            "converged": true,
+            "overTarget": true
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 648,
+              "y": 557
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 647,
+              "y": 557
+            },
+            "ink": {
+              "x": 647,
+              "y": 557
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1024x768 4:3 spatial: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 4,
+        "of": 5,
+        "onChrome": [
+          "lower-left"
+        ]
+      }
+    },
+    {
+      "name": "1024x768 4:3 spatial: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1024x768 4:3 canvas: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 4,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 380,
+              "y": 298
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 2,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 380,
+              "y": 298
+            },
+            "ink": {
+              "x": 380,
+              "y": 298
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 112,
+              "y": 141
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 113,
+              "y": 141
+            },
+            "ink": {
+              "x": 113,
+              "y": 141
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 648,
+              "y": 141
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 647,
+              "y": 141
+            },
+            "ink": {
+              "x": 647,
+              "y": 141
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 112,
+              "y": 455
+            },
+            "pointerError": {
+              "x": 4,
+              "y": -2
+            },
+            "converged": true,
+            "overTarget": true
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 648,
+              "y": 455
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 647,
+              "y": 455
+            },
+            "ink": {
+              "x": 647,
+              "y": 455
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "1024x768 4:3 canvas: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 4,
+        "of": 5,
+        "onChrome": [
+          "lower-left"
+        ]
+      }
+    },
+    {
+      "name": "1024x768 4:3 canvas: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "2560x1080 ultrawide: the bar and the board agree on one window",
+      "pass": true,
+      "detail": {
+        "window": {
+          "w": 2560,
+          "h": 1080
+        },
+        "mode": "SPATIAL_DRAW",
+        "surface": null,
+        "bar": {
+          "left": 0,
+          "top": 0,
+          "width": 2560,
+          "height": 64
+        },
+        "rail": {
+          "left": 2272,
+          "top": 64,
+          "width": 288,
+          "height": 1016
+        },
+        "dockTop": 960,
+        "railOpen": true
+      }
+    },
+    {
+      "name": "2560x1080 ultrawide spatial: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 4,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 1136,
+              "y": 512
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1136,
+              "y": 512
+            },
+            "ink": {
+              "x": 1136,
+              "y": 512
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 294,
+              "y": 193
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 294,
+              "y": 193
+            },
+            "ink": {
+              "x": 294,
+              "y": 193
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 1978,
+              "y": 193
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -4,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1977,
+              "y": 193
+            },
+            "ink": {
+              "x": 1977,
+              "y": 193
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 294,
+              "y": 831
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 294,
+              "y": 831
+            },
+            "ink": {
+              "x": 294,
+              "y": 831
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 1978,
+              "y": 831
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -4,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1977,
+              "y": 831
+            },
+            "ink": {
+              "x": 1977,
+              "y": 831
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "2560x1080 ultrawide spatial: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 5,
+        "of": 5,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "2560x1080 ultrawide spatial: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "2560x1080 ultrawide canvas: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 4,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 1136,
+              "y": 454
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 1136,
+              "y": 454
+            },
+            "ink": {
+              "x": 1136,
+              "y": 454
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 294,
+              "y": 179
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 2,
+              "y": 1
+            },
+            "converged": true,
+            "press": {
+              "x": 294,
+              "y": 179
+            },
+            "ink": {
+              "x": 294,
+              "y": 179
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 1978,
+              "y": 179
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -4,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1977,
+              "y": 179
+            },
+            "ink": {
+              "x": 1977,
+              "y": 179
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 294,
+              "y": 729
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 4,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 295,
+              "y": 729
+            },
+            "ink": {
+              "x": 295,
+              "y": 729
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 1978,
+              "y": 729
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1978,
+              "y": 729
+            },
+            "ink": {
+              "x": 1978,
+              "y": 729
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "2560x1080 ultrawide canvas: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 5,
+        "of": 5,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "2560x1080 ultrawide canvas: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas 1440x900 rail open: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 576,
+              "y": 364
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 576,
+              "y": 364
+            },
+            "ink": {
+              "x": 576,
+              "y": 364
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 160,
+              "y": 157
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 161,
+              "y": 157
+            },
+            "ink": {
+              "x": 161,
+              "y": 157
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 992,
+              "y": 157
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 992,
+              "y": 157
+            },
+            "ink": {
+              "x": 992,
+              "y": 157
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 160,
+              "y": 571
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 160,
+              "y": 571
+            },
+            "ink": {
+              "x": 160,
+              "y": 571
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 992,
+              "y": 571
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 991,
+              "y": 571
+            },
+            "ink": {
+              "x": 991,
+              "y": 571
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas 1440x900 rail open: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 5,
+        "of": 5,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "canvas 1440x900 rail open: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "collapsing the rail widens the board without moving the mapping",
+      "pass": true,
+      "detail": {
+        "open": {
+          "left": 0,
+          "top": 0,
+          "width": 1440,
+          "height": 900
+        },
+        "collapsed": {
+          "left": 0,
+          "top": 0,
+          "width": 1440,
+          "height": 900
+        }
+      }
+    },
+    {
+      "name": "canvas 1440x900 rail collapsed: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 4,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 684,
+              "y": 364
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 2,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 684,
+              "y": 364
+            },
+            "ink": {
+              "x": 684,
+              "y": 364
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 185,
+              "y": 157
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 186,
+              "y": 157
+            },
+            "ink": {
+              "x": 186,
+              "y": 157
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 1183,
+              "y": 157
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -4,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1182,
+              "y": 157
+            },
+            "ink": {
+              "x": 1182,
+              "y": 157
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 185,
+              "y": 571
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 4,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 186,
+              "y": 571
+            },
+            "ink": {
+              "x": 186,
+              "y": 571
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 1183,
+              "y": 571
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -4,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 1182,
+              "y": 571
+            },
+            "ink": {
+              "x": 1182,
+              "y": 571
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas 1440x900 rail collapsed: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 5,
+        "of": 5,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "canvas 1440x900 rail collapsed: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas zoom 2.4 + pan: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 576,
+              "y": 364
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 577,
+              "y": 364
+            },
+            "ink": {
+              "x": 577,
+              "y": 364
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 160,
+              "y": 157
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 160,
+              "y": 157
+            },
+            "ink": {
+              "x": 160,
+              "y": 157
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 992,
+              "y": 157
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 992,
+              "y": 157
+            },
+            "ink": {
+              "x": 992,
+              "y": 157
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 160,
+              "y": 571
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 160,
+              "y": 571
+            },
+            "ink": {
+              "x": 160,
+              "y": 571
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 992,
+              "y": 571
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 992,
+              "y": 571
+            },
+            "ink": {
+              "x": 992,
+              "y": 571
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas zoom 2.4 + pan: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 5,
+        "of": 5,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "canvas zoom 2.4 + pan: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas zoom 0.5 + pan: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 576,
+              "y": 364
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -2,
+              "y": -2
+            },
+            "converged": true,
+            "press": {
+              "x": 576,
+              "y": 364
+            },
+            "ink": {
+              "x": 576,
+              "y": 364
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 160,
+              "y": 157
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 160,
+              "y": 157
+            },
+            "ink": {
+              "x": 160,
+              "y": 157
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "target": {
+              "x": 992,
+              "y": 157
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 992,
+              "y": 157
+            },
+            "ink": {
+              "x": 992,
+              "y": 157
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "target": {
+              "x": 160,
+              "y": 571
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 160,
+              "y": 571
+            },
+            "ink": {
+              "x": 160,
+              "y": 571
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 992,
+              "y": 571
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 991,
+              "y": 571
+            },
+            "ink": {
+              "x": 991,
+              "y": 571
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas zoom 0.5 + pan: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 5,
+        "of": 5,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "canvas zoom 0.5 + pan: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas un-mirrored: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 720,
+              "y": 450
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 720,
+              "y": 450
+            },
+            "ink": {
+              "x": 720,
+              "y": 450
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 360,
+              "y": 300
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 2,
+              "y": 1
+            },
+            "converged": true,
+            "press": {
+              "x": 360,
+              "y": 300
+            },
+            "ink": {
+              "x": 360,
+              "y": 300
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 1080,
+              "y": 600
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 1079,
+              "y": 600
+            },
+            "ink": {
+              "x": 1079,
+              "y": 600
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas un-mirrored: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 3,
+        "of": 3,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "canvas un-mirrored: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "a left hand is the acting hand when it is preferred",
+      "pass": true,
+      "detail": {
+        "primaryHandedness": "Left"
+      }
+    },
+    {
+      "name": "canvas left hand: pointer lands where the hand aims (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 3,
+        "rows": [
+          {
+            "label": "centre",
+            "target": {
+              "x": 720,
+              "y": 450
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 0,
+              "y": 0
+            },
+            "converged": true,
+            "press": {
+              "x": 720,
+              "y": 450
+            },
+            "ink": {
+              "x": 720,
+              "y": 450
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "target": {
+              "x": 360,
+              "y": 300
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": 3,
+              "y": 2
+            },
+            "converged": true,
+            "press": {
+              "x": 361,
+              "y": 300
+            },
+            "ink": {
+              "x": 361,
+              "y": 300
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "target": {
+              "x": 1080,
+              "y": 600
+            },
+            "overTarget": false,
+            "pointerError": {
+              "x": -3,
+              "y": -1
+            },
+            "converged": true,
+            "press": {
+              "x": 1079,
+              "y": 600
+            },
+            "ink": {
+              "x": 1079,
+              "y": 600
+            },
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "canvas left hand: most of the board is free of chrome",
+      "pass": true,
+      "detail": {
+        "drawable": 3,
+        "of": 3,
+        "onChrome": []
+      }
+    },
+    {
+      "name": "canvas left hand: ink starts under the pointer (≤4px)",
+      "pass": true,
+      "detail": {
+        "worstPx": 0,
+        "rows": [
+          {
+            "label": "centre",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "upper-left",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "label": "lower-right",
+            "inkError": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "no runtime errors",
+      "pass": true,
+      "detail": []
+    }
+  ]
+}

@@ -1,0 +1,1022 @@
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from 'react';
+import { CameraPreview } from './components/CameraPreview';
+import { CameraStatusDot } from './components/CameraStatusDot';
+import { DebugPanel } from './components/DebugPanel';
+import { ModeSwitcher } from './components/ModeSwitcher';
+import { CanvasDock } from './components/CanvasDock';
+import { ModelDock } from './components/ModelDock';
+import { CalibrationOffer, PinchCalibration } from './components/PinchCalibration';
+import {DEFAULT_CONTACT, loadContactProfile} from './utils/gesture/PinchContactDetector';
+import { SurfaceDock } from './components/SurfaceDock';
+import { exportPaper, paintPaper, PAPER_WIDTH, PAPER_HEIGHT } from './rendering/canvas2d/freehand';
+import { TrackingTuning } from './components/TrackingTuning';
+import { appMode, type WorkspaceMode } from './app/AppMode';
+import { inputRouter } from './interaction/InputRouter';
+import {downloadBlob,workspaceRecorder} from './project/export';
+import { importProjectModel } from './project/importModel';
+import { FeedbackNotice } from './components/FeedbackNotice';
+import { GuideScreen } from './components/GuideScreen';
+import {GUIDE_SECTIONS} from './guide/content';
+import { GalleryScreen, relativeTime } from './components/GalleryScreen';
+import { FeatureHub, type HubTarget } from './components/FeatureHub';
+import { LaunchScreen } from './components/LaunchScreen';
+import { SettingsScreen } from './components/SettingsScreen';
+import { PermissionCard } from './components/PermissionCard';
+import { SpatialDock } from './components/SpatialDock';
+import { ThemeToggle } from './components/ThemeToggle';
+import { TopStatus } from './components/TopStatus';
+import { TrackingProblem } from './components/TrackingProblem';
+import { TutorialCoach, TutorialTarget } from './components/TutorialCoach';
+import { TUTORIAL_STEPS } from './tutorial/steps';
+import { useTutorialSignal } from './tutorial/useTutorialSignal';
+import { appReducer, canDraw, initialState, isOverlay, showsWelcomeField, TUTORIAL_STEP_COUNT, activeScope } from './app/appState';
+import { loadPreferences, resetPreferences, resolveTheme, subscribePreferences, updatePreferences } from './app/preferences';
+import { notify } from './app/feedback';
+import { FOCUS_MODE_RETURN_MS, INK_LOD_MIN, QUALITY_TIERS, WELCOME, VIEW_MODE_HOLD_MS } from './config';
+import { detectCapabilities, missingCapability } from './app/capabilities';
+import { useAirDrawSession } from './hooks/useAirDrawSession';
+import { usePerfGovernor } from './hooks/usePerfGovernor';
+import { useUrlFlags } from './hooks/useUrlFlags';
+import { interactionManager } from './interaction/GestureInteractionManager';
+import { arbitration } from './interaction/GestureArbitration';
+import { modelController } from './model/modelController';
+import { SpatialCursor } from './interaction/SpatialCursor';
+import { useInteractive } from './interaction/useInteractive';
+import { Scene3D } from './rendering/three/Scene3D';
+
+import { inspectController } from './rendering/three/inspectController';
+import { themeController } from './theme/themeController';
+import { captureFrame } from './rendering/three/capture';
+import { frameRequest } from './rendering/three/framing';
+import { MATERIAL_PRESETS } from './rendering/three/materials';
+import {
+  artworkOf,
+  deleteArtwork,
+  duplicateArtwork,
+  getArtwork,
+  listArtworks,
+  makeArtwork,
+  migrateLegacySave,
+  saveArtwork,
+  type Artwork,
+} from './storage/artworks';
+import type { MaterialPresetId, QualityTier, ViewMode } from './types/drawing';
+import styles from './App.module.css';
+import {motionTokens} from './design/motion';
+import { MotionConfig,AnimatePresence,useReducedMotion } from 'motion/react';
+import {useProjectBridge} from './project/useProjectBridge';
+import {ProjectPanel,type ProjectPanelMode} from './components/ProjectPanel';
+import {RecognitionSuggestion} from './components/RecognitionSuggestion';
+import {workspace} from './project/workspace';
+import {projectFromArtwork,saveProject} from './project/storage';
+import {sessionSnapshot} from './project/sessionSnapshot';
+import {CreationTutorial} from './components/CreationTutorial';
+import {ensureBuiltinModel} from './project/builtin';
+import { LabRuntime } from './playlab/runtime';
+import { LabStage } from './playlab/LabStage';
+import { LabHub, LabChrome } from './playlab/LabHub';
+import { WorkspaceBar } from './components/WorkspaceBar';
+import { DrawingSurface } from './components/DrawingSurface';
+import { CanvasMinimap } from './components/CanvasMinimap';
+import { ScreenTransition } from './components/ScreenTransition';
+import { quality as labQuality } from './playlab/quality';
+import { cameraService } from './services/handTracking/CameraService';
+import { currentLocale, setLanguage, syncLanguageFromPreferences, t } from './i18n';
+import {appCommandBus,type AppCommand} from './app/AppCommandBus';
+import {voiceAssistant} from './voice/VoiceAssistantService';
+import {VoicePill, VoiceStatusPanel} from './components/VoicePill';
+import {bootPhase} from './app/BootSequence';
+
+/** Full-screen drag surface used to rotate the piece in view mode. */
+function InspectDragSurface() {
+  const { ref } = useInteractive({
+    id: 'inspect-orbit',
+    scope: 'studio',
+    magnet: 0,
+    dragThreshold: 3,
+    onDrag: (_point, delta) => inspectController.rotate(delta.x, delta.y),
+    onPressEnd:cancelled=>{if(!cancelled)workspace.camera({yaw:inspectController.yaw,pitch:inspectController.pitch,distance:inspectController.distance});},
+  });
+  return <div ref={ref as React.RefObject<HTMLDivElement>} className={styles.inspectSurface} aria-hidden="true" />;
+}
+
+const MATERIAL_IDS = new Set<string>(MATERIAL_PRESETS.map((preset) => preset.id));
+
+/** Imported files are external input, so a material id is checked, not trusted. */
+function isMaterialPreset(value: unknown): value is MaterialPresetId {
+  return typeof value === 'string' && MATERIAL_IDS.has(value);
+}
+
+export default function App() {
+  const flags = useUrlFlags();
+  const [prefs, setPrefs] = useState(loadPreferences);
+  const systemReduced=useReducedMotion();
+  const reduced=prefs.reducedMotion==='on'||prefs.reducedMotion==='system'&&!!systemReduced;
+  const [bootStarted,setBootStarted]=useState(false);
+  /** Set when the user chooses something that needs the camera or the microphone. */
+  const [deviceWanted, setDeviceWanted] = useState(false);
+  useEffect(()=>setBootStarted(true),[]);
+  const [state, dispatch] = useReducer(appReducer, undefined, () =>
+    initialState({ tutorialStep: prefs.tutorialDone ? TUTORIAL_STEP_COUNT : 0 }),
+  );
+  const [mirror, setMirror] = useState(flags.mirror);
+  // Preferences own devMode outright (`?debug=1` seeds it at load), so the settings
+  // switch and the panel can never disagree about what is on.
+  const devMode = prefs.devMode;
+  const [previewExpanded, setPreviewExpanded] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('3d');
+  const [tier, setTier] = useState<QualityTier>('high');
+  const [softwareRenderer,setSoftwareRenderer]=useState(false);
+  const [focusMode, setFocusMode] = useState(false);
+  /** 暂停手势: hand input stops, mouse/keyboard/voice keep working. */
+  const [gesturePaused, setGesturePaused] = useState(false);
+  /** Which board to come back to when a toy says 返回画布. */
+  const labReturnRef = useRef<WorkspaceMode | null>(null);
+  const [projectPanel,setProjectPanel]=useState<ProjectPanelMode|null>(null);
+  const [creationTutorial]=useState(()=>{try{return !localStorage.getItem('airdraw-make3d-tutorial');}catch{return true;}});
+  const capabilities = useMemo(detectCapabilities, []);
+
+  // A returning user has already granted the camera, so the opening can accept a
+  // pinch instead of forcing a click. A first-time user is never prompted until
+  // they choose to begin — no permission dialog before the explanation.
+  const [cameraPreauthorized, setCameraPreauthorized] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    navigator.permissions
+      ?.query({ name: 'camera' as PermissionName })
+      .then((status) => {
+        if (!cancelled) setCameraPreauthorized(status.state === 'granted');
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const gestureReady = flags.simulate || cameraPreauthorized;
+  // Simulated tracking always runs so the suites stay deterministic; a real camera is
+  // opened only after the user chooses a function that needs one.
+  const session = useAirDrawSession(deviceWanted || flags.simulate, flags.simulate);
+  const { engine, metrics, setMaxFps } = session;
+  useProjectBridge(engine);
+  const appStateRef = useRef(state);
+  appStateRef.current = state;
+  // `dockOpen` cannot be read off the Dock's opacity: the element is always mounted and
+  // fades, so a test that aims by opacity toggles the real switch mid-fade.
+  useEffect(()=>{if(import.meta.env.DEV)Object.assign(window,{__airdrawWorkspace:workspace,__airdrawApp:()=>appStateRef.current});},[]);
+  const modeState = useSyncExternalStore(appMode.subscribe, appMode.getSnapshot);
+  useEffect(()=>{if(modeState.target==='MODEL_CONTROL')void ensureBuiltinModel().catch(e=>notify(String(e),{tone:'warn'}));},[modeState.target]);
+  // First entry offers the three-cycle calibration before the existing tutorial.
+  const [calibrating, setCalibrating] = useState(false);
+  // One PlayLab runtime for the whole app: it reads the same engine frame as the pen.
+  const lab = useMemo(() => new LabRuntime(engine), [engine]);
+  const labState = useSyncExternalStore(lab.subscribe, () => lab.state);
+  useEffect(() => { if (import.meta.env.DEV) Object.assign(window, { __airdrawLab: lab, __airdrawVoice: voiceAssistant, __airdrawQuality: labQuality }); }, [lab]);
+  const [modelUrl]=useState(import.meta.env.BASE_URL+'models/airdraw-orb.glb');
+  const modelResource=useRef<{dispose:()=>void}|null>(null);
+  useEffect(()=>()=>modelResource.current?.dispose(),[]);
+  const finishCalibration=useCallback(()=>{setCalibrating(false);engine.cancelInput();updatePreferences({calibrationSkipped:false});},[engine]);
+  const offerCalibration=!loadContactProfile().calibratedAt&&!prefs.calibrationSkipped;
+  useEffect(()=>()=>workspaceRecorder.dispose(),[]);
+  useEffect(()=>{
+    if(state.context!=='launch')appMode.enter();
+    engine.cancelInput();engine.setWorkspaceMode(modeState.target);
+    engine.setDrawingAllowed(canDraw(state) && !projectPanel && modeState.mode!=='TRANSITION' && !calibrating && modeState.target!=='MODEL_CONTROL');
+    inputRouter.set(modeState.mode,canDraw(state)&&!calibrating&&!projectPanel?'WORKSPACE':'UI');
+  },[engine,state.context,modeState,calibrating,projectPanel]);
+
+  usePerfGovernor(metrics, tier, setTier,softwareRenderer?'low':'high');
+
+  useEffect(() => subscribePreferences(setPrefs), []);
+  useEffect(()=>{appMode.reduced=reduced;themeController.reduced=reduced;document.documentElement.dataset.reducedMotion=prefs.reducedMotion;},[prefs.reducedMotion,reduced]);
+
+  // ---- the machine owns gesture routing and the pen --------------------------
+  useEffect(() => {
+    interactionManager.setActiveScope(calibrating && state.context!=='launch'?'calibration':projectPanel?'workspace':activeScope(state));
+    engine.setDrawingAllowed(canDraw(state) && !projectPanel && !calibrating && modeState.mode!=='TRANSITION' && modeState.target!=='MODEL_CONTROL');
+  }, [engine, state, modeState, calibrating,projectPanel]);
+
+  /**
+   * A toy plays across the entire screen. While one is running, the only thing a
+   * pinch may land on is the toy's own chrome; without this the drawing dock and
+   * the material popover keep competing for the same contact and the toy never
+   * hears it.
+   */
+  const toyOwnsScreen = state.context === 'playlab' && labState.phase !== 'HUB';
+  useEffect(() => {
+    interactionManager.setScreenOwner(toyOwnsScreen ? 'toy' : 'ui');
+    return () => interactionManager.setScreenOwner('ui');
+  }, [toyOwnsScreen]);
+
+  /**
+   * The opening burst is owned by the app, not by the welcome screen: the screen
+   * unmounts the moment a door is chosen, and a stage left at `dispersing` would
+   * keep the particle field alive behind the hub forever.
+   */
+  useEffect(() => {
+    if (state.launchStage !== 'dispersing') return;
+    const timer = setTimeout(() => dispatch({ type: 'launch-stage', stage: 'home-ready' }), reduced ? 0 : WELCOME.disperseMs);
+    return () => clearTimeout(timer);
+  }, [state.launchStage, reduced]);
+
+  useEffect(() => {
+    themeController.setMode(resolveTheme(prefs.theme));
+  }, [prefs.theme]);
+
+  useEffect(() => {
+    if (prefs.theme !== 'auto') return;
+    const query = matchMedia('(prefers-color-scheme: light)');
+    const onChange = () => themeController.setMode(resolveTheme('auto'));
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, [prefs.theme]);
+
+  useEffect(() => {
+    engine.setMirror(mirror);
+  }, [engine, mirror]);
+  useEffect(() => {
+    engine.setViewMode(viewMode);
+  }, [engine, viewMode]);
+  useEffect(() => {
+    engine.setInspectMode(state.inspect);
+  }, [engine, state.inspect]);
+  useEffect(() => {
+    engine.setEraseMode(state.eraseMode);
+  }, [engine, state.eraseMode]);
+  useEffect(() => {
+    engine.setDominantHand(prefs.dominantHand);
+  }, [engine, prefs.dominantHand]);
+  useEffect(() => {
+    engine.setPointerSensitivity(prefs.pointerSensitivity);
+    engine.setPointerSmoothing(prefs.pointerSmoothing);
+    engine.setPinchAssist(prefs.pinchAssist);
+  }, [engine, prefs.pointerSensitivity, prefs.pointerSmoothing, prefs.pinchAssist]);
+  useEffect(() => {
+    // The lab reads the same preferences the studio does: one setter for both
+    // detectors, so a toy cannot disagree with the rail about what a swipe is.
+    lab.setGestureIntensity(prefs.toyIntensity);
+    lab.setDetail(prefs.toyDetail === 'auto' ? null : prefs.toyDetail);
+  }, [lab, prefs.toyIntensity, prefs.toyDetail]);
+  // Navigation feel is a preference, not a constant: the sheet must respond to the
+  // slider the moment it moves, and remember it across sessions.
+  useEffect(() => {
+    engine.navPanSpeed = prefs.panSpeed;
+    engine.navZoomSensitivity = prefs.zoomSensitivity;
+  }, [engine, prefs.panSpeed, prefs.zoomSensitivity]);
+  useEffect(() => {
+    labQuality.fromTier(tier);
+  }, [tier]);
+  useEffect(() => {
+    syncLanguageFromPreferences(prefs);
+  }, [prefs.uiLanguage]);
+  useEffect(() => {
+    const quality = QUALITY_TIERS[tier];
+    engine.setQualityTier(tier);
+    engine.setMinPointDistance(quality.minPointDistance);
+    setMaxFps(quality.detectFps);
+  }, [engine, tier, setMaxFps]);
+
+  // Cursor → interaction manager at detection rate; the manager interpolates.
+  const routingEpoch=useRef(-1);
+  useEffect(
+    () =>
+      engine.onCursor((cursor) => {
+        if(routingEpoch.current!==engine.tracking.epoch){routingEpoch.current=engine.tracking.epoch;interactionManager.cancel();}
+        const present = cursor.pointerState !== 'lost' && cursor.pointerState !== 'searching';
+        interactionManager.feed({ x: cursor.x, y: cursor.y, z: 0 }, cursor.pinched, present, engine.contact.state, engine.contact.contactScore);
+        const mode=appMode.getSnapshot().mode;
+        const allowed=canDraw(state) && !projectPanel && !calibrating && mode!=='TRANSITION';
+        inputRouter.set(mode, present && allowed && !interactionManager.snapshot.overTarget ? 'WORKSPACE' : 'UI', cursor.pinched);
+        // The pen lifts over any target, so a pinch in the gap between two dock
+        // buttons cannot draw behind the dock; the magnetic halo outside a region
+        // still draws normally. The post-click cooldown also lifts the pen, so a
+        // pinch already consumed by the UI cannot start a stroke as the control
+        // disappears from under the cursor.
+        const snapshot = interactionManager.snapshot;
+        engine.setUiHovered(snapshot.overTarget || snapshot.state === 'cooling');
+        engine.setUiCaptured(snapshot.overTarget || snapshot.pressId !== null);
+        // One place declares what the hand is doing, so PlayLab's page turn can be
+        // locked by the pen, a UI press or a model grab without each of them
+        // re-inventing the question.
+        if (cursor.drawing) arbitration.begin('draw');
+        else arbitration.end('draw');
+        if (snapshot.pressId) arbitration.begin('pinch');
+        else arbitration.end('pinch');
+        if (modelController.targetId) arbitration.begin('grab');
+        else arbitration.end('grab');
+        if (!present) arbitration.holdForSafety();
+        else if (arbitration.snapshot.holder === 'safety') arbitration.clear();
+      }),
+    [engine, state, calibrating,projectPanel],
+  );
+
+  useEffect(() => {
+    interactionManager.start();
+    return () => interactionManager.stop();
+  }, []);
+
+  // The cursor lives in screen space even when the 2D canvas is not mounted,
+  // so the viewport always tracks the window (DrawingSurface refines it).
+  useEffect(() => {
+    const apply = () => {
+      engine.setViewport(window.innerWidth, window.innerHeight, Math.min(window.devicePixelRatio || 1, 2));
+    };
+    apply();
+    window.addEventListener('resize', apply);
+    return () => window.removeEventListener('resize', apply);
+  }, [engine]);
+
+  // ---- the device takes over only once it is actually ready ------------------
+  // The hub needs no camera, so the first permission prompt is deferred to the moment
+  // a creation door is chosen. The first-run calibration is then *offered* by
+  // `CalibrationOffer`, never auto-started: auto-starting used to swallow every
+  // gesture until the user finished or cancelled, which read as "the buttons do
+  // nothing" — see the phase-10 log.
+
+  // ---- gesture → application semantics, per context --------------------------
+  const gestureMemory = useRef({ openPalmHandled: false, victoryHandled: false });
+  const lastHandsDistance = useRef(0);
+
+  useEffect(() => {
+    const memory = gestureMemory.current;
+    const gesture = metrics.gesture;
+
+    engine.setInputLocked(gesture === 'FIST');
+    interactionManager.setLocked(gesture === 'FIST');
+
+    if (gesture === 'OPEN_PALM') {
+      if (!memory.openPalmHandled && metrics.gestureDurationMs >= prefs.gestureHoldMs) {
+        memory.openPalmHandled = true;
+        if(modeState.target==='MODEL_CONTROL'){workspace.selection=[];workspace.emit();}
+        if (projectPanel || isOverlay(state.context)) sendCommand({type:'CLOSE_MENU'});
+        // On the dot canvas an open palm is the pan gesture; the tool row has its
+        // own explicit entries there, so the palm must not also summon it.
+        else if ((state.context === 'studio' || state.context === 'tutorial') && modeState.target !== 'CANVAS_DRAW')
+          sendCommand({type:state.dockOpen?'CLOSE_MENU':'OPEN_MENU'});
+      }
+    } else {
+      memory.openPalmHandled = false;
+    }
+
+    // View mode belongs to the canvas and to the lesson that teaches it, and it has to be
+    // *held*: a pinch sweep passes through two extended fingers for a few frames, and a blip
+    // must not flip the canvas into inspect and leave the pen dead with no explanation.
+    if (gesture === 'VICTORY') {
+      if (
+        !memory.victoryHandled
+        && metrics.gestureDurationMs >= VIEW_MODE_HOLD_MS
+        && modeState.target === 'SPATIAL_DRAW'
+        && (state.context === 'studio' || state.context === 'tutorial')
+      ) {
+        memory.victoryHandled = true;
+        dispatch({ type: 'inspect', on: !state.inspect });
+      }
+    } else {
+      memory.victoryHandled = false;
+    }
+
+    // Zoom only while inspecting, and only against the previous *inspecting*
+    // frame, so entering view mode cannot jump the camera.
+    if (state.inspect && metrics.handsDistancePx > 0 && lastHandsDistance.current > 0) {
+      const factor = lastHandsDistance.current / metrics.handsDistancePx;
+      if (Math.abs(factor - 1) > 0.004) inspectController.zoomBy(factor);
+    }
+    lastHandsDistance.current = state.inspect ? metrics.handsDistancePx : 0;
+  }, [metrics, engine, state.context, state.inspect, state.dockOpen, prefs.gestureHoldMs,projectPanel,modeState.target]);
+
+  // Dock auto-hide follows the live cursor (5 Hz metrics are too coarse).
+  const dockAwaySince = useRef<number | null>(null);
+  const dockTravel = useRef<number | null>(null);
+  useEffect(() => {
+    if (!state.dockOpen) {
+      dockAwaySince.current = null;
+      dockTravel.current = null;
+      return undefined;
+    }
+    let raf = 0;
+    const loop = () => {
+      raf = requestAnimationFrame(loop);
+      const snapshot = interactionManager.snapshot;
+      const distance = interactionManager.distanceToTargets(snapshot.cursor);
+      // A hand that is still closing in has not "left" the Dock. Without this, the
+      // 1.4 s window races the cursor's own convergence time (~0.5 s over 300 px),
+      // and a far item on the Dock arrives hidden.
+      const approaching = distance !== null && dockTravel.current !== null && dockTravel.current - distance > 1.5;
+      if (distance !== null) dockTravel.current = distance;
+      const away =
+        snapshot.state !== 'lost' && !interactionManager.containsPoint(snapshot.cursor, 120) && !approaching;
+      const now = performance.now();
+      if (away) {
+        dockAwaySince.current ??= now;
+        if (now - dockAwaySince.current > 1400) {
+          dockAwaySince.current = null;
+          dispatch({ type: 'dock', open: false });
+        }
+      } else {
+        dockAwaySince.current = null;
+      }
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [state.dockOpen]);
+
+  // Focus mode: chrome recedes while drawing, returns after a quiet moment.
+  useEffect(() => {
+    if (metrics.drawing) {
+      setFocusMode(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setFocusMode(false), (modeState.target==='CANVAS_DRAW'?800:FOCUS_MODE_RETURN_MS));
+    return () => window.clearTimeout(timer);
+  }, [metrics.drawing]);
+
+  // ---- artwork library ------------------------------------------------------
+  const [gallery, setGallery] = useState<Artwork[]>([]);
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+  const [pngBackdrop, setPngBackdrop] = useState<'none' | 'day' | 'night'>('none');
+
+  const refreshGallery = useCallback(() => {
+    void listArtworks().then(setGallery);
+  }, []);
+
+  useEffect(() => {
+    void migrateLegacySave().then(refreshGallery);
+  }, [refreshGallery]);
+
+  const slug = (value: string) => value.replace(/[^\w\u4e00-\u9fff-]+/g, '_');
+
+  const download = (href: string, filename: string) => {
+    const anchor = document.createElement('a');
+    anchor.href = href;
+    anchor.download = filename;
+    anchor.click();
+  };
+
+  const handleSave = async () => {
+    const strokes = engine.getCommitted();
+    if (strokes.length === 0) {
+      notify('Nothing to save yet', { tone: 'warn' });
+      return;
+    }
+    let thumbnail=captureFrame({scale:1,background:'theme'})?.dataUrl??null;
+    if(engine.workspaceMode==='CANVAS_DRAW'){const canvas=document.createElement('canvas');canvas.width=PAPER_WIDTH;canvas.height=PAPER_HEIGHT;paintPaper(canvas,strokes,engine.canvasBackground==='white'?'#ffffff':engine.canvasBackground==='dark'?'#242b36':'transparent');thumbnail=canvas.toDataURL('image/png');}
+    const now = new Date();
+    const record = artworkOf(strokes, session.brush, {
+      title: 'Artwork ' + now.toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      theme: themeController.mode,
+      camera: { yaw: inspectController.yaw, pitch: inspectController.pitch, distance: inspectController.distance },
+      thumbnail,
+    });
+    record.mode=engine.workspaceMode==='CANVAS_DRAW'?'canvas':'spatial';record.paper=engine.canvasBackground;
+    await saveArtwork(record);
+    refreshGallery();
+    notify('Saved', { tone: 'success' });
+  };
+
+  const openArtwork = async (id: string) => {
+    const piece = await getArtwork(id);
+    if (!piece) return;
+    // A saved piece becomes a project of its own. Pouring it into the live
+    // project instead would let the next autosave write it over real work.
+    try { if (workspace.project.objects.length) await saveProject(sessionSnapshot(engine)); }
+    catch { notify('当前工程保存失败，先手动保存再打开作品', { tone: 'warn' }); return; }
+    workspace.open(projectFromArtwork(piece));
+    const nextMode = piece.mode === 'canvas' || piece.strokes[0]?.mode === 'canvas' ? 'CANVAS_DRAW' : 'SPATIAL_DRAW';
+    appMode.request(nextMode);engine.setWorkspaceMode(nextMode);
+    session.setColor(piece.brush.color);session.setWidth(piece.brush.width);session.setMaterial(piece.brush.material);
+    dispatch({ type: 'go-studio' });
+    notify('Opened');
+  };
+
+  const exportPng = async (id: string) => {
+    const piece = await getArtwork(id);
+    if (!piece) return;
+    if(piece.mode==='canvas'||piece.strokes[0]?.mode==='canvas'){exportPaper(piece.strokes,piece.paper==='dark'?'#242b36':piece.paper==='transparent'?'transparent':'#ffffff','png');return;}
+    const previousMode=appMode.getSnapshot().target;appMode.request('SPATIAL_DRAW');engine.setWorkspaceMode('SPATIAL_DRAW');
+    engine.projectCapturePaused=true;
+    // Photographing a saved piece must not cost the user the ink they are on:
+    // the canvas and the theme are put back exactly as they were found.
+    const previousStrokes = [...engine.getCommitted()];
+    const previousTheme = themeController.mode;
+    const theme = pngBackdrop === 'none' ? piece.theme : pngBackdrop;
+    engine.loadArtwork(piece.strokes);
+    themeController.setMode(theme);
+    // One beat so the reopened piece is what gets photographed.
+    await new Promise((resolve) => window.setTimeout(resolve, 850));
+    const scale = window.devicePixelRatio >= 1.5 ? 2 : 1;
+    let shot:ReturnType<typeof captureFrame>;
+    try{shot=captureFrame({scale,background:pngBackdrop});}
+    finally{engine.loadArtwork(previousStrokes);appMode.request(previousMode);engine.setWorkspaceMode(previousMode);themeController.setMode(previousTheme);engine.projectCapturePaused=false;}
+    if (!shot) {
+      notify('Export failed', { tone: 'danger' });
+      return;
+    }
+    download(shot.dataUrl, `${slug(piece.title)}-${pngBackdrop === 'none' ? 'transparent' : pngBackdrop}.png`);
+    notify('PNG exported', { tone: 'success' });
+  };
+
+  const exportJson = async (id: string) => {
+    const piece = await getArtwork(id);
+    if (!piece) return;
+    const url = URL.createObjectURL(new Blob([JSON.stringify(piece)], { type: 'application/json' }));
+    download(url, slug(piece.title) + '.json');
+    window.setTimeout(() => URL.revokeObjectURL(url), 4000);
+    notify('JSON exported', { tone: 'success' });
+  };
+
+  /** Import is the one place ink enters the library from outside, so it is validated. */
+  const importJson = async (file: File) => {
+    try {
+      if(file.size>20*1024*1024)throw new Error('piece too large');
+      const parsed = JSON.parse(await file.text()) as Partial<Artwork>;
+      const strokes = Array.isArray(parsed.strokes) ? parsed.strokes : [];
+      const usable =
+        strokes.length > 0 && strokes.length<=2000 &&
+        strokes.every(
+          (stroke) =>
+            Array.isArray(stroke?.segments) &&
+            stroke.segments.every(
+              (segment) =>
+                Array.isArray(segment) &&
+                segment.length<=10000 && segment.every((p) => Number.isFinite(p?.x) && Number.isFinite(p?.y) && Number.isFinite(p?.z) && p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1&&Math.abs(p.z)<=1),
+            ),
+        );
+      if (!usable) throw new Error('not an AirDraw piece');
+      const record = makeArtwork({
+        mode:parsed.mode==='canvas'?'canvas':'spatial',
+        paper:parsed.paper==='dark'||parsed.paper==='transparent'?parsed.paper:'white',
+        title:
+          typeof parsed.title === 'string' && parsed.title.trim()
+            ? parsed.title.trim().slice(0, 60)
+            : file.name.replace(/\.json$/i, '') || 'Imported piece',
+        theme: parsed.theme === 'day' ? 'day' : 'night',
+        camera: {
+          yaw: Number.isFinite(parsed.camera?.yaw) ? (parsed.camera?.yaw as number) : 0,
+          pitch: Number.isFinite(parsed.camera?.pitch) ? (parsed.camera?.pitch as number) : 0,
+          distance: Number.isFinite(parsed.camera?.distance) ? (parsed.camera?.distance as number) : 13.5,
+        },
+        brush: {
+          color: typeof parsed.brush?.color === 'string' ? parsed.brush.color : '#22d3ee',
+          width: Number.isFinite(parsed.brush?.width) ? (parsed.brush?.width as number) : 10,
+          material: isMaterialPreset(parsed.brush?.material) ? parsed.brush.material : 'candy',
+        },
+        strokes: strokes.map((stroke, index) => ({
+          mode:stroke.mode==='canvas'?'canvas':'spatial',
+          tool:stroke.tool==='marker'||stroke.tool==='highlighter'||stroke.tool==='eraser'?stroke.tool:'pen',
+          virtualPressure:stroke.virtualPressure===true,
+          surface:stroke.surface==='wood'||stroke.surface==='metal'||stroke.surface==='stone'?stroke.surface:undefined,
+          id: index + 1,
+          color: typeof stroke.color === 'string' && /^#[\da-f]{6}$/i.test(stroke.color) ? stroke.color : '#22d3ee',
+          width: Number.isFinite(stroke.width) ? Math.min(64,Math.max(2,stroke.width)) : 10,
+          material: isMaterialPreset(stroke.material) ? stroke.material : 'candy',
+          segments: stroke.segments,
+          lod: Number.isFinite(stroke.lod) ? Math.min(1, Math.max(INK_LOD_MIN, stroke.lod)) : 1,
+        })),
+        strokeCount: strokes.length,
+        pointCount: strokes.reduce(
+          (sum, stroke) => sum + stroke.segments.reduce((n, segment) => n + segment.length, 0),
+          0,
+        ),
+        thumbnail: null,
+      });
+      await saveArtwork(record);
+      refreshGallery();
+      notify('Imported', { tone: 'success' });
+    } catch {
+      notify('That file is not an AirDraw piece', { tone: 'danger' });
+    }
+  };
+
+  const blocked = missingCapability(capabilities, flags.simulate);
+  /**
+   * The one place a creation door is opened: it is also the moment the camera is
+   * asked for, so browsing the hub never triggers a permission prompt.
+   */
+  const pickFromHub = useCallback((target: HubTarget) => {
+    setDeviceWanted(true);
+    if (target === 'PLAYLAB') {
+      dispatch({ type: 'go-playlab' });
+      return;
+    }
+    dispatch({ type: 'enter-creation' });
+    // The lessons draw in the spatial canvas; a trained user gets the door they chose.
+    if (appStateRef.current.tutorialStep >= TUTORIAL_STEP_COUNT) {
+      appMode.request(target);
+      engine.setWorkspaceMode(target);
+    }
+  }, [engine]);
+  const commandHandler=useRef<(command:AppCommand)=>void|Promise<void>>(()=>{});
+  commandHandler.current=async command=>{
+    if(calibrating&&command.type!=='CANCEL'&&command.type!=='SET_THEME')throw new Error('请先完成校准，或说取消');
+    if(state.confirmClear&&command.type!=='CANCEL'&&command.type!=='CLEAR_CANVAS')throw new Error('请先确认或取消清空');
+    const release=()=>{engine.cancelInput();modelController.release();setProjectPanel(null);};
+    switch(command.type){
+      case 'SWITCH_MODE':setDeviceWanted(true);release();dispatch({type:'go-studio'});appMode.request(command.mode);break;
+      case 'OPEN_MENU':dispatch({type:'dock',open:true});break;
+      case 'OPEN_SETTINGS':dispatch({type:'open-context',context:'settings'});break;
+      case 'OPEN_COLOR_PANEL':dispatch({type:'dock',open:true});dispatch({type:'popover',popover:'color'});break;
+      case 'SET_LANGUAGE':{const next=currentLocale()==='zh'?'en':'zh';setLanguage(next);updatePreferences({uiLanguage:next});notify(t('settings.languageSwitched',{language:next==='zh'?'中文':'English'}),{tone:'success'});break;}
+      case 'CLOSE_MENU':setProjectPanel(null);if(isOverlay(state.context))dispatch({type:'close-overlay'});else dispatch({type:'dock',open:false});break;
+      case 'UNDO':session.undo();break;
+      case 'REDO':engine.redo();break;
+      case 'SAVE':await saveProject(sessionSnapshot(engine));if(engine.getCommitted().length)await handleSave();break;
+      case 'CLEAR_CANVAS':release();if(command.confirmed){session.clear();dispatch({type:'clear-confirm',open:false});}else dispatch({type:'clear-confirm',open:true});break;
+      case 'CANCEL':if(calibrating){setCalibrating(false);engine.cancelInput();}dispatch({type:'clear-confirm',open:false});break;
+      case 'OPEN_GALLERY':case 'OPEN_HELP':release();dispatch({type:'open-context',context:command.type==='OPEN_HELP'?'help':'gallery'});break;
+      case 'SET_THEME':workspace.environment({theme:command.theme});updatePreferences({theme:command.theme});break;
+      case 'SET_COLOR':session.setColor(command.color);break;
+      case 'SET_BRUSH_SIZE':session.setWidth(Math.max(2,Math.min(40,command.width??session.brush.width+(command.delta??0))));break;
+      case 'OPEN_PLAYLAB':setDeviceWanted(true);release();labReturnRef.current=modeState.target;dispatch({type:'go-playlab'});break;
+      case 'OPEN_TOY':setDeviceWanted(true);release();labReturnRef.current=modeState.target;dispatch({type:'go-playlab'});lab.request(command.toy);break;
+      case 'NEXT_PAGE':case 'PREVIOUS_PAGE':{const delta=command.type==='NEXT_PAGE'?1:-1;if(state.context==='playlab')lab.step(delta);else if(state.context==='help')dispatch({type:'help-section',index:Math.min(GUIDE_SECTIONS.length-1,Math.max(0,state.helpSection+delta))});else if(state.context==='gallery')dispatch({type:'gallery-focus',index:Math.min(Math.max(0,gallery.length-1),Math.max(0,state.galleryFocus+delta))});break;}
+      case 'CENTER_ARTWORK':{const request=frameRequest(engine.getCommitted());if(request)inspectController.frame(request.x,request.y,request.distance);break;}
+      // Board navigation goes through the same controller the gestures drive, so a
+      // voice command and an open palm can never disagree about where the sheet is.
+      case 'PAN_BOARD':engine.panBoard(command.dx??0,command.dy??0);break;
+      case 'ZOOM_BOARD':engine.canvasZoomBy(command.factor);break;
+      case 'VIEW_FIT':engine.canvasFitAll();break;
+      case 'VIEW_RESET':engine.canvasZoomReset();break;
+      case 'VIEW_LAST':engine.canvasViewLast();break;
+      case 'RETURN_TO_CANVAS':{
+        // Leaving a toy is not "back in the browser history": the toy stops taking
+        // input, its resources are released, and the board comes back exactly where
+        // the user left it — same project, same zoom, same tool.
+        lab.back();
+        release();
+        dispatch({type:'go-studio'});
+        const target=labReturnRef.current??'SPATIAL_DRAW';
+        appMode.request(target);
+        engine.setWorkspaceMode(target);
+        break;
+      }
+      case 'PAUSE_GESTURES':{
+        const next=command.on??!gesturePaused;
+        setGesturePaused(next);
+        engine.setInputsPaused(next);
+        notify(next?t('status.gesturesPaused'):t('status.gesturesResumed'));
+        break;
+      }
+      case 'EXIT_VIEW_MODE':dispatch({type:'inspect',on:false});break;
+      // "返回首页" lands on the hub, which needs no device; the welcome animation is
+      // not forced on anyone who has already seen it.
+      case 'HOME':release();dispatch({type:'go-hub'});break;
+    }
+  };
+  useEffect(()=>{appCommandBus.defer=()=>!!engine.activeStroke;const unbind=appCommandBus.bind(command=>commandHandler.current(command));const off=engine.onHistoryChange(()=>queueMicrotask(()=>{void appCommandBus.flush().catch(error=>notify(error.message,{tone:'warn'}));}));return()=>{off();unbind();appCommandBus.clear();voiceAssistant.stop();};},[engine]);
+  useEffect(()=>{voiceAssistant.configure({wakePhrase:prefs.voiceWakePhrase,language:prefs.voiceLanguage,feedback:prefs.voiceFeedback,volume:prefs.voiceVolume});},[prefs.voiceWakePhrase,prefs.voiceLanguage,prefs.voiceFeedback,prefs.voiceVolume]);
+  const sendCommand=(command:AppCommand)=>{void appCommandBus.send(command).catch(error=>notify(error.message,{tone:'warn'}));};
+  const chrome = state.context !== 'launch';
+  /**
+   * The hub is a door, not a workspace: its own header owns the screen, so the
+   * mode switcher, the tool docks and the tracker read-out stay hidden until a
+   * door is chosen. Theme, device status, voice and feedback remain available.
+   */
+  const onHub = state.context === 'hub';
+  const workspaceChrome = chrome && !onHub;
+  /**
+   * PlayLab brings its own chrome. The drawing docks are not merely out of place
+   * in a toy — their gesture regions compete for the same pinch, so a grab lands
+   * on a colour swatch instead of the orb.
+   */
+  const drawingChrome = workspaceChrome && state.context !== 'playlab';
+  /**
+   * The one top bar. When it is up, the pieces it hosts (theme, camera, state line,
+   * mode segment) must not also render as their own floating layers — duplicate
+   * regions with the same id, and two bars doing the same job.
+   */
+  const barOwnsTop = workspaceChrome && !isOverlay(state.context) && !calibrating && !projectPanel;
+  const quality = QUALITY_TIERS[tier];
+  const blockedByProblem = !blocked && session.error !== null && state.context !== 'launch';
+
+  // ---- tutorial: lessons are passed by doing them ----------------------------
+  const tutorialSignal = useTutorialSignal({
+    engine,
+    metrics,
+    step: state.tutorialStep,
+    dockOpen: state.dockOpen,
+    inspect: state.inspect,
+    strokeCount: session.strokeCount,
+    color: session.brush.color,
+    width: session.brush.width,
+    theme: themeController.mode,
+  });
+  const [targetConfirmed, setTargetConfirmed] = useState(false);
+  const [readyFlourish, setReadyFlourish] = useState(false);
+
+  useEffect(() => {
+    setTargetConfirmed(false);
+  }, [state.tutorialStep]);
+
+  useEffect(() => {
+    if (state.context !== 'tutorial' || calibrating) return;
+    const lesson = TUTORIAL_STEPS[state.tutorialStep];
+    if (!lesson || !lesson.complete(tutorialSignal)) return;
+    const next = state.tutorialStep + 1;
+    if (next >= TUTORIAL_STEPS.length) {
+      updatePreferences({ tutorialDone: true });
+      dispatch({ type: 'tutorial-finished' });
+      setReadyFlourish(true);
+    } else {
+      dispatch({ type: 'tutorial-step', step: next });
+    }
+  }, [state.context, state.tutorialStep, tutorialSignal, calibrating]);
+
+  useEffect(() => {
+    if (!readyFlourish) return undefined;
+    const timer = window.setTimeout(() => setReadyFlourish(false), 1600);
+    return () => window.clearTimeout(timer);
+  }, [readyFlourish]);
+
+  return (
+    <MotionConfig transition={motionTokens.spring} reducedMotion={reduced?'always':prefs.reducedMotion==='off'?'never':'user'}>
+    <div className={styles.workspace} data-boot-phase={bootStarted?bootPhase(state.context,session.cameraState,calibrating,state.launchStage==='hello'):'BOOT'}>
+      {capabilities.webgl && <Scene3D onSoftwareRenderer={()=>{setSoftwareRenderer(true);setTier('low');}} engine={engine} quality={quality} inspect={state.inspect && modeState.target==='SPATIAL_DRAW'} home={showsWelcomeField(state) || onHub} welcome={showsWelcomeField(state)} launchStage={state.launchStage} hub={onHub} modelUrl={modelUrl} ready={readyFlourish} reduced={reduced} lab={state.context==='playlab' ? <LabStage runtime={lab} active reducedMotion={reduced} /> : undefined} />}
+      <AnimatePresence>{state.context==='launch' && <LaunchScreen stage={state.launchStage} helloSeen={prefs.helloSeen} gestureReady={gestureReady} reduced={reduced} onStage={stage=>dispatch({type:'launch-stage',stage})} onBegin={()=>{updatePreferences({helloSeen:true});dispatch({type:'begin'});}} />}</AnimatePresence>
+      <AnimatePresence>{state.context==='hub' && (
+        <FeatureHub
+          onPick={pickFromHub}
+          onGallery={()=>dispatch({type:'open-context',context:'gallery'})}
+          onGuide={()=>dispatch({type:'open-context',context:'help'})}
+          onSettings={()=>dispatch({type:'open-context',context:'settings'})}
+          recent={gallery[0] ? { name: gallery[0].title, when: relativeTime(gallery[0].updatedAt) } : null}
+          onResume={()=>void openArtwork(gallery[0]!.id)}
+          deviceNote={deviceWanted ? null : '未使用摄像头与麦克风'}
+        />
+      )}</AnimatePresence>
+      {state.inspect && modeState.target==='SPATIAL_DRAW' && !isOverlay(state.context) && <InspectDragSurface />}
+      {/* The dot canvas is a real document layer once the mode has settled: crisp
+          dots and exact hit mapping at any zoom, while the 3D paper keeps carrying
+          the transition blend. */}
+      {chrome && modeState.mode === 'CANVAS_DRAW' && !isOverlay(state.context) && !projectPanel && !calibrating && (
+        <DrawingSurface engine={engine} dotDensity={prefs.dotDensity} />
+      )}
+      {modeState.mode === 'CANVAS_DRAW' && !isOverlay(state.context) && !projectPanel && !calibrating && (
+        <CanvasMinimap engine={engine} scope={state.context} />
+      )}
+      {(chrome || gestureReady) && <SpatialCursor />}
+
+      {state.context === 'tutorial' && !calibrating && TUTORIAL_STEPS[state.tutorialStep]?.id === 'select' && !targetConfirmed && (
+        <TutorialTarget onConfirm={() => setTargetConfirmed(true)} />
+      )}
+      {state.context === 'tutorial' && !calibrating && (
+        <TutorialCoach
+          index={state.tutorialStep}
+          signal={tutorialSignal}
+          reduced={reduced}
+          onSkip={() => {
+            updatePreferences({ tutorialDone: true });
+            dispatch({ type: 'tutorial-finished' });
+          }}
+        />
+      )}
+      {barOwnsTop && (
+        <WorkspaceBar
+          projectName={workspace.project.name}
+          saveState={workspace.saveState}
+          onBack={() => sendCommand({ type: 'HOME' })}
+          onRename={() => setProjectPanel('projects')}
+          onOpenProjects={() => setProjectPanel(projectPanel ? null : 'layers')}
+          onOpenGallery={() => dispatch({ type: 'open-context', context: 'gallery' })}
+          onOpenGuide={() => sendCommand({ type: 'OPEN_HELP' })}
+          onRestartTutorial={() => {
+            updatePreferences({ tutorialDone: false });
+            dispatch({ type: 'enter-tutorial', step: 0 });
+          }}
+          onOpenSettings={() => dispatch({ type: 'open-context', context: 'settings' })}
+          onToggleTheme={() => sendCommand({ type: 'SET_THEME', theme: themeController.mode === 'day' ? 'night' : 'day' })}
+          onToggleCameraPreview={() => setPreviewExpanded((value) => !value)}
+          onSetHand={(hand) => updatePreferences({ dominantHand: hand })}
+          hand={prefs.dominantHand}
+          cameraPreviewOpen={previewExpanded}
+          handPresent={metrics.handCount > 0}
+          reduced={reduced}
+          scope={state.context}
+          onToggleToolbar={() => sendCommand({ type: state.dockOpen ? 'CLOSE_MENU' : 'OPEN_MENU' })}
+          toolbarOpen={state.dockOpen || modeState.mode === 'CANVAS_DRAW'}
+          gesturesPaused={gesturePaused}
+          onToggleGestures={() => sendCommand({ type: 'PAUSE_GESTURES' })}
+          centre={state.context !== 'tutorial' && state.context !== 'playlab' && (
+            <ModeSwitcher layout={false} onMode={(mode) => sendCommand({ type: 'SWITCH_MODE', mode })} onPlayLab={() => sendCommand({ type: 'OPEN_PLAYLAB' })} />
+          )}
+          voice={<VoiceStatusPanel anchor={{ top: '100%' }} />}
+        />
+      )}
+      {/* The hub's own header carries the brand; a second floating status pill over the
+          invitation repeated the wordmark and sat on the headline at tablet widths. */}
+      {!barOwnsTop && workspaceChrome && <TopStatus metrics={metrics} flash={null} focusMode={focusMode} />}
+      {!barOwnsTop && chrome && <VoicePill />}
+      {/* The hub is a door, not a workspace: its own four cards are the mode control, so
+          a second switcher floating over them only duplicated the choice — and on a short
+          window it sat on top of the hub's footer row, making those buttons unclickable. */}
+      {!barOwnsTop && workspaceChrome && <ModeSwitcher onMode={mode=>sendCommand({type:'SWITCH_MODE',mode})} onPlayLab={()=>sendCommand({type:'OPEN_PLAYLAB'})} />}
+      {state.context==='playlab' && labState.phase==='HUB' && <LabHub runtime={lab} onLeave={()=>dispatch({type:'go-studio'})}/>}
+      {state.context==='playlab' && labState.phase!=='HUB' && <LabChrome runtime={lab} onReturnToCanvas={()=>sendCommand({type:'RETURN_TO_CANVAS'})}/>}
+      {projectPanel&&<ProjectPanel engine={engine} mode={projectPanel} onClose={()=>setProjectPanel(null)}/>}
+      {chrome&&!calibrating&&!projectPanel&&state.context==='studio'&&<RecognitionSuggestion engine={engine}/>}
+      {creationTutorial&&<CreationTutorial hidden={!chrome||calibrating||!!projectPanel||state.context!=='studio'}/>}
+      {workspaceChrome && calibrating && session.lifecycle==='running' && <PinchCalibration engine={engine} onDone={finishCalibration} />}
+      {workspaceChrome && !calibrating && offerCalibration && state.context==='studio' && <CalibrationOffer onStart={()=>setCalibrating(true)} onSkip={()=>updatePreferences({calibrationSkipped:true})} />}
+      {drawingChrome && !projectPanel && !calibrating && !isOverlay(state.context) && modeState.target==='SPATIAL_DRAW' && <SurfaceDock engine={engine} focus={focusMode}/>}
+      {drawingChrome && !projectPanel && !calibrating && !isOverlay(state.context) && modeState.target==='CANVAS_DRAW' && <CanvasDock onWorkspace={setProjectPanel} engine={engine} focus={focusMode}/>}
+      {drawingChrome && !projectPanel && !calibrating && !isOverlay(state.context) && modeState.target==='MODEL_CONTROL' && <ModelDock onImport={importProjectModel} onHelp={()=>sendCommand({type:'OPEN_HELP'})} onSettings={()=>dispatch({type:'open-context',context:'settings'})}/>}
+      {!barOwnsTop && chrome && <ThemeToggle mode={themeController.mode} onToggle={() => sendCommand({type:'SET_THEME',theme:themeController.mode==='day'?'night':'day'})} />}
+      {!barOwnsTop && chrome && (
+        <CameraStatusDot
+          metrics={metrics}
+          lifecycle={session.lifecycle}
+          cameraState={session.cameraState}
+          simulated={session.simulated}
+          onExpand={() => setPreviewExpanded((value) => !value)}
+        />
+      )}
+      {chrome && <FeedbackNotice />}
+
+      {drawingChrome && !projectPanel && !calibrating && modeState.target!=='MODEL_CONTROL' && !isOverlay(state.context) && !blockedByProblem && (
+        <SpatialDock
+          scope={state.context}
+          open={state.dockOpen || modeState.mode === 'CANVAS_DRAW'}
+          mode={modeState.target}
+          onFitAll={() => sendCommand({ type: 'VIEW_FIT' })}
+          onZoomReset={() => sendCommand({ type: 'VIEW_RESET' })}
+          onViewLast={() => sendCommand({ type: 'VIEW_LAST' })}
+          brush={session.brush}
+          strokeCount={session.strokeCount}
+          canUndo={session.canUndo}
+          canRedo={engine.canRedo}
+          eraseMode={state.eraseMode}
+          inspect={state.inspect}
+          focusMode={focusMode}
+          confirmClear={state.confirmClear}
+          popover={state.popover}
+          onPopover={(popover) => dispatch({ type: 'popover', popover })}
+          setColor={color=>sendCommand({type:'SET_COLOR',color})}
+          setWidth={width=>sendCommand({type:'SET_BRUSH_SIZE',width})}
+          setMaterial={session.setMaterial}
+          onUndo={()=>sendCommand({type:'UNDO'})}
+          onRedo={()=>sendCommand({type:'REDO'})}
+          onToggleErase={() => dispatch({ type: 'erase', on: !state.eraseMode })}
+          onArmClear={() => dispatch({ type: 'clear-confirm', open: true })}
+          onDismissClear={() => dispatch({ type: 'clear-confirm', open: false })}
+          onClear={() => {sendCommand({type:'CLEAR_CANVAS',confirmed:true});if(voiceAssistant.getSnapshot().state==='CONFIRMING')voiceAssistant.success('已清空');}}
+          onToggleInspect={() => dispatch({ type: 'inspect', on: !state.inspect })}
+          onSave={()=>sendCommand({type:'SAVE'})}
+          onCenter={() => sendCommand({type:'CENTER_ARTWORK'})}
+        />
+      )}
+
+      {/* The three full-screen overlays share one handover: content lifts in under a
+          single drawn stroke and lifts out faster than it came, so switching between
+          them never shows an empty frame. */}
+      <AnimatePresence>
+      {state.context === 'gallery' && (
+        <ScreenTransition key="gallery" name="gallery">
+        <GalleryScreen
+          items={gallery}
+          focus={state.galleryFocus}
+          pendingDelete={pendingDelete}
+          reduced={reduced}
+          onOpen={openArtwork}
+          onDuplicate={async (id) => {
+            await duplicateArtwork(id);
+            refreshGallery();
+            notify('Duplicated');
+          }}
+          onArmDelete={(id) => setPendingDelete(id)}
+          onCancelDelete={() => setPendingDelete(null)}
+          onConfirmDelete={async () => {
+            if (pendingDelete) await deleteArtwork(pendingDelete);
+            setPendingDelete(null);
+            refreshGallery();
+            notify('Deleted', { tone: 'success' });
+          }}
+          onExportPng={exportPng}
+          onExportJson={exportJson}
+          backdrop={pngBackdrop}
+          onBackdrop={setPngBackdrop}
+          onImport={importJson}
+          onFocusIndex={(index) => dispatch({ type: 'gallery-focus', index })}
+          onClose={() => dispatch({ type: 'close-overlay' })}
+        />
+        </ScreenTransition>
+      )}
+      {state.context === 'settings' && (
+        <ScreenTransition key="settings" name="settings">
+        <SettingsScreen
+          preferences={prefs}
+          lifecycle={session.lifecycle}
+          simulated={session.simulated}
+          version="0.6.0"
+          onChange={updatePreferences}
+          onReconnectCamera={session.retry}
+          onResetTutorial={() => {
+            updatePreferences({ tutorialDone: false });
+            dispatch({ type: 'enter-tutorial', step: 0 });
+          }}
+          onResetAll={() => {
+            // Every stored knob the app owns, in one honest sweep: preferences, the
+            // recognition tuning and the personal pinch profile.
+            const restored = resetPreferences();
+            try {
+              localStorage.removeItem('airdraw-tracking-config');
+              localStorage.removeItem('airdraw-pinch-calibration');
+            } catch {
+              /* Nothing persisted: the session still gets the defaults below. */
+            }
+            engine.setContactProfile({ ...DEFAULT_CONTACT });
+            engine.setPointerSensitivity(restored.pointerSensitivity);
+            engine.setPointerSmoothing(restored.pointerSmoothing);
+            engine.setPinchAssist(restored.pinchAssist);
+            engine.setDominantHand(restored.dominantHand);
+            lab.setGestureIntensity(restored.toyIntensity);
+            lab.setDetail(null);
+            voiceAssistant.configure({ wakePhrase: restored.voiceWakePhrase, language: restored.voiceLanguage, feedback: restored.voiceFeedback, volume: restored.voiceVolume });
+            themeController.setMode(resolveTheme(restored.theme));
+            notify(t('settings.resetAllDone'), { tone: 'success' });
+          }}
+          onClose={() => dispatch({ type: 'close-overlay' })}
+        ><TrackingTuning developer={devMode} configure={session.configure} onCalibrate={()=>{dispatch({type:'close-overlay'});setCalibrating(true);}} onResetContact={()=>{try{localStorage.removeItem('airdraw-pinch-calibration');}catch{/* Nothing persisted, the runtime reset below still applies. */}engine.setContactProfile({...DEFAULT_CONTACT});updatePreferences({calibrationSkipped:false});notify('已恢复默认手感');}}/></SettingsScreen>
+        </ScreenTransition>
+      )}
+      {state.context === 'help' && (
+        <ScreenTransition key="help" name="help">
+        <GuideScreen
+          section={state.helpSection}
+          practice={state.practiceGesture as never}
+          gesture={metrics.gesture}
+          pinched={metrics.pinched}
+          handPresent={metrics.handCount > 0}
+          confidence={metrics.gestureConfidence}
+          devMode={devMode}
+          reduced={reduced}
+          onSection={(index) => dispatch({ type: 'help-section', index })}
+          onPractice={(g) => dispatch({ type: 'practice', gesture: g })}
+          onClose={() => dispatch({ type: 'close-overlay' })}
+        />
+        </ScreenTransition>
+      )}
+      </AnimatePresence>
+      {/* The camera is asked for only after a door was chosen. This card explains the
+          prompt and always leaves a way back to the hub, so a refusal is a detour and
+          not a dead end. */}
+      <AnimatePresence>{deviceWanted && (state.context === 'tutorial' || state.context === 'studio') && session.cameraState !== 'READY' && (
+        <PermissionCard lifecycle={session.lifecycle} cameraState={session.cameraState} onDecline={() => { setDeviceWanted(false); dispatch({ type: 'go-hub' }); }} />
+      )}</AnimatePresence>
+      {blocked && (
+        <TrackingProblem
+          error={
+            blocked === 'webgl'
+              ? { code: 'no-webgl', message: '当前浏览器没有可用的 WebGL 上下文' }
+              : blocked === 'camera'
+                ? { code: 'no-camera-api', message: '当前浏览器没有提供 getUserMedia' }
+                : { code: 'insecure-context', message: '页面不在安全上下文中' }
+          }
+          onRetry={session.retry}
+          simulated={session.simulated}
+        />
+      )}
+      {blockedByProblem && session.error && (
+        <TrackingProblem error={session.error} onRetry={session.retry} simulated={session.simulated} />
+      )}
+
+      {/* The inset is a creation aid: it belongs beside the board, not on top of a
+          full-screen surface. Over the gallery/settings/help it covered the first
+          card's actions and the settings list's drag lane, so those screens own the
+          whole viewport and the inset comes back with the studio. */}
+      {(previewExpanded || devMode) && chrome && !isOverlay(state.context) && (
+        <CameraPreview
+          stream={session.stream}
+          visible
+          simulated={session.simulated}
+          lifecycle={session.lifecycle}
+          primaryHandedness={metrics.primaryHandedness}
+          gesture={metrics.gesture}
+          showSkeleton={true}
+          inputHint={calibrating?'先完成三次真实接触校准':state.context==='tutorial'&&!canDraw(state)?'先完成当前教程步骤':projectPanel?'关闭对象面板后继续绘画':engine.inputHint}
+          onDiagnostic={()=>downloadBlob(new Blob([JSON.stringify({app:{context:state.context,tutorialStep:state.tutorialStep,calibrating,projectPanel},input:engine.inputDiagnostic},null,2)],{type:'application/json'}),'AirDraw-input-diagnostic.json')}
+          subscribe={session.subscribe}
+          onHide={() => setPreviewExpanded(false)}
+        />
+      )}
+
+      {devMode && chrome && (
+        <DebugPanel
+          contact={engine.contact}
+          metrics={metrics}
+          camera={{ state: session.cameraState, delegate: session.delegate, notice: cameraService.configNotice }}
+          lab={{ phase: labState.phase, status: labState.status, detail: labState.detail, swipeState: labState.swipeState, index: labState.index, error: labState.error }}
+          mirror={mirror}
+          viewMode={viewMode}
+          onViewModeChange={mode=>{setViewMode(mode);appMode.request(mode==='2d'?'CANVAS_DRAW':'SPATIAL_DRAW');}}
+          onToggleMirror={() => setMirror((value) => !value)}
+          onClose={() => updatePreferences({ devMode: false })}
+        />
+      )}
+    </div>
+    </MotionConfig>
+  );
+}
+
+
+
+
+
